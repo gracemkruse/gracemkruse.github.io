@@ -155,6 +155,7 @@ hr.short-thick {
 }
 .vnu {
   display: inline;
+  
 
 }
 .row-gapless > div[class*='col-'] {
@@ -440,7 +441,7 @@ a:hover {
 }
 a {
   font-weight: 600;
-  color: #5edcd0;
+  color: #949494;
   transition: all 0.3s ease;
   -webkit-transition: all 0.3s ease;
   -moz-transition: all 0.3s ease;
@@ -466,6 +467,36 @@ a:hover {
   color: #34d3c4;
   text-decoration: none;
 }
+
+ab {
+  font-weight: 600;
+  color: #949494;
+  transition: all 0.3s ease;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  cursor: poitner;
+}
+.image-bg ab,
+.bg-primary ab {
+  color: #fff;
+}
+.image-bg ab:hover,
+.bg-primary ab:hover {
+  color: #fff;
+  opacity: .9;
+}
+.bg-light ab {
+  color: #949494;
+}
+.bg-light ab:hover {
+  color: #949494;
+  opacity: 1;
+}
+ab:hover {
+  color: #949494;
+  text-decoration: none;
+}
+
 .label {
   font-family: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
@@ -893,14 +924,16 @@ nav .btn,
   border-bottom: 1px solid #ccc;
   overflow: hidden;
 }
+
 .nav-utility i {
   position: relative;
   top: 1px;
 }
+
 .nav-bar {
-  height: 55px;
-  max-height: 55px;
-  line-height: 53px;
+  height: 60px;
+  max-height: 96px;
+  line-height: 60px;
   border-bottom: 1px solid #ccc;
 }
 .nav-bar .module,
@@ -910,6 +943,12 @@ nav .btn,
 .nav-bar a {
   display: inline-block;
   height: 55px;
+}
+.nav-bar-2{
+  height: 16px;
+  max-height: 16px;
+  line-height: 16px;
+  border-bottom: 1px solid #ccc;
 }
 .logo {
   max-height: 60%;
@@ -1070,7 +1109,7 @@ nav.bg-dark .logo-dark {
   right: 0;
 }
 .module.widget-handle {
-  border-left: 1px solid #ccc;
+  border-left: 4px solid #ccc;
   padding: 0 24px;
   cursor: pointer;
   position: relative;
@@ -1311,7 +1350,7 @@ nav .cart-overview a {
     overflow: hidden;
   }
   .nav-bar .module {
-    padding: 0 16px;
+    padding: 0 36px;
   }
   .nav-bar .module-group {
     width: 100%;
