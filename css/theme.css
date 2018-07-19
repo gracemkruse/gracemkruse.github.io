@@ -1809,8 +1809,8 @@ input[type="submit"],
 button[type="submit"] {
   height: 50px;
   line-height: 48px;
-  border: 2px solid #47b475;
-  background: #47b475;
+  border: 2px solid #5edcd0;
+  background: #5edcd0;
   color: #fff;
   width: 100%;
   font-size: 11px;
