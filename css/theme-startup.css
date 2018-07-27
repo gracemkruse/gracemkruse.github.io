@@ -932,7 +932,7 @@ nav .btn,
 
 .nav-bar {
   height: 60px;
-  max-height: 96px;
+  max-height: 192px;
   line-height: 60px;
   border-bottom: 1px solid #ccc;
 }
@@ -1449,7 +1449,8 @@ nav .cart-overview a {
     display: inline-block;
     position: relative;
     bottom: 3px;
-    margin-left: 8px;
+    margin-left: 32px;
+	margin-top: 8px;
   }
   .widget-handle .function {
     width: 100%;
@@ -1474,8 +1475,8 @@ nav .cart-overview a {
     top: 18px;
   }
   .mobile-toggle {
-    border-left: 1px solid #ccc !important;
-    border-bottom: none !important;
+    border-right: 1px solid #ccc !important;
+    border-bottom: 1px solid #ccc !important;
   }
   .mobile-toggle i {
     line-height: 53px !important;
@@ -1849,8 +1850,8 @@ input[type="submit"],
 button[type="submit"] {
   height: 50px;
   line-height: 48px;
-  border: 2px solid #5edcd0;
-  background: #5edcd0;
+  border: 2px solid #b6dad0;
+  background: #b6dad0;
   color: #fff;
   width: 100%;
   font-size: 11px;
