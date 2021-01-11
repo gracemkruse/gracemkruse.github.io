@@ -155,7 +155,7 @@ hr.short-thick {
 }
 .vnu {
   display: inline;
-  
+
 
 }
 .row-gapless > div[class*='col-'] {
@@ -441,7 +441,7 @@ a:hover {
 }
 a {
   font-weight: 600;
-  color: #949494;
+  color: #34d3c4;
   transition: all 0.3s ease;
   -webkit-transition: all 0.3s ease;
   -moz-transition: all 0.3s ease;
@@ -460,11 +460,11 @@ a {
   color: #5edcd0;
 }
 .bg-light a:hover {
-  color: #5edcd0;
+  color: #279F93;
   opacity: 1;
 }
 a:hover {
-  color: #34d3c4;
+  color: #279F93;
   text-decoration: none;
 }
 
