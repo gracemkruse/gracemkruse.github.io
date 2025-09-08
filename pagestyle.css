@@ -1,0 +1,184 @@
+body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      color: #0232A1;
+      background: #fff;
+    }
+    header {
+      position: fixed; /* Ensure header stays at the top on scroll */
+      top: 0;
+      width: 100vw; /* Expand header across full screen */
+      background-color: #0232A1;
+      color: white;
+      padding: 8px 32px;
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Besley', serif;
+      z-index: 1000;
+    }
+    .title-block {
+      position: fixed;
+      top: 18px;
+      left: 0;
+      width: 100%;
+      background: transparent;
+      z-index: 999;
+      padding: 200px 32px auto 32px;
+      max-width: 100%;
+      margin: 0 0 500px 0px;
+    }
+    .project-container {
+      padding: 0px 32px 0 32px;
+      max-width: 100%;
+      margin: 
+    }
+    h1 {
+      font-size: 96px;
+      font-family: 'Besley', serif;
+      font-weight: 400;
+      margin: 32px 10% -24px 10%;
+    }
+    .subtitle {
+      font-size: 14px;
+      font-family: 'Besley', serif;
+      font-weight: 400;
+      margin: -18px 10% 4px 10%;
+    }
+    .subtitle2 {
+      font-size: 14px;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 900;
+      margin: 0 10% 4px 10%;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #0232A1;
+    }
+    .date-awards-container {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 4px;
+      padding:100px 8px 0 8px;
+      font-size: 14px;
+      line-height: .5;
+      align-items: start;
+    }
+    .horizontal-line-container {
+      max-width: 100%;
+      margin: 0 auto;
+            box-sizing: border-box;
+  }
+    .date-column { grid-column: span 3; }
+    .summary-column {
+      grid-column: span 6;
+      font-size: 14px;
+      line-height: 1.2;
+      border-left: 1px solid #0232A1;
+      padding-left: 32px;
+    }
+    .photo-text-section {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 32px;
+      align-items: start;
+      margin: 0 10%; /* Align with the title margins */
+      padding: 217px 0 0 0;
+  
+    }
+    .photo-column { grid-column: span 6; }
+    .photo-column img { width: 100%; height: auto; display: block; }
+    .text-column {
+      grid-column: span 3;
+      font-size: 14px;
+      font-weight: 400;
+    }
+    .photo-column, .text-column {
+      margin: 64px 0 0 0; /* Ensure child elements align properly */
+    }
+    .section-title {
+      font-family: 'Besley', serif;
+      font-size: 24px;
+      font-weight: 400;
+      margin: 0 10%; /* Align with the title margins */
+      padding: px 0 0 0;
+    }
+    .gallery {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+    }
+    .gallery img {
+      width: 100%;
+      height: auto;
+      display: none;
+    }
+    .gallery img.active {
+      display: block;
+    }
+    .gallery-controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+    }
+    .gallery-controls button {
+      background-color: #0232A1;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+    footer {
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid #0232A1;
+      font-size: 14px;
+      color: #0232A1;
+      margin-top: 48px;
+    }
+
+    /* 📱 Mobile Enhancements */
+    @media screen and (max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px;
+        gap: 4px;
+      }
+      .title-block {
+        position: static;
+        padding: 16px;
+        text-align: left;
+      }
+      h1 { font-size: 36px; margin: 16px 0 8px; }
+      .subtitle, .subtitle2 { margin: 0 0 8px; font-size: 12px; }
+      .project-container {
+        padding: 16px;
+        margin: 0;
+        max-width: 100%;
+      }
+      .date-awards-container,
+      .photo-text-section {
+        display: block;
+      }
+      .date-column, .summary-column,
+      .photo-column, .text-column {
+        width: 100%; 
+        grid-column: auto;
+        padding: 0; 
+        border: none;
+      }
+      .summary-column { padding-top: 16px; }
+      .gallery-controls {
+        justify-content: center;
+        gap: 16px;
+      }
+      .gallery-controls button {
+        padding: 8px 16px; font-size: 14px;
+      }
+      .section-title {
+        font-size: 20px;
+        margin-top: 32px;
+      }
+      footer {
+        font-size: 12px;
+        padding: 16px;
+      }
+    }

@@ -1,0 +1,154 @@
+<html lang="en"><head><script type="text/javascript" src="/___vscode_livepreview_injected_script"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grace Kruse Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Besley:wght@400;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&amp;family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&amp;family=Roboto:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+  <div class="header">
+    <div class="name">
+     <div>grace kruse</div>
+      <!--<div>Kruse</div> for two line large name-->
+    </div>
+    <div class="portfolio-text">PORTFOLIO</div>
+  </div>
+  <div class="contact" id="contactBar">
+    <div>Brooklyn, NY</div>
+    <div><a href="mailto:grace.m.kruse@gmail.com" style="color: #0232A1; text-decoration: none;">grace.m.kruse@gmail.com</a></div>
+    <div>719.360.6290</div>
+  </div>
+  <div class="description">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  </div>
+  <div class="grid">
+    <!-- 12 Project Blocks -->
+    <div>
+      <a href="temp3">
+        <img src="img/helix.jpg" alt="Helix project thumbnail">
+        <div class="overlay">
+          <h3>Helix</h3>
+          <p>Strategy and Creative Direction</p>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="imposter.html">
+        <img src="img/helixbranding.png" alt="Helix Branding thumbnail">
+        <div class="overlay">
+          <h3>Helix Branding</h3>
+          <p>Design System</p>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="imposter.html">
+        <img src="img/ts.png" alt="Tech Scouting thumbnail">
+        <div class="overlay">
+          <h3>Tech Scouting</h3>
+          <p>Creative Direction</p>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="imposter.html">
+        <img src="img/imp/fcf.png" alt="Imposter card game thumbnail">
+        <div class="overlay">
+          <h3>Imposter</h3>
+          <p>Card Game</p>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="currentss19.html">
+        <img src="img/currentss19/altcover.jpg" alt="Currents Art magazine cover">
+        <div class="overlay">
+          <h3>Currents Art</h3>
+          <p>Magazine Design</p>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="predicate.html">
+        <img src="img/predicate/predicate.jpg" alt="Predicate front-end development thumbnail">
+        <div class="overlay">
+          <h3>Predicate</h3>
+          <p>Front End Development</p>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="currentsf18.html">
+        <img src="img/currentsf18/Worship.jpg" alt="Currents Worship project thumbnail">
+        <div class="overlay">
+          <h3>Currents Worship</h3>
+          <p>Creative Direction and Lead Designer</p>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="artposters.html">
+        <img src="img/Posters/full.jpg" alt="Pick-Up Sticks poster design">
+        <div class="overlay">
+          <h3>Pick-Up Sticks</h3>
+          <p>Poster Design</p>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="ip.html">
+        <img src="img/ip/shanghai.jpg" alt="International Programs marketing poster">
+        <div class="overlay">
+          <h3>International Programs</h3>
+          <p>Marketing Posters</p>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="ladyg.html">
+        <img src="img/ladyg-sketch.jpg" alt="Lady G personal logo sketch">
+        <div class="overlay">
+          <h3>Lady g</h3>
+          <p>Personal Logo Design</p>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="mobius.html">
+        <img src="img/Investor Book.jpg" alt="Mobius theme park concept">
+        <div class="overlay">
+          <h3>Mobius</h3>
+          <p>Theme Park Concept</p>
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="elephant-puzzle.html">
+        <img src="img/IMG_3813.jpg" alt="L'éléphant puzzle illustration">
+        <div class="overlay">
+          <h3>L'éléphant</h3>
+          <p>Puzzle and Illustration</p>
+        </div>
+      </a>
+    </div>
+  </div>
+  <footer style="font-family: 'Besley', serif; text-align: center;">
+    <img src="img/bluelogo.png" alt="Small Logo" style="width: 12px; height: auto; vertical-align: middle; margin-right: 0px;">
+    Grace Kruse 2025
+  </footer>
+  <script>
+    const contactBar = document.getElementById('contactBar');
+    const contactOffsetTop = contactBar.offsetTop;
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY >= contactOffsetTop) {
+        contactBar.classList.add('scrolled');
+      } else {
+        contactBar.classList.remove('scrolled');
+      }
+    });
+  </script>
+
+
+<span style="border-radius:10px !important;text-indent:12px !important;width:auto !important;height:20px !important;padding:0px 8px !important;text-align:center !important;vertical-align:middle !important;font:bold 11px / 20px &quot;Helvetica Neue&quot;, Helvetica, sans-serif !important;color:rgb(255, 255, 255) !important;background:url(&quot;data:image/svg+xml;base64,PHN2ZyBpZD0ic291cmNlIiB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHZpZXdCb3g9IjAgMCAxMiAxMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNiIgY3k9IjYiIHI9IjYiIGZpbGw9IiNFNjAwMjMiPjwvY2lyY2xlPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTAgNkMwIDguNTYxNSAxLjYwNTUgMTAuNzQ4NSAzLjg2NSAxMS42MDlDMy44MSAxMS4xNDA1IDMuNzUxNSAxMC4zNjggMy44Nzc1IDkuODI2QzMuOTg2IDkuMzYgNC41NzggNi44NTcgNC41NzggNi44NTdDNC41NzggNi44NTcgNC4zOTk1IDYuNDk5NSA0LjM5OTUgNS45N0M0LjM5OTUgNS4xNCA0Ljg4MDUgNC41MiA1LjQ4IDQuNTJDNS45OSA0LjUyIDYuMjM2IDQuOTAyNSA2LjIzNiA1LjM2MUM2LjIzNiA1Ljg3MzUgNS45MDk1IDYuNjM5NSA1Ljc0MSA3LjM1QzUuNjAwNSA3Ljk0NDUgNi4wMzk1IDguNDI5NSA2LjYyNTUgOC40Mjk1QzcuNjg3IDguNDI5NSA4LjUwMzUgNy4zMSA4LjUwMzUgNS42OTRDOC41MDM1IDQuMjYzNSA3LjQ3NTUgMy4yNjQgNi4wMDggMy4yNjRDNC4zMDkgMy4yNjQgMy4zMTE1IDQuNTM4NSAzLjMxMTUgNS44NTZDMy4zMTE1IDYuMzY5NSAzLjUwOSA2LjkxOTUgMy43NTYgNy4yMTlDMy44MDQ1IDcuMjc4NSAzLjgxMiA3LjMzIDMuNzk3NSA3LjM5MDVDMy43NTIgNy41Nzk1IDMuNjUxIDcuOTg1IDMuNjMxNSA4LjA2OEMzLjYwNSA4LjE3NyAzLjU0NSA4LjIwMDUgMy40MzE1IDguMTQ3NUMyLjY4NTUgNy44MDA1IDIuMjE5NSA2LjcxIDIuMjE5NSA1LjgzNEMyLjIxOTUgMy45NDk1IDMuNTg4IDIuMjE5NSA2LjE2NTUgMi4yMTk1QzguMjM3NSAyLjIxOTUgOS44NDggMy42OTYgOS44NDggNS42NjlDOS44NDggNy43Mjc1IDguNTUwNSA5LjM4NDUgNi43NDg1IDkuMzg0NUM2LjE0MyA5LjM4NDUgNS41NzQ1IDkuMDY5NSA1LjM3OTUgOC42OThDNS4zNzk1IDguNjk4IDUuMDggOS44MzkgNS4wMDc1IDEwLjExOEM0Ljg2NjUgMTAuNjYgNC40NzU1IDExLjM0NiA0LjIzMyAxMS43MzU1QzQuNzkyIDExLjkwNzUgNS4zODUgMTIgNiAxMkM5LjMxMzUgMTIgMTIgOS4zMTM1IDEyIDZDMTIgMi42ODY1IDkuMzEzNSAwIDYgMEMyLjY4NjUgMCAwIDIuNjg2NSAwIDZaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8L3N2Zz4=&quot;) 4px 50% / 12px 12px no-repeat rgb(230, 0, 35) !important;position:absolute !important;opacity:1 !important;z-index:9007199254740990 !important;display:none !important;cursor:pointer !important;border:none !important;-webkit-font-smoothing:antialiased !important;top:0 !important;left:0 !important;display:none !important;top:796px !important;left:101px !important">Save</span></body></html>
