@@ -1,0 +1,57 @@
+body {
+margin: 0;
+font-family: 'Roboto', sans-serif;
+color: #0232A1;
+background: #fff;
+}
+header {
+background-color: #0232A1;
+color: white;
+padding: 12px 32px;
+display: flex;
+justify-content: space-between;
+font-family: 'Besley', serif;
+position: sticky;
+top: 0;
+z-index: 1000;
+width: 100%;
+}
+.title-block {
+position: fixed;
+top: 18px;
+left: 0;
+width: 100%;
+background: white;
+z-index: 999;
+padding: 0px 10% 4px 10%;
+max-width: 100%;
+margin: 0 auto;
+}
+.project-container {
+padding: 200px 0 0 0;
+margin: 0 auto;
+max-width: 100%;
+}
+h1 {
+font-size: 96px;
+font-family: 'Besley', serif;
+font-weight: 400;
+margin: 32px 0 -24px;
+}
+.subtitle {
+font-size: 14px;
+font-family: 'Besley', serif;
+font-weight: 400;
+margin: -18px 0 4px;
+}
+.subtitle2 {
+font-size: 14px;
+font-family: 'Roboto', sans-serif;
+font-weight: 900;
+margin: 0 0 4px;
+padding-bottom: 8px;
+border-bottom: 1px solid #0232A1;
+}
+.date-awards-container {
+display: grid;
+}
