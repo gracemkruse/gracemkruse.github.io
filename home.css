@@ -75,12 +75,22 @@ body {
     overflow: hidden;
     aspect-ratio: 1 / 1;
   }
-  .grid img {
+  /* .grid img {
     width: 50%;
     height: auto;
     display: block;
     margin: 0 auto;
     transition: transform 0.3s ease;
+  } */
+  .project-image {
+    width: 50%;
+    height: 50%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    display: block;
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
   }
   .overlay {
     position: absolute;
