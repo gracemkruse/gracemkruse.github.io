@@ -1,0 +1,156 @@
+body {
+    margin: 0;
+    font-family: 'Besley', serif;
+    background: #fff;
+    color: #0232A1;
+  }
+  body header{
+    margin: 0;
+    font-family: 'Besley', serif;
+    background: #fff;
+    color: #0232A1;
+  }
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 32px;
+    position: relative;
+    flex-wrap: wrap;
+  }
+  .name {
+    font-size: 26vw;
+    line-height: .85;
+    flex-grow: 1;
+  }
+  .portfolio-text {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 9vw;
+    position: absolute;
+    right: 16px;
+    top: 84px;
+  }
+  .contact {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 32px;
+    border-top: 1px solid #0232A1;
+    border-bottom: 1px solid #0232A1;
+    font-size: 14px;
+    flex-wrap: wrap;
+    position: relative;
+    background-color: transparent;
+    color: #0232A1;
+    width: 100vw;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    z-index: 1000;
+  }
+  .contact.scrolled {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #0232A1;
+    color: #FFF;
+    width: 100vw;
+  }
+  .description {
+    padding: 16px 32px;
+    font-size: 14px;
+    max-width: 800px;
+    margin-top: 4px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid #0232A1;
+    border-left: 1px solid #0232A1;
+  }
+  .grid > div {
+    position: relative;
+    border-right: 1px solid #0232A1;
+    border-bottom: 1px solid #0232A1;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+  }
+
+  .project-image {
+    width: 50%;
+    height: 50%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    display: block;
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+  }
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0232A1;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    text-align: center;
+    opacity: 0;
+    transform: rotateY(180deg);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    padding: 16px;
+    backface-visibility: hidden;
+    box-sizing: border-box;
+  }
+  .overlay h3, .overlay p {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+  .overlay h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: min(4vw, 18px);
+    line-height: 1.2;
+  }
+  .overlay p {
+    font-size: min(3.5vw, 14px);
+    line-height: 1.2;
+    margin: 0;
+  }
+  .grid > div:hover .overlay {
+    opacity: 1;
+    transform: rotateY(0deg);
+  }
+  .logo {
+    text-align: center;
+    padding: 32px;
+  }
+  .logo img {
+    width: 80px;
+    display: block;
+    margin: 0 auto 8px;
+  }
+  .logo div {
+    font-size: 16px;
+  }
+  footer {
+    text-align: center;
+    padding: 24px;
+    border-top: 1px solid #0232A1;
+    font-size: 14px;
+    color: #0232A1;
+  }
+  @media (max-width: 768px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 480px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
