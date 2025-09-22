@@ -75,13 +75,7 @@ body {
     overflow: hidden;
     aspect-ratio: 1 / 1;
   }
-  /* .grid img {
-    width: 50%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-    transition: transform 0.3s ease;
-  } */
+
   .project-image {
     width: 50%;
     height: 50%;
