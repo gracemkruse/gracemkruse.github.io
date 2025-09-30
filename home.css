@@ -63,19 +63,34 @@ body {
   }
   .grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1fr 1fr 1fr; /* Fixed 4 columns */
     gap: 0;
     border-top: 1px solid #0232A1;
     border-left: 1px solid #0232A1;
   }
-  .grid > div {
+  .about-me {
+    grid-column: 1; /* Always in the first column */
+    grid-row: 1 / span 12; /* Spans all rows to stay static */
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    background-color: #f9f9f9;
+    color: #0232A1;
+    border-right: 1px solid #0232A1;
+    box-sizing: border-box;
+    position: sticky; /* Keeps it static while scrolling */
+    top: 0;
+    height: 100vh; /* Full viewport height */
+    overflow-y: auto; /* Scrollable if content overflows */
+  }
+  .grid > div:not(.about-me) {
+    grid-column: span 1; /* Projects occupy columns 2-4 */
     position: relative;
     border-right: 1px solid #0232A1;
     border-bottom: 1px solid #0232A1;
     overflow: hidden;
     aspect-ratio: 1 / 1;
   }
-
   .project-image {
     width: 50%;
     height: 50%;
@@ -146,11 +161,20 @@ body {
   }
   @media (max-width: 768px) {
     .grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr 1fr 1fr; /* Revert to 3 columns */
+    }
+    .about-me {
+      grid-column: 1 / span 3; /* Spans all columns on smaller screens */
+      grid-row: auto; /* No fixed row span */
+      position: relative; /* No sticky behavior */
+      height: auto;
     }
   }
   @media (max-width: 480px) {
     .grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr; /* Single column layout */
+    }
+    .about-me {
+      grid-column: 1; /* Stays in its own row */
     }
   }

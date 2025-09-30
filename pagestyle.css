@@ -15,6 +15,12 @@ body {
       justify-content: space-between;
       font-family: 'Besley', serif;
       z-index: 1000;
+      font-size: 16px; /* Ensure text is readable */
+      flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    }
+    header div {
+      flex: 1; /* Ensure equal spacing between items */
+      text-align: center; /* Center-align text */
     }
     .title-block {
       position: fixed;
@@ -137,10 +143,13 @@ body {
     /* 📱 Mobile Enhancements */
     @media screen and (max-width: 768px) {
       header {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: column; /* Stack items vertically */
+        align-items: center;
         padding: 16px;
-        gap: 4px;
+        font-size: 14px; /* Adjust font size for smaller screens */
+      }
+      header div {
+        margin-bottom: 8px; /* Add spacing between items */
       }
       .title-block {
         position: static;
