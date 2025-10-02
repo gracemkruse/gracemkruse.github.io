@@ -4,10 +4,28 @@ body {
       color: #0232A1;
       background: #fff;
     }
-    header {
-      position: fixed; /* Ensure header stays at the top on scroll */
+
+    h2 {
+      font-family: 'Besley', serif;
+      font-size: 24px;
+      font-weight: 400;
+      margin: 0 0 0 0;
+      padding: 0px 0 0 0;
+      grid-column: 1 / -1; /* Span across all columns */
+    }
+    
+    p{
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      vertical-align: top;
+      margin: 0 8px 0 0px;
+    }
+
+   header {
+      position: fixed; 
       top: 0;
-      width: 100vw; /* Expand header across full screen */
+      width: 100vw; 
       background-color: #0232A1;
       color: white;
       padding: 8px 32px;
@@ -15,7 +33,7 @@ body {
       justify-content: space-between;
       font-family: 'Besley', serif;
       z-index: 1000;
-      font-size: 16px; /* Ensure text is readable */
+      font-size: 16px; 
       flex-wrap: wrap; /* Allow wrapping on smaller screens */
     }
     header div {
@@ -27,7 +45,7 @@ body {
       top: 18px;
       left: 0;
       width: 100%;
-      background: transparent;
+      background: #fff;
       z-index: 999;
       padding: 200px 32px auto 32px;
       max-width: 100%;
@@ -42,70 +60,77 @@ body {
       font-size: 96px;
       font-family: 'Besley', serif;
       font-weight: 400;
+      color:#0232A1;
       margin: 32px 10% -24px 10%;
     }
     .subtitle {
       font-size: 14px;
       font-family: 'Besley', serif;
       font-weight: 400;
-      margin: -18px 10% 4px 10%;
+      color:#0232A1;
+      line-height: normal;
+      margin: 0px 10%;
     }
     .subtitle2 {
       font-size: 14px;
       font-family: 'Roboto', sans-serif;
       font-weight: 900;
+      color:#0232A1;
       margin: 0 10% 4px 10%;
       padding-bottom: 8px;
       border-bottom: 1px solid #0232A1;
     }
-    .date-awards-container {
+
+   
+   /* .date-awards-container {
       display: grid;
       grid-template-columns: repeat(9, 1fr);
       gap: 4px;
-      padding:100px 8px 0 8px;
+      padding: 100px 8px 0 8px;
       font-size: 14px;
       line-height: .5;
       align-items: start;
-    }
+    }*/
     .horizontal-line-container {
       max-width: 100%;
-      margin: 0 auto;
-            box-sizing: border-box;
+      margin: 8px auto;
+      box-sizing: border-box;
   }
-    .date-column { grid-column: span 3; }
+   /* .date-column { grid-column: span 3; }
     .summary-column {
       grid-column: span 6;
       font-size: 14px;
       line-height: 1.2;
       border-left: 1px solid #0232A1;
       padding-left: 32px;
-    }
-    .photo-text-section {
+    }*/
+    .main {
       display: grid;
       grid-template-columns: repeat(9, 1fr);
-      gap: 32px;
+      gap: 8px 32px;
       align-items: start;
-      margin: 0 10%; /* Align with the title margins */
-      padding: 217px 0 0 0;
+      margin: 0 10%;
+      padding: 275px 0 0 0;
   
     }
-    .photo-column { grid-column: span 6; }
-    .photo-column img { width: 100%; height: auto; display: block; }
+    .photo-column { 
+      grid-column: span 6;
+      margin: 0; 
+    }
+    .photo-column img { 
+      width: 100%; 
+      height: auto; 
+      display: block; }
+    
     .text-column {
       grid-column: span 3;
       font-size: 14px;
       font-weight: 400;
+      margin: 0px;
+      align-items: start;
     }
-    .photo-column, .text-column {
-      margin: 64px 0 0 0; /* Ensure child elements align properly */
-    }
-    .section-title {
-      font-family: 'Besley', serif;
-      font-size: 24px;
-      font-weight: 400;
-      margin: 0 10%; /* Align with the title margins */
-      padding: px 0 0 0;
-    }
+
+    
     .gallery {
       position: relative;
       width: 100%;
@@ -147,34 +172,74 @@ body {
         align-items: center;
         padding: 16px;
         font-size: 14px; /* Adjust font size for smaller screens */
+        position: fixed;
       }
       header div {
         margin-bottom: 8px; /* Add spacing between items */
       }
       .title-block {
         position: static;
-        padding: 16px;
+        padding: 120px 10% 8px 5%; /* Reduce padding for less gap */
         text-align: left;
+        color: #fff;
+        margin: 0; /* Remove extra margin */
       }
-      h1 { font-size: 36px; margin: 16px 0 8px; }
-      .subtitle, .subtitle2 { margin: 0 0 8px; font-size: 12px; }
+      h1 { font-size: 36px; 
+        margin: 16px 0 0 0; 
+      }
+      .subtitle
+      { 
+        font-size: 12px; 
+        padding: 0 8px 0 0;
+        margin: 0 8px 0 0;
+      } 
+      .subtitle2 { 
+        font-size: 12px; 
+        margin: 0 5% 0 0;
+      }
       .project-container {
         padding: 16px;
         margin: 0;
         max-width: 100%;
       }
-      .date-awards-container,
+      /*.date-awards-container,
       .photo-text-section {
         display: block;
       }
-      .date-column, .summary-column,
-      .photo-column, .text-column {
+      
+      .summary-column { 
+        padding-top: 16px; }*/
+     
+      .main {
+        display: flex;
+        flex-direction: column; /* Stack children vertically */
+        padding: 0px 5% 0 5%;
+        margin: 0 0;
+      }
+
+      .photo-column {
+        width: 100%;
+        box-sizing: border-box; 
+        grid-column: auto;
+        padding: 0; 
+        border: none;
+      }
+      .photo-column img {
+        width: 100%;
+        height: auto;
+        display: block;
+        padding: 0;
+        margin: 0; /* Remove default margin */
+      }
+      .text-column {
+        width: 100%;
+        padding: 0;
+        border: none;
         width: 100%; 
         grid-column: auto;
         padding: 0; 
         border: none;
       }
-      .summary-column { padding-top: 16px; }
       .gallery-controls {
         justify-content: center;
         gap: 16px;
@@ -182,12 +247,8 @@ body {
       .gallery-controls button {
         padding: 8px 16px; font-size: 14px;
       }
-      .section-title {
-        font-size: 20px;
-        margin-top: 32px;
-      }
+        
       footer {
         font-size: 12px;
         padding: 16px;
       }
-    }

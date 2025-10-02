@@ -83,6 +83,34 @@ body {
     height: 100vh; /* Full viewport height */
     overflow-y: auto; /* Scrollable if content overflows */
   }
+  .about-me-buttons {
+    margin: 16px -17px 16px -17px;
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 0px;
+    align-items: left;
+  }
+  .button {
+    display: inline-block;
+    padding: 8px 16px;
+    text-align: center;
+    font-size: 14px;
+    font-family: 'Besley', serif;
+    font-weight: 400;
+    color: #0232A1;
+    text-decoration: none;
+    border: 1px solid #0232A1;
+    border-radius: 0px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .button:hover {
+    background-color: #0232A1;
+    color: #FFF;
+  }
+  .button.selected {
+    background-color: #0232A1;
+    color: #FFF;
+  }
   .grid > div:not(.about-me) {
     grid-column: span 1; /* Projects occupy columns 2-4 */
     position: relative;
@@ -92,8 +120,8 @@ body {
     aspect-ratio: 1 / 1;
   }
   .project-image {
-    width: 50%;
-    height: 50%;
+    width: 60%;
+    height: 60%;
     object-fit: cover;
     transition: transform 0.3s ease;
     display: block;
@@ -121,20 +149,28 @@ body {
     backface-visibility: hidden;
     box-sizing: border-box;
   }
-  .overlay h3, .overlay p {
+  /*.overlay h3, .overlay p {
     margin-left: 16px;
     margin-right: 16px;
-  }
+  }*/
   .overlay h3 {
+    font-family: besley, serif;
+    font-weight: 400;
     margin-top: 0;
     margin-bottom: 8px;
     font-size: min(4vw, 18px);
     line-height: 1.2;
+    margin-left: 16px;
+    margin-right: 16px;
   }
   .overlay p {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
     font-size: min(3.5vw, 14px);
     line-height: 1.2;
     margin: 0;
+    margin-left: 16px;
+    margin-right: 16px;
   }
   .grid > div:hover .overlay {
     opacity: 1;
