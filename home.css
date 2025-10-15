@@ -17,9 +17,41 @@ body {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    padding: 32px;
+    padding: 32px 0;
     position: relative;
     flex-wrap: wrap;
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+h3 {
+  font-family: 'Besley', serif;
+  font-weight:100
+}
+p {
+  font-family: 'neue haas grotesk', sans-serif;
+  font-weight:100;
+  font-size: 12px;
+}
+
+  /* Full-width line after header on desktop */
+  @media (min-width: 769px) {
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: calc(-12.5vw);
+      width: 100vw;
+      height: 1px;
+      background-color: #0232A1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .header {
+      width: 100%;
+      padding: 32px;
+    }
   }
   .name {
     font-size: 26vw;
@@ -37,10 +69,12 @@ body {
   .contact {
     display: flex;
     justify-content: space-between;
-    padding: 8px 32px;
-    border-top: 1px solid #0232A1;
-    border-bottom: 1px solid #0232A1;
-    font-size: 14px;
+    padding: 8px 0;
+
+    font-size: 1px;
+    font-family: 'besley', serif;
+    font-size: 13;
+    font-weight:200;
     flex-wrap: wrap;
     position: relative;
     background-color: transparent;
@@ -50,6 +84,15 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
     z-index: 1000;
   }
+
+  /* Content area at 75% width on desktop */
+  @media (min-width: 769px) {
+    .contact {
+      padding-left: 12.5%;
+      padding-right: 12.5%;
+    }
+  }
+
   .contact.scrolled {
     position: fixed;
     top: 0;
@@ -57,6 +100,12 @@ body {
     background-color: #0232A1;
     color: #FFF;
     width: 100vw;
+  }
+
+  @media (max-width: 768px) {
+    .contact {
+      padding: 8px 32px;
+    }
   }
   .description {
     padding: 16px 32px;
@@ -68,8 +117,31 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr; /* Fixed 4 columns */
     gap: 0;
-    border-top: 1px solid #0232A1;
-    border-left: 1px solid #0232A1;
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+  }
+
+  /* Full-width top border on desktop */
+  @media (min-width: 769px) {
+    .grid::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: calc(-100vw / 6);
+      right: calc(-100vw / 6);
+      height: 1px;
+      background-color: #0232A1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .grid {
+      width: 100%;
+      border-top: 1px solid #0232A1;
+      border-left: 1px solid #0232A1;
+    }
   }
   .about-me {
     grid-column: 1; /* Always in the first column */
@@ -77,9 +149,11 @@ body {
     padding: 16px;
     font-size: 14px;
     line-height: 1.5;
-    background-color: #f9f9f9;
+    background-color: #fff;
     color: #0232A1;
+    border-left: 1px solid #0232A1;
     border-right: 1px solid #0232A1;
+    border-top:1px solid #0232A1;
     box-sizing: border-box;
     position: sticky; /* Keeps it static while scrolling */
     top: 0;
@@ -123,8 +197,8 @@ body {
     aspect-ratio: 1 / 1;
   }
   .project-image {
-    width: 60%;
-    height: 60%;
+    width: 75%;
+    height: 75%;
     object-fit: cover;
     transition: transform 0.3s ease;
     display: block;
@@ -158,7 +232,7 @@ body {
   }*/
   .overlay h3 {
     font-family: besley, serif;
-    font-weight: 400;
+    font-weight: 200;
     margin-top: 0;
     margin-bottom: 8px;
     font-size: min(4vw, 18px);
@@ -175,9 +249,20 @@ body {
     margin-left: 16px;
     margin-right: 16px;
   }
+
+  /* Hover state - simple rotation reveal */
   .grid > div:hover .overlay {
     opacity: 1;
     transform: rotateY(0deg);
+  }
+
+  .overlay-description {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-top: 16px;
+    color: white;
   }
   .logo {
     text-align: center;
