@@ -5,6 +5,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Besley:wght@400;700&amp;display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&amp;family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&amp;family=Roboto:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="home.css">
+  <link rel="icon" type="image/png" sizes="16x16" href="projects/ladyg/img/bluelogo.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="projects/ladyg/img/bluelogo.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="projects/ladyg/img/bluelogo.png">
 </head>
 <body style="overflow-x:hidden;">
   <div class="header">
@@ -15,7 +18,7 @@
   <div class="contact" id="contactBar">
     <div>Brooklyn, NY </div>
     <div>Product Manager | Product Designer | Createive Strategist</div>
-    <div><a href="https://www.linkedin.com/in/gracekruse" style="color: #0232A1; text-decoration: none;">Contact</a></div>
+    <div><a href="https://www.linkedin.com/in/gracekruse" target="_blank" rel="noopener noreferrer" style="color: #0232A1; text-decoration: none;">Contact</a></div>
   </div>
   <div class="grid">
     <div class="about-me">
@@ -24,7 +27,7 @@
           Welcome to my portfolio! I’ve spent my life learning how to bring structure to chaos and heart to everything I create. This has become my norm through my experiences as an elite ballet dancer, the fourth of nine kids, and a product manager and designer creating technologies that change lives. It is essential to give people tools that empower them and I’d be thrilled to bring my experience, curiosity, and creativity to your projects.
         </p>
     </div>
-    <div>
+    <div class="animate-on-scroll">
       <a href="projects/helix/helix25.html">
         <img class="project-image" src="/projects/helix/img/ebcrender.jpg" alt="Helix project thumbnail">
         <div class="overlay">
@@ -33,7 +36,7 @@
         </div>
       </a>
     </div>
-    <div>
+    <div class="animate-on-scroll">
       <a href="projects/helix/helixbranding.html">
         <img class="project-image" src="projects/helix/img/helixlogo.png" alt="Helix Branding thumbnail">
         <div class="overlay">
@@ -42,7 +45,7 @@
         </div>
       </a>
     </div>
-    <div>
+    <div class="animate-on-scroll">
       <a href="projects/techscouting/techscouting.html">
         <img class="project-image" src="img/ts.jpg" alt="Tech Scouting thumbnail">
         <div class="overlay">
@@ -51,7 +54,7 @@
         </div>
       </a>
     </div>
-    <div>
+    <div class="animate-on-scroll">
       <a href="projects/imposter/imposter.html">
         <img class="project-image" src="projects/imposter/img/fcf.png" alt="Imposter card game thumbnail">
         <div class="overlay">
@@ -60,7 +63,7 @@
         </div>
       </a>
     </div>
-    <div>
+    <div class="animate-on-scroll">
       <a href="projects/currentss19/currentss19.html">
         <img class="project-image" src="projects/currentss19/img/altcover.jpg" alt="Currents Art magazine cover">
         <div class="overlay">
@@ -69,7 +72,7 @@
         </div>
       </a>
     </div>
-    <div>
+    <div class="animate-on-scroll">
       <a href="projects/predicate/predicate.html">
         <img class="project-image" src="projects/predicate/img/predicate.jpg" alt="Predicate front-end development thumbnail">
         <div class="overlay">
@@ -78,7 +81,7 @@
         </div>
       </a>
     </div>
-    <div>
+    <div class="animate-on-scroll">
       <a href="projects/currentsf18/currentsf18.html">
         <img class="project-image" src="projects/currentsf18/img/Worship.jpg" alt="Currents Worship project thumbnail">
         <div class="overlay">
@@ -87,7 +90,7 @@
         </div>
       </a>
     </div>
-    <div>
+    <div class="animate-on-scroll">
       <a href="projects/artposters/artposters.html">
         <img class="project-image" src="projects/artposters/img/full.jpg" alt="Pick-Up Sticks poster design">
         <div class="overlay">
@@ -96,7 +99,7 @@
         </div>
       </a>
     </div>
-    <div>
+    <div class="animate-on-scroll">
       <a href="projects/international-programs/ip.html">
         <img class="project-image" src="projects/international-programs/img/shanghai.jpg" alt="International Programs marketing poster">
         <div class="overlay">
@@ -105,7 +108,7 @@
         </div>
       </a>
     </div>
-    <div>
+    <div class="animate-on-scroll">
       <a href="ladyg.html">
         <img class="project-image" src="img/ladyg-sketch.jpg" alt="Lady G personal logo sketch">
         <div class="overlay">
@@ -114,7 +117,7 @@
         </div>
       </a>
     </div>
-    <div>
+    <div class="animate-on-scroll">
       <a href="mobius.html">
         <img class="project-image" src="img/Investor Book.jpg" alt="Mobius theme park concept">
         <div class="overlay">
@@ -123,7 +126,7 @@
         </div>
       </a>
     </div>
-    <div>
+    <div class="animate-on-scroll">
       <a href="elephant-puzzle.html">
         <img class="project-image" src="img/IMG_3813.jpg" alt="L'éléphant puzzle illustration">
         <div class="overlay">
@@ -138,6 +141,7 @@
     Grace Kruse 2025
   </footer>
   <script>
+    // Sticky contact bar functionality
     const contactBar = document.getElementById('contactBar');
     const contactOffsetTop = contactBar.offsetTop;
 
@@ -147,6 +151,36 @@
       } else {
         contactBar.classList.remove('scrolled');
       }
+    });
+
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          // Add staggered delay for cascading effect
+          setTimeout(() => {
+            entry.target.classList.add('animated');
+          }, index * 50); // 50ms delay between each item
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Observe all elements with animate-on-scroll class
+    const animateElements = document.querySelectorAll('.animate-on-scroll');
+    animateElements.forEach((el) => {
+      observer.observe(el);
+    });
+
+    // Observe fade-in elements
+    const fadeElements = document.querySelectorAll('.fade-in-element');
+    fadeElements.forEach((el) => {
+      observer.observe(el);
     });
   </script>
 </body></html>
