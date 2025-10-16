@@ -1,26 +1,45 @@
 <html lang="en"><head><script type="text/javascript" src="/___vscode_livepreview_injected_script"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project Template – Mobile Preview</title>
+  <title>Helix Center for Innovation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
   <link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..900&amp;family=Roboto+Flex:opsz,wght@8..144,100..1000&amp;family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&amp;family=Roboto:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../projects/ladyg/img/bsqladyg.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../projects/ladyg/img/bsqladyg.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../projects/ladyg/img/bsqladyg.png">
   <link href="helix25.css" rel="stylesheet">
 </head>
 <body>
   <header>
-    <div><a href="../../index25.html">← back to overview</a></div>
-    <!--<div><a href="mailto:grace.m.kruse@gmail.com">Email Grace</a></div>-->
-    <div><a href="https://www.linkedin.com/in/gracekruse" target="_blank" rel="noopener noreferrer">Contact</a></div>
+    <div class="header-content">
+      <div><a href="../../index25.html">← back to overview</a></div>
+      <!--<div><a href="mailto:grace.m.kruse@gmail.com">Email Grace</a></div>-->
+      <div><a href="https://www.linkedin.com/in/gracekruse" target="_blank" rel="noopener noreferrer">Contact</a></div>
+    </div>
   </header>
   
 
   <div class="title-block">
-    <h1>Helix</h1>
-    <div class="subtitle">Booz Allen's Center for Innovation | Jan 2020–Apr 2023</div>
-    <div class="subtitle">Award 1 | Award 2 | Award 3</div>
-    <div class="subtitle2">Creative Direction | Digital Design Lead | Concept and Strategy Development</div>
+    <div class="title-content">
+      <div class="title-left">
+        <h1>Helix</h1>
+        <div class="subtitle">Booz Allen's Center for Innovation | Jan 2020–Apr 2023</div>
+        <div class="subtitle awards">
+          <a href="https://www.gacep.com/content.asp?admin=Y&contentid=433" target="_blank" rel="noopener noreferrer">2024 World Class Center</a> |
+          <a href="https://codieawards.com/past-winners" target="_blank" rel="noopener noreferrer">2024 Most Innovative Tech Company</a>
+        </div>
+        <div class="subtitle2 roles">
+          <span class="role-tag">Creative Direction</span>
+          <span class="role-tag">Digital Design Lead</span>
+          <span class="role-tag">Concept and Strategy Development</span>
+        </div>
+      </div>
+      <div class="title-right">
+        <p>At the start of the COVID-19 pandemic, Booz Allen decided to turn their Innovation Center that focused on product development, showcasing technology, and large innovation based events and panels into a physical and digital Executive Briefing Center (EBC). Our goal was to showcase Booz Allen's 100+ year innovation journey to our clients through interactive experiences.</p>
+      </div>
+    </div>
   </div>
 
   <div class="two-column-layout">
@@ -49,10 +68,6 @@
 
     <div class="text-column-container">
       <div class="text-section">
-        <p>At the start of the COVID-19 pandemic, Booz Allen decided to turn their Innovation Center that focused on product development, showcasing technology, and large innovation based events and panels into a physical and digital Executive Briefing Center (EBC). Our goal was to showcase Booz Allen's 100+ year innovation journey to our clients through interactive experiences.</p>
-      </div>
-
-      <div class="text-section">
         <h2>Strategy</h2>
         <p>Unlike a lot of the EBCs we researched, we didn't have a singular thread or theme that had led to the company's success. After a lot of thought and brainstorming, we landed on our thesis of showcasing the "passion of our people and the impact of our problem solving". From there we built our four pillar strategy consisting of interactive experiences that told the stories around our Technology, Innovation, People, and Values. Within the EBC had unique spaces like 280º screens and massive curved displays to creatively showcase our capabilities like Tech Scouting, Artificial Intelligence, our Diversity, Equity, and Inclusion initiatives, and many more years of work.</p>
       </div>
@@ -63,18 +78,99 @@
     <img src="img/bluelogo.png" alt="Small Logo">
     Grace Kruse 2025
   </footer>
+
+  <!-- Image Modal -->
+  <div class="image-modal" id="imageModal">
+    <img src="" alt="Expanded view">
+  </div>
+
   <script src="pagejs.js"></script>
   <script>
-    // Sticky contact bar functionality
-    const contactBar = document.getElementById('contactBar');
-    const contactOffsetTop = contactBar.offsetTop;
+    // Image modal functionality
+    const modal = document.getElementById('imageModal');
+    const modalImg = modal.querySelector('img');
+    const images = document.querySelectorAll('.images-column img');
 
-    window.addEventListener('scroll', () => {
-      if (window.scrollY >= contactOffsetTop) {
-        contactBar.classList.add('scrolled');
-      } else {
-        contactBar.classList.remove('scrolled');
+    images.forEach(img => {
+      img.addEventListener('click', function() {
+        modal.classList.add('active');
+        modalImg.src = this.src;
+        modalImg.alt = this.alt;
+      });
+    });
+
+    modal.addEventListener('click', function() {
+      modal.classList.remove('active');
+    });
+
+    // Close modal on escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        modal.classList.remove('active');
       }
+    });
+
+    // Scroll animations
+    const observerOptions = {
+      threshold: 0,
+      rootMargin: '0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, index * 100);
+        }
+      });
+    }, observerOptions);
+
+    // Observe image items
+    document.querySelectorAll('.image-item').forEach((item) => {
+      observer.observe(item);
+    });
+
+    // Observe text sections
+    document.querySelectorAll('.text-section').forEach((section) => {
+      observer.observe(section);
+    });
+
+    // Add stagger delay to image items
+    document.querySelectorAll('.image-item').forEach((item, index) => {
+      item.style.transitionDelay = `${index * 0.1}s`;
+    });
+
+    // Confetti effect for award links
+    const awardLinks = document.querySelectorAll('.subtitle.awards a');
+
+    awardLinks.forEach(link => {
+      link.addEventListener('mouseenter', function(e) {
+        // Create multiple confetti particles
+        const colors = ['#4169E1', '#0232A1', '#6B8DD6', '#1E3A8A'];
+        const particleCount = 8;
+
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('span');
+          particle.className = 'confetti-particle';
+          particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          particle.style.left = '50%';
+          particle.style.top = '50%';
+
+          // Random animation
+          const animations = ['confetti1', 'confetti2', 'confetti3', 'confetti4', 'confetti5'];
+          const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+          particle.style.animation = `${randomAnimation} 0.8s ease-out forwards`;
+          particle.style.animationDelay = `${i * 0.05}s`;
+
+          this.appendChild(particle);
+
+          // Remove particle after animation
+          setTimeout(() => {
+            particle.remove();
+          }, 900 + (i * 50));
+        }
+      });
     });
   </script>
 </body></html>
