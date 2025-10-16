@@ -491,7 +491,7 @@ h1 {
 
 .role-tag {
   font-family: 'Neue Haas Grotesk Text Pro', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
   color: #0232A1;
   background-color: transparent;
@@ -501,6 +501,7 @@ h1 {
   display: inline-block;
   transition: all 0.3s ease;
   cursor: default;
+  text-transform: uppercase;
 }
 
 .role-tag:hover {
