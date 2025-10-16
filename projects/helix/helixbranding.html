@@ -153,11 +153,19 @@
       cursor: pointer;
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 2px;
+      will-change: transform;
     }
 
     .accordion-image-item img:hover {
-      transform: translateY(-4px) scale(1.01);
+      transform: translateY(-4px) scale(1.01) !important;
       box-shadow: 0 12px 24px rgba(2, 50, 161, 0.15);
+    }
+
+    /* Parallax effect - disabled on mobile */
+    @media (min-width: 769px) {
+      .accordion-image-item.parallax-active img {
+        transition: transform 0.1s linear;
+      }
     }
 
     .accordion-image-caption {
@@ -438,5 +446,59 @@
         modal.classList.remove('active');
       }
     });
+
+    // Subtle parallax effect on images (desktop only)
+    if (window.innerWidth > 768) {
+      let ticking = false;
+
+      function updateParallax() {
+        const imageItems = document.querySelectorAll('.accordion-section.active .accordion-image-item');
+
+        imageItems.forEach((item, index) => {
+          const img = item.querySelector('img');
+          const rect = item.getBoundingClientRect();
+          const windowHeight = window.innerHeight;
+
+          // Only apply parallax if image is in viewport
+          if (rect.top < windowHeight && rect.bottom > 0) {
+            // Calculate how far through the viewport the image is (0 to 1)
+            const scrollProgress = (windowHeight - rect.top) / (windowHeight + rect.height);
+
+            // Subtle movement - max 20px, different speed for each image
+            const parallaxSpeed = 0.15 + (index * 0.05); // Varying speeds create depth
+            const translateY = (scrollProgress - 0.5) * 40 * parallaxSpeed;
+
+            // Apply transform (only if not hovering - hover has its own transform)
+            if (!img.matches(':hover')) {
+              img.style.transform = `translateY(${translateY}px)`;
+            }
+
+            item.classList.add('parallax-active');
+          }
+        });
+
+        ticking = false;
+      }
+
+      function requestParallaxUpdate() {
+        if (!ticking) {
+          window.requestAnimationFrame(updateParallax);
+          ticking = true;
+        }
+      }
+
+      // Update parallax on scroll
+      window.addEventListener('scroll', requestParallaxUpdate);
+
+      // Update parallax when accordion opens
+      accordionHeaders.forEach(header => {
+        header.addEventListener('click', function() {
+          setTimeout(updateParallax, 450); // After accordion animation
+        });
+      });
+
+      // Initial parallax update
+      updateParallax();
+    }
   </script>
 </body></html>
