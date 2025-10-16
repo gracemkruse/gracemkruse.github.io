@@ -86,6 +86,19 @@
 
   <script src="pagejs.js"></script>
   <script>
+    // Update title block height for proper content spacing
+    function updateTitleBlockHeight() {
+      const titleBlock = document.querySelector('.title-block');
+      if (titleBlock && window.innerWidth > 768) {
+        const height = titleBlock.offsetHeight;
+        document.documentElement.style.setProperty('--title-block-height', height + 'px');
+      }
+    }
+
+    // Run on load and resize
+    updateTitleBlockHeight();
+    window.addEventListener('resize', updateTitleBlockHeight);
+
     // Image modal functionality
     const modal = document.getElementById('imageModal');
     const modalImg = modal.querySelector('img');
