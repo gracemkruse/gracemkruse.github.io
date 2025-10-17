@@ -34,7 +34,7 @@
         </div>
       </div>
       <div class="title-right">
-        <p>The second magazine I designed was vastly different from the first. Since the topic was "Art" the design of the magazine was my way of expressing my own artform. I wanted the magazine to be a bit satirical, taking the stereotypical artsy style to an extreme which I did by using the three primary colors and the ligature filled typeface, Avant Garde. Instead of trying to create something new that represented art, the best way to showcase the process was to go a little over the top to make it artsy.</p>
+        <p>The second magazine I designed was vastly different from the first. Since the topic was "Art" the design of the magazine was my way of expressing my own artform. I wanted the magazine to be a bit satirical, taking the stereotypical artsy style to an extreme which I did by using the three primary colors and the ligature filled typeface, Avant Garde. Instead of trying to create something new that represented art, the best way to showcase the process was to go a little over the top to make it artsy. <a href="https://issuu.com/pgm-pepperdinegraphicmedia/docs/currents_magazine_spring_2019_lr" target="_blank" rel="noopener noreferrer">View the full magazine on Issuu</a></p>
       </div>
     </div>
   </div>
@@ -73,16 +73,7 @@
 
     <div class="text-column-container">
       <div class="text-section">
-        <h2>Design Philosophy</h2>
-        <p>This magazine was an exploration of pushing design boundaries while maintaining readability and structure. By using the three primary colors as the foundation and pairing them with Avant Garde's distinctive ligatures, I created a visual language that felt both playful and intentional.</p>
-      </div>
-      <div class="text-section">
-        <h2>Creative Team</h2>
         <p>Huge shoutout to the amazing team that helped create this magazine. As always, this wouldn't have come to life without the work of the writers, editors, and incredible photographer, Milan Loiacono. The collaborative process was essential to bringing this vision to life.</p>
-      </div>
-      <div class="text-section">
-        <h2>View Full Magazine</h2>
-        <p>Want to see more? <a href="https://issuu.com/pgm-pepperdinegraphicmedia/docs/currents_magazine_spring_2019_lr" target="_blank" rel="noopener noreferrer">Click here to view the full magazine on Issuu</a>.</p>
       </div>
     </div>
   </div>
@@ -116,23 +107,43 @@
     const modal = document.getElementById('imageModal');
     const modalImg = modal.querySelector('img');
     const images = document.querySelectorAll('.images-column img');
+    let currentImageIndex = -1;
 
-    images.forEach(img => {
-      img.addEventListener('click', function() {
+    function showImage(index) {
+      if (index >= 0 && index < images.length) {
+        currentImageIndex = index;
         modal.classList.add('active');
-        modalImg.src = this.src;
-        modalImg.alt = this.alt;
+        modalImg.src = images[index].src;
+        modalImg.alt = images[index].alt;
+      }
+    }
+
+    images.forEach((img, index) => {
+      img.addEventListener('click', function() {
+        showImage(index);
       });
     });
 
     modal.addEventListener('click', function() {
       modal.classList.remove('active');
+      currentImageIndex = -1;
     });
 
-    // Close modal on escape key
+    // Arrow key navigation and escape key
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
         modal.classList.remove('active');
+        currentImageIndex = -1;
+      } else if (modal.classList.contains('active')) {
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          const nextIndex = (currentImageIndex + 1) % images.length;
+          showImage(nextIndex);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const prevIndex = (currentImageIndex - 1 + images.length) % images.length;
+          showImage(prevIndex);
+        }
       }
     });
 

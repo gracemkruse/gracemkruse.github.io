@@ -10,6 +10,107 @@
   <link rel="icon" type="image/png" sizes="32x32" href="../../projects/ladyg/img/bsqladyg.png">
   <link rel="apple-touch-icon" sizes="180x180" href="../../projects/ladyg/img/bsqladyg.png">
   <link href="../shared-styles.css" rel="stylesheet">
+  <style>
+    .photo-grid-container {
+      width: 75%;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 24px;
+      margin-top: max(230px, calc(var(--title-block-height, 200px) + 30px));
+      margin-bottom: 60px;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      grid-auto-rows: minmax(200px, auto);
+    }
+
+    .grid-item {
+      cursor: pointer;
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out, box-shadow 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .grid-item.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .grid-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    /* Grid positioning */
+    .grid-1 {
+      grid-column: 1 / 3;
+      grid-row: 1 / 3;
+    }
+
+    .grid-2 {
+      grid-column: 3 / 5;
+      grid-row: 1 / 2;
+    }
+
+    .grid-3 {
+      grid-column: 3 / 4;
+      grid-row: 2 / 3;
+    }
+
+    .grid-4 {
+      grid-column: 4 / 5;
+      grid-row: 2 / 3;
+    }
+
+    .grid-4 img {
+      object-position: center;
+      object-fit: cover;
+    }
+
+    .grid-5 {
+      grid-column: 1 / 5;
+      grid-row: 3 / 4;
+    }
+
+    .grid-6 {
+      grid-column: 1 / 3;
+      grid-row: 4 / 5;
+    }
+
+    .grid-7 {
+      grid-column: 3 / 5;
+      grid-row: 4 / 5;
+    }
+
+    .grid-item:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .grid-item:hover img {
+      transform: scale(1.02);
+    }
+
+    @media (max-width: 768px) {
+      .photo-grid-container {
+        width: 100%;
+        padding: 20px;
+        margin-top: 0;
+      }
+
+      .photo-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -34,52 +135,20 @@
         </div>
       </div>
       <div class="title-right">
-        <p>I've always said that being a designer is like creating one of Immanuel Kant's universal laws. You "act only on that maxim through which you can at the same time will that it should become a universal law". In design terms, that means only create a design rule if it could be used on every page, anywhere, by any person, and have it look as though it belongs. The theme for the first magazine I designed was "Worship". Although the content explored a variety of ways to worship, I wanted to keep my style traditional with serif fonts and peaceful colors. The goal was to see if I could create a design system that could be as detailed as a universal law.</p>
+        <p>I've always said that being a designer is like creating one of Immanuel Kant's universal laws. You "act only on that maxim through which you can at the same time will that it should become a universal law". In design terms, that means only create a design rule if it could be used on every page, anywhere, by any person, and have it look as though it belongs. The theme for the first magazine I designed was "Worship". Although the content explored a variety of ways to worship, I wanted to keep my style traditional with serif fonts and peaceful colors. The goal was to see if I could create a design system that could be as detailed as a universal law. <a href="https://issuu.com/pgm-pepperdinegraphicmedia/docs/currents_magazine_winter_2019" target="_blank" rel="noopener noreferrer">View the full magazine on Issuu</a>.</p>
       </div>
     </div>
   </div>
 
-  <div class="two-column-layout">
-    <div class="images-column">
-      <div class="image-item">
-        <img src="img/f18cover.jpg" alt="Currents Worship Magazine Cover">
-        <div class="image-caption">Cover design - Top 10 Cover Finalist</div>
-      </div>
-      <div class="image-item">
-        <img src="img/f18.jpg" alt="Opening Spread">
-        <div class="image-caption">Opening spread with traditional serif typography</div>
-      </div>
-      <div class="image-item">
-        <img src="img/f18-01.jpg" alt="Feature Spread 1">
-        <div class="image-caption">Feature article spread</div>
-      </div>
-      <div class="image-item">
-        <img src="img/f18-02.jpg" alt="Feature Spread 2">
-        <div class="image-caption">Interior spread design</div>
-      </div>
-      <div class="image-item">
-        <img src="img/f18-03.jpg" alt="Feature Spread 3">
-        <div class="image-caption">Feature layout with peaceful color palette</div>
-      </div>
-      <div class="image-item">
-        <img src="img/f18-04.jpg" alt="Feature Spread 4">
-        <div class="image-caption">Final spread design</div>
-      </div>
-    </div>
-
-    <div class="text-column-container">
-      <div class="text-section">
-        <h2>Design Philosophy</h2>
-        <p>This magazine represents my first attempt at creating a comprehensive design system based on the principle of universal laws. Every design decision was made with the intention that it could be applied consistently throughout the entire publication while maintaining visual harmony and readability.</p>
-      </div>
-      <div class="text-section">
-        <h2>Visual Language</h2>
-        <p>The traditional serif typefaces and peaceful color palette were chosen to complement the theme of worship. The goal was to create a calming, contemplative reading experience that honored the diverse perspectives on worship explored in the content.</p>
-      </div>
-      <div class="text-section">
-        <h2>View Full Magazine</h2>
-        <p>Want to read more? <a href="https://issuu.com/pgm-pepperdinegraphicmedia/docs/currents_magazine_winter_2019" target="_blank" rel="noopener noreferrer">Click here to view the full magazine on Issuu</a>.</p>
-      </div>
+  <div class="photo-grid-container">
+    <div class="photo-grid">
+      <div class="grid-item grid-1"><img src="img/Worship.jpg" alt="Worship landscape"></div>
+      <div class="grid-item grid-2"><img src="img/Worship2.jpg" alt="Worship statue"></div>
+      <div class="grid-item grid-3"><img src="img/f18-03.jpg" alt="Currents spread"></div>
+      <div class="grid-item grid-4"><img src="img/Worship3b.png" alt="Worship detail"></div>
+      <div class="grid-item grid-5"><img src="img/Worship16.jpg" alt="Worship portrait"></div>
+      <div class="grid-item grid-6"><img src="img/Worship32.jpg" alt="Worship figure"></div>
+      <div class="grid-item grid-7"><img src="img/f18-02.jpg" alt="Currents spread"></div>
     </div>
   </div>
 
@@ -95,23 +164,10 @@
 
   <script src="pagejs.js"></script>
   <script>
-    // Update title block height for proper content spacing
-    function updateTitleBlockHeight() {
-      const titleBlock = document.querySelector('.title-block');
-      if (titleBlock && window.innerWidth > 768) {
-        const height = titleBlock.offsetHeight;
-        document.documentElement.style.setProperty('--title-block-height', height + 'px');
-      }
-    }
-
-    // Run on load and resize
-    updateTitleBlockHeight();
-    window.addEventListener('resize', updateTitleBlockHeight);
-
     // Image modal functionality
     const modal = document.getElementById('imageModal');
     const modalImg = modal.querySelector('img');
-    const images = document.querySelectorAll('.images-column img');
+    const images = document.querySelectorAll('.photo-grid img');
 
     images.forEach(img => {
       img.addEventListener('click', function() {
@@ -132,9 +188,9 @@
       }
     });
 
-    // Scroll animations
+    // Scroll animations for grid items
     const observerOptions = {
-      threshold: 0,
+      threshold: 0.1,
       rootMargin: '0px'
     };
 
@@ -143,24 +199,19 @@
         if (entry.isIntersecting) {
           setTimeout(() => {
             entry.target.classList.add('visible');
-          }, index * 100);
+          }, index * 50);
         }
       });
     }, observerOptions);
 
-    // Observe image items
-    document.querySelectorAll('.image-item').forEach((item) => {
+    // Observe grid items
+    document.querySelectorAll('.grid-item').forEach((item) => {
       observer.observe(item);
     });
 
-    // Observe text sections
-    document.querySelectorAll('.text-section').forEach((section) => {
-      observer.observe(section);
-    });
-
-    // Add stagger delay to image items
-    document.querySelectorAll('.image-item').forEach((item, index) => {
-      item.style.transitionDelay = `${index * 0.1}s`;
+    // Add stagger delay to grid items
+    document.querySelectorAll('.grid-item').forEach((item, index) => {
+      item.style.transitionDelay = `${index * 0.05}s`;
     });
   </script>
 </body></html>
