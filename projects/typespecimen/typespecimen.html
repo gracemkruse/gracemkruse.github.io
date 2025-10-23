@@ -13,23 +13,160 @@
   <link rel="apple-touch-icon" sizes="180x180" href="../../projects/ladyg/img/bsqladyg.png">
   <link href="../shared-styles.css" rel="stylesheet">
   <style>
-    /* Adjust spacing for longer description */
-    .two-column-layout {
-      margin-top: max(280px, calc(var(--title-block-height, 250px) + 54px));
+    /* Custom layout for typespecimen - section-based instead of sticky scrolling */
+
+    /* Override shared-styles to remove sticky behavior */
+    .images-column {
+      position: static;
+      max-height: none;
+      overflow-y: visible;
+      top: auto;
+      padding: 0;
+      width: 100%;
     }
 
-    .images-column {
-      max-height: calc(100vh - 280px);
-      top: 280px;
+    .two-column-layout {
+      margin-top: max(280px, calc(var(--title-block-height, 250px) + 54px));
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .two-column-layout::after {
+      display: none;
+    }
+
+    .text-column-container {
+      width: 100%;
+      padding: 0;
+      position: static;
     }
 
     .text-column-container::after {
-      top: 280px;
+      display: none;
     }
 
+    /* Create section-based layout */
+    .content-section {
+      display: flex;
+      width: 100%;
+      border-bottom: 1px solid #0232A1;
+      padding: 32px 0;
+      position: relative;
+    }
+
+    .content-section:first-child {
+      padding-top: 0;
+    }
+
+    .content-section:last-child {
+      border-bottom: none;
+    }
+
+    .section-images {
+      width: 66.67%;
+      padding: 0 24px 0 24px;
+      padding-right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .section-text {
+      width: 33.33%;
+      padding: 0 24px 0 24px;
+      padding-left: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      position: relative;
+    }
+
+    .section-text::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: -32px;
+      width: 1px;
+      background-color: #0232A1;
+      animation: drawLine 0.8s ease-out 0.7s backwards;
+      transform-origin: top;
+    }
+
+    .content-section:last-child .section-text::before {
+      bottom: 0;
+    }
+
+    .content-section:first-child .section-text::before {
+      top: 0;
+    }
+
+    .section-images .image-item {
+      margin-bottom: 0;
+    }
+
+    .section-images img {
+      max-height: 60vh;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .section-text h2 {
+      font-family: 'Besley', serif;
+      font-size: 14px;
+      font-weight: 200;
+      color: #0232A1;
+      margin-bottom: 12px;
+      margin-top: 0;
+    }
+
+    .section-text p {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .section-text p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Mobile responsive */
     @media (max-width: 768px) {
       .two-column-layout {
         margin-top: 0;
+      }
+
+      .content-section {
+        flex-direction: column;
+        padding: 30px 20px;
+      }
+
+      .section-images,
+      .section-text {
+        width: 100%;
+        padding: 0;
+      }
+
+      .section-images {
+        margin-bottom: 20px;
+        gap: 20px;
+      }
+
+      .section-text h2 {
+        font-size: 16px;
+        margin-bottom: 14px;
+      }
+
+      .section-text p {
+        font-size: 13px;
+      }
+
+      .section-text::before {
+        display: none;
       }
     }
   </style>
@@ -59,61 +196,81 @@
   </div>
 
   <div class="two-column-layout">
-    <div class="images-column">
-      <div class="image-item visible">
-        <img src="img/1. Front and back.jpg" alt="Type specimen front and back cover">
-        <div class="image-caption">Front and back cover of the type specimen</div>
+    <!-- Section 1: Concept & Design Philosophy -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/1. Front and back.jpg" alt="Type specimen front and back cover">
+          <div class="image-caption">Front and back cover of the type specimen</div>
+        </div>
+        <div class="image-item visible">
+          <img src="img/Text Spread.jpg" alt="Text spread showing Kate Middleton theme">
+          <div class="image-caption">Text spread introducing the beauty contest concept</div>
+        </div>
       </div>
-      <div class="image-item visible">
-        <img src="img/Text Spread.jpg" alt="Text spread showing Kate Middleton theme">
-        <div class="image-caption">Text spread introducing the beauty contest concept</div>
-      </div>
-      <div class="image-item visible">
-        <img src="img/Anatomy of Tyep.jpg" alt="Anatomy of type analysis">
-        <div class="image-caption">Typographic anatomy and judging criteria</div>
-      </div>
-      <div class="image-item visible">
-        <img src="img/Featured figures spread.jpg" alt="Featured characters spread">
-        <div class="image-caption">Featured characters with honorable mentions</div>
-      </div>
-      <div class="image-item visible">
-        <img src="img/Ligatures.jpg" alt="Ligatures and typeface family">
-        <div class="image-caption">Extensive ligature library and typeface variations</div>
-      </div>
-      <div class="image-item visible">
-        <img src="img/Q comparison.jpg" alt="Q character comparison">
-        <div class="image-caption">How Mrs. Eaves inspired Mr. Eaves</div>
-      </div>
-      <div class="image-item visible">
-        <img src="img/Usage.jpg" alt="Mrs. Eaves in use">
-        <div class="image-caption">Real-world applications of Mrs. Eaves</div>
-      </div>
-    </div>
-
-    <div class="text-column-container">
-      <div class="text-section visible">
+      <div class="section-text">
         <h2>Concept & Design Philosophy</h2>
         <p>The theme of the type specimen is inspired by things on display. Throughout the pages, the glyphs of Mrs. Eaves are participating in a beauty contest to show off their finest features to distinguished judge Kate Middleton. Both Kate Middleton and beauty contests are often thought of as figures on display, which fit the purpose of the typeface.</p>
         <p>Since Mrs. Eaves is a display typeface, Kate Middleton seemed to be a good comparison. As the future Queen of England, it is her duty to always put her best foot forward despite any circumstance. Although the future of the country is not riding on her decisions, the entirety of the United Kingdom is looking at how she makes her decisions. To continue on the idea of display, the characters of Mrs. Eaves are being showcased in a beauty contest.</p>
       </div>
+    </div>
 
-      <div class="text-section visible">
+    <!-- Section 2: Typography Analysis -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/Anatomy of Tyep.jpg" alt="Anatomy of type analysis">
+          <div class="image-caption">Typographic anatomy and judging criteria</div>
+        </div>
+      </div>
+      <div class="section-text">
         <h2>Typography Analysis</h2>
         <p>Our judge, Kate Middleton, explains the judging criteria and gives a background on why the contest is being hosted. She is looking for good examples of a transitional typeface as well as teardrop terminals and low x-height. She also shows how Baskerville, the predecessor of Mrs. Eaves, uses the same qualities.</p>
       </div>
+    </div>
 
-      <div class="text-section visible">
+    <!-- Section 3: Character Showcase -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/Featured figures spread.jpg" alt="Featured characters spread">
+          <div class="image-caption">Featured characters with honorable mentions</div>
+        </div>
+      </div>
+      <div class="section-text">
         <h2>Character Showcase</h2>
         <p>Finally, all the characters are on display. The ones in blue receive honorable mention and a short blurb about their outstanding characteristics, whereas the ones in orange have a whole page dedicated to their exquisite features.</p>
       </div>
+    </div>
 
-      <div class="text-section visible">
+    <!-- Section 4: Ligatures & Typeface Family -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/Ligatures.jpg" alt="Ligatures and typeface family">
+          <div class="image-caption">Extensive ligature library and typeface variations</div>
+        </div>
+        <div class="image-item visible">
+          <img src="img/Q comparison.jpg" alt="Q character comparison">
+          <div class="image-caption">How Mrs. Eaves inspired Mr. Eaves</div>
+        </div>
+      </div>
+      <div class="section-text">
         <h2>Ligatures & Typeface Family</h2>
         <p>Mrs. Eaves was not just a one and done typeface. It contains an extensive ligature library, as well as being a complete typeface with bold, italic, small caps, and demi caps.</p>
         <p>The comparison shows how Mrs. Eaves inspired the typeface Mr. Eaves, demonstrating the evolution and expansion of this typographic family.</p>
       </div>
+    </div>
 
-      <div class="text-section visible">
+    <!-- Section 5: Usage -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/Usage.jpg" alt="Mrs. Eaves in use">
+          <div class="image-caption">Real-world applications of Mrs. Eaves</div>
+        </div>
+      </div>
+      <div class="section-text">
         <h2>Usage</h2>
         <p>The uses for Mrs. Eaves are extensive, appearing on the cover of all Penguin Classics books and the Wordpress logo, looking elegant with a diverse range of uses.</p>
       </div>
@@ -121,7 +278,7 @@
   </div>
 
   <footer>
-    <img src="../../img/ladygbao.png" alt="Small Logo">
+    <img src="../mobius/img/bluelogo.png" alt="Small Logo">
     Grace Kruse 2025
   </footer>
 
@@ -148,7 +305,7 @@
     // Image modal functionality
     const modal = document.getElementById('imageModal');
     const modalImg = modal.querySelector('img');
-    const images = document.querySelectorAll('.images-column img');
+    const images = document.querySelectorAll('.section-images img');
     let currentImageIndex = -1;
 
     function showImage(index) {
@@ -187,37 +344,6 @@
           showImage(prevIndex);
         }
       }
-    });
-
-    // Scroll animations
-    const observerOptions = {
-      threshold: 0,
-      rootMargin: '0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry, index) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => {
-            entry.target.classList.add('visible');
-          }, index * 100);
-        }
-      });
-    }, observerOptions);
-
-    // Observe image items
-    document.querySelectorAll('.image-item').forEach((item) => {
-      observer.observe(item);
-    });
-
-    // Observe text sections
-    document.querySelectorAll('.text-section').forEach((section) => {
-      observer.observe(section);
-    });
-
-    // Add stagger delay to image items
-    document.querySelectorAll('.image-item').forEach((item, index) => {
-      item.style.transitionDelay = `${index * 0.1}s`;
     });
   </script>
 </body></html>

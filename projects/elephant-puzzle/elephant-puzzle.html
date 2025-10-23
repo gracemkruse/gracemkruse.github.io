@@ -1,203 +1,444 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="L'éléphant" />
+  <meta property="og:image" content="img/IMG_3812.jpg"/>
+  <title>L'éléphant | Grace Kruse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..900&family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../projects/ladyg/img/bsqladyg.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../projects/ladyg/img/bsqladyg.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../projects/ladyg/img/bsqladyg.png">
+  <link href="../shared-styles.css" rel="stylesheet">
+  <style>
+    /* Custom layout for elephant-puzzle - section-based instead of sticky scrolling */
 
-<!doctype html>
-<html lang="en">
-    <head>
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124666381-1"></script>
-		<script>
-		  window.dataLayer = window.dataLayer || [];
-		  function gtag(){dataLayer.push(arguments);}
-		  gtag('js', new Date());
+    /* Override shared-styles to remove sticky behavior */
+    .images-column {
+      position: static;
+      max-height: none;
+      overflow-y: visible;
+      top: auto;
+      padding: 0;
+      width: 100%;
+    }
 
-		  gtag('config', 'UA-124666381-1');
-		</script>
-
-        <meta charset="utf-8">
-        <meta property="og:title" content="L'éléphant" />
-        <meta property="og:image" content="img/IMG_3812.jpg"/>
-        <title>L'éléphant | Grace Kruse</title>
-		<link rel="shortcut icon" type="image/png" href="../../img/favicon.png">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="../../css/themify-icons.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="../../css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="../../css/lightbox.min.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="../../css/theme-startup.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="../../css/custom.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="http://fonts.googleapis.com/css?" family="Lato:300,400%7CRaleway:100,400,300,500,600,700%7COpen+Sans:400,500,600' rel='stylesheet' type='text/css">
-        <link href="http://fonts.googleapis.com/css?family=Poppins:100,300,400,600,700" rel="stylesheet" type="text/css">
-        <link href="../../css/font-poppins.css" rel="stylesheet" type="text/css">
-    </head>
-
-    <body class="scroll-assist">
-		<div class="nav-container"><nav>
-
-		        <div class="nav-bar text-center">
-	              <div class="col-md-2 col-md-push-5 col-sm-12 text-center">
-		                <a href="../../index.html">
-		                    <div class="vnu"><img alt="logo" class="image-xs" src="../../img/ladygbao.png"></div>
-		                </a>
-		            </div>
+    .two-column-layout {
+      margin-top: calc(var(--title-block-height, 250px) + 30px);
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
 
 
+    .text-column-container {
+      width: 100%;
+      padding: 0;
+      position: static;
+    }
 
-		        <div class="col-sm-12 col-md-5 col-md-pull-2 overflow-hidden-xs mt-sm-8">
-		                <ul class="menu inline-block pull-right">
-		                    <li class="vpf"><a href="tel:719-360-6290">+1.719.360.6290</a></li>
+    .text-column-container::after {
+      display: none;
+    }
 
-		                </ul>
-		            </div>
+    /* Create section-based layout */
+    .content-section {
+      display: flex;
+      width: 100%;
+      border-bottom: 1px solid #0232A1;
+      padding: 32px 0;
+      position: relative;
+    }
 
-		            <div class="col-sm-12 col-md-5 pb-xs-24">
-		                <ul class="menu">
-		                    <li><a href="mailto:grace.m.kruse@gmail.com">grace.m.kruse@gmail.com</a></li>
-		                </ul>
-		            </div>
-			</div>
-
-		    </nav>
-		</div>
-
-		<div class="main-container">
-		<section>
-		        <div class="container">
-		            <div class="feed-item mb96 mb-xs-48">
-
-
-		                <div class="row mb32 mb-xs-16">
-		                    <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 text-center">
-		                        <h6 class="uppercase mb16 mb-xs-8">November 2017</h6>
-		                        <h3>L'éléphant</h3>
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-                          <a href="img/IMG_3812.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-8" src="img/IMG_3812.jpg"></a>
-		                        <p class="lead">L'éléphant started out as a symbol project. We sketched, researched, and contacted a vendor to create our product. I wanted to make something interactive so I created a laser cut children's puzzle.</p>
-		                    </div>
-		                </div>
-
-<div class="row mb32 mb-xs-8">
-	<div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-
-		                        <h3>Sketches</h3>
-		                </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-                      <a href="img/sample sketches.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-8" src="img/sample sketches.jpg"></a>
-		                        <p class="lead">The brief stated that we were to start by sketching 60–100 pictures of an animal. Due to the fact that I have never been the best at drawing, I was quite nervous to undertake the project. After the initial 60, there were another 32 based on certain words, plus another 5 in a specific stye. These are a few of the 97 elephants sketched. There's a good chance that the least embarrassing ones were done by friends... </p>
-		                </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-                      <a href="img/top 4 sketches.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-8" src="img/top 4 sketches.jpg"></a>
-		                        <p class="lead" src="img/top 4 sketches.jpg" alt="Article Image">Top four sketches. (three out of the four were done by me)</p>
-
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-
-		                        <h3>Digitalization</h3>
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-                          <a href="img/digital elephant.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-8" src="img/digital elephant.jpg"></a>
-		                        <p class="lead" src="img/digital elephant.png" alt="Article Image"> </p>
-
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-
-								<h3>Laser Cutting</h3>
-		                    </div><div class="row">
-	<div Class="col-md-4 col-md-offset-2 col-sm-5 col-sm-offset-1">
-		<div class="local-video-container">
-		                        <div class="background-image-holder mb8">
-		                            <img alt="Background Image" class="background-image" src="">
-		                        </div>
-		                        <video controls="">
-		                            <source src="video/IMG_3791.webm" type="video/webm">
-		                                <source src="video/IMG_3791.mp4" type="video/mp4">
-		                                    <source src="video/IMG_3791.ogg" type="video/ogg">
-		                        </video>
-		                        <div class="play-button"></div>
-								<div class="pause-button"></div>
-		                    </div>
-	</div><div Class="col-md-4 col-sm-5">
-	<p class="lead">Instead of contacting a vendor, I glued the illustration to wood, which was then laser cut on the path  shown above. As you can hear on the video, it was a little nerve wracking watching the laser cut through both layers. </p></div>
-
-	</div>
-									<div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-
-		                        <h3>Product Images</h3>
-                  </div>
+    .content-section:first-child {
+      padding-top: 32px;
+    }
 
 
-				  <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-		        <div class="container">
-		            <div class="row mb32 mb-xs-32">
-		                <div class="col-sm-5 col-md-4">
-		                    <div class="image-caption cast-shadow mb-xs-32">
-                          <a href="img/Square elephant.jpg" data-lightbox="true">
-		                        <img src="img/Square elephant.jpg" alt="Captioned Image"></a>
+    .content-section:last-child {
+      border-bottom: none;
+    }
 
-		                    </div>
-		                </div><div class="col-sm-5 col-md-4">
-		                    <div class="image-caption cast-shadow mb-xs-32">
-                          <a href="img/IMG_3812.jpg" data-lightbox="true">
-		                        <img alt="Captioned Image" src="img/IMG_3812.jpg"></a>
+    .section-images {
+      width: 66.67%;
+      padding: 0 24px 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
 
-		                    </div>
-		                </div>
+    .section-text {
+      width: 33.33%;
+      padding: 0 24px 0 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      position: relative;
+    }
 
-		            </div>
-		        </div><div class="container">
+    /* Single continuous vertical line on the layout container */
+    .two-column-layout::after {
+      content: '';
+      position: absolute;
+      left: 66.67%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: #0232A1;
+      animation: drawLine 0.8s ease-out 0.7s backwards;
+      transform-origin: top;
+      z-index: 1;
+    }
 
-		            <div class="row mb64 mb-xs-32">
-		                <div class="col-sm-5 col-md-4">
-		                    <div class="image-caption cast-shadow mb-xs-32">
-                          <a href="img/IMG_1014.JPG" data-lightbox="true">
-		                        <img alt="Captioned Image" src="img/IMG_1014.JPG"></a>
+    /* 2x2 Grid for product images */
+    .image-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+    }
 
-		                    </div>
-		                </div><div class="col-sm-5 col-md-4">
-		                    <div class="image-caption cast-shadow mb-xs-32">
-                          <a href="img/IMG_0998.JPG" data-lightbox="true">
-		                        <img alt="Captioned Image" src="img/IMG_0998.JPG"></a>
+    .image-grid .image-item {
+      margin-bottom: 0;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      cursor: pointer;
+    }
 
-		                    </div>
-		                </div>
+    .image-grid img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
 
-		            </div>
-		        </div>
+    .image-grid img:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
 
-                      </div>
+    /* Side-by-side layout for sketch images */
+    .image-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+    }
 
+    .image-row .image-item {
+      margin-bottom: 0;
+      cursor: pointer;
+    }
 
-		               <!-- </div><div class="row">
-		                    <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 text-center">
-		                        <a class="mb48 mb-xs-32 btn btn-lg" href="#">Share Project</a>
+    .image-row img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
 
-		                    </div>-->
-		            </div>
+    .image-row img:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
 
-		        </div></section>
+    .two-column-layout {
+      position: relative;
+    }
 
+    .section-images .image-item {
+      margin-bottom: 0;
+      cursor: pointer;
+    }
 
+    .section-images img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
 
+    .section-images img:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
 
-            <footer class="footer-2 bg-dark text-center-xs">
-      				<div class="container">
-      					<div class="row">
-      						<div class="col-sm-4">
-      							<a href="../../index.html"><img class="image-xs fade-half" alt="Pic" src="img/ladyggs.png"></a>
-      						</div>
+    /* Keep first image in original aspect ratio */
+    .content-section:first-child .section-images img {
+      max-height: none;
+    }
 
+    .section-images video {
+      max-height: 60vh;
+      width: 100%;
+      height: auto;
+    }
 
+    .section-text h2 {
+      font-family: 'Besley', serif;
+      font-size: 14px;
+      font-weight: 200;
+      color: #0232A1;
+      margin-bottom: 12px;
+      margin-top: 0;
+    }
 
-      						<div class="col-sm-3 text-center"><span class="fade-half"> © Copyright 2020 Grace Kruse – All rights reserved</span></div>
-      						<div class="col-sm-5 text-right text-center-xs col-md-5"> grace.m.kruse@gmaill.com</div>
-      						<div class="col-sm-5 text-right text-center-xs col-md-5"> +1.719.360.6290</div>
+    .section-text p {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
 
-      				  </div>
-      				</div>
-      			</footer>
-	</div>
+    .section-text p:last-child {
+      margin-bottom: 0;
+    }
 
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .two-column-layout {
+        margin-top: 0;
+      }
 
-	<script src="../../js/jquery.min.js"></script>
-        <script src="../../js/bootstrap.min.js"></script>
-        <script src="../../js/lightbox.min.js"></script>
-        <script src="../../js/parallax.js"></script>
-        <script src="../../js/scripts.js"></script>
-    </body>
-</html>
+      .content-section {
+        flex-direction: column;
+        padding: 30px 20px;
+      }
+
+      /* Images appear before text on mobile (natural HTML order preserved) */
+      .section-images,
+      .section-text {
+        width: 100%;
+        padding: 0;
+      }
+
+      .section-images {
+        margin-bottom: 20px;
+        gap: 20px;
+      }
+
+      .section-text h2 {
+        font-size: 16px;
+        margin-bottom: 14px;
+      }
+
+      .section-text p {
+        font-size: 13px;
+      }
+
+      .two-column-layout::after {
+        display: none;
+      }
+
+      .image-grid {
+        gap: 10px;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+
+      .image-row {
+        gap: 10px;
+        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Ensure elephant puzzle whole.jpg appears first */
+      .section-images {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* First section: Explicitly order images - elephant whole first, then sketches */
+      .content-section:first-child .section-images {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .content-section:first-child .section-images > .image-item:first-child {
+        order: 1;
+      }
+
+      .content-section:first-child .section-images > .image-row {
+        order: 2;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div><a href="../../index25.html">← back to overview</a></div>
+      <div><a href="https://www.linkedin.com/in/gracekruse" target="_blank" rel="noopener noreferrer">Contact</a></div>
+    </div>
+  </header>
+
+  <div class="title-block">
+    <div class="title-content">
+      <div class="title-left">
+        <h1>L'éléphant</h1>
+        <div class="subtitle">A Laser Cut Children's Puzzle | November 2017</div>
+        <div class="subtitle2 roles">
+          <span class="role-tag">Product Design</span>
+          <span class="role-tag">Symbol Design</span>
+        </div>
+      </div>
+      <div class="title-right">
+        <p>L'éléphant started out as a symbol project. We sketched, researched, and contacted a vendor to create our product. I wanted to make something interactive so I created a laser cut children's puzzle. The project involved extensive sketching, digitalization of the design, and hands-on fabrication using laser cutting technology.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-column-layout">
+    <!-- Section 1: Initial Design -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/elephant puzzle whole.jpg" alt="Complete elephant puzzle overview">
+          <div class="image-caption">Overview of the complete puzzle design</div>
+        </div>
+        <div class="image-row">
+          <div class="image-item visible">
+            <img src="img/sample sketches.jpg" alt="Sample elephant sketches">
+            <div class="image-caption">Selection of elephant sketches from initial exploration</div>
+          </div>
+          <div class="image-item visible">
+            <img src="img/top 4 sketches.jpg" alt="Top 4 elephant sketches">
+            <div class="image-caption">Top four sketches selected for development</div>
+          </div>
+        </div>
+      </div>
+      <div class="section-text">
+        <h2>Initial Design</h2>
+        <p>The brief stated that we were to start by sketching 60–100 pictures of an animal. Due to the fact that I have never been the best at drawing, I was quite nervous to undertake the project. After the initial 60, there were another 32 based on certain words, plus another 5 in a specific style.</p>
+        <p>These are a few of the 97 elephants sketched. There's a good chance that the least embarrassing ones were done by friends... Three out of the four final sketches were done by me.</p>
+      </div>
+    </div>
+
+    <!-- Section 2: Digitalization -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/digital elephant.jpg" alt="Digital elephant design">
+          <div class="image-caption">Final digitalized elephant design</div>
+        </div>
+      </div>
+      <div class="section-text">
+        <h2>Digitalization</h2>
+        <p>The selected sketch was transformed into a digital vector illustration, preparing it for the laser cutting process. The design needed to be simplified and optimized to work as a puzzle with clean, cuttable lines.</p>
+      </div>
+    </div>
+
+    <!-- Section 3: Laser Cutting -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <video controls>
+            <source src="img/IMG_3791.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+          <div class="image-caption">Laser cutting process in action</div>
+        </div>
+      </div>
+      <div class="section-text">
+        <h2>Laser Cutting</h2>
+        <p>Instead of contacting a vendor, I glued the illustration to wood, which was then laser cut on the path shown above. As you can hear on the video, it was a little nerve wracking watching the laser cut through both layers.</p>
+        <p>The fabrication process required precision and careful monitoring to ensure the design cut cleanly through the material without burning or warping.</p>
+      </div>
+    </div>
+
+    <!-- Section 4: Product Images -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-grid">
+          <div class="image-item visible">
+            <img src="img/IMG_1014.JPG" alt="Child playing with elephant puzzle">
+          </div>
+          <div class="image-item visible">
+            <img src="img/IMG_0998.JPG" alt="Child interacting with puzzle pieces">
+          </div>
+          <div class="image-item visible">
+            <img src="img/IMG_3812.jpg" alt="Final elephant puzzle">
+          </div>
+          <div class="image-item visible">
+            <img src="img/Square elephant.jpg" alt="Puzzle pieces arranged">
+          </div>
+        </div>
+      </div>
+      <div class="section-text">
+        <h2>Product Images</h2>
+        <p>The final product is an interactive children's puzzle featuring the elephant design. The laser cutting process created clean edges and precise puzzle pieces that fit together seamlessly.</p>
+        <p>The natural wood material gives the puzzle a tactile, handcrafted quality that enhances the interactive experience for children.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <img src="../mobius/img/bluelogo.png" alt="Small Logo">
+    Grace Kruse 2025
+  </footer>
+
+  <!-- Image Modal -->
+  <div class="image-modal" id="imageModal">
+    <img src="" alt="Expanded view">
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Update title block height for proper content spacing
+      function updateTitleBlockHeight() {
+        const titleBlock = document.querySelector('.title-block');
+        if (titleBlock && window.innerWidth > 768) {
+          const height = titleBlock.offsetHeight;
+          document.documentElement.style.setProperty('--title-block-height', height + 'px');
+        }
+      }
+
+      // Run on load and resize
+      updateTitleBlockHeight();
+      window.addEventListener('resize', updateTitleBlockHeight);
+
+      // Image modal functionality
+      const modal = document.getElementById('imageModal');
+      const modalImg = modal.querySelector('img');
+      const images = document.querySelectorAll('.image-item img');
+
+      images.forEach((img, index) => {
+        img.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          modal.classList.add('active');
+          modalImg.src = this.src;
+          modalImg.alt = this.alt;
+        });
+      });
+
+      modal.addEventListener('click', function() {
+        modal.classList.remove('active');
+      });
+
+      // Close modal on escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          modal.classList.remove('active');
+        }
+      });
+    });
+  </script>
+</body></html>
