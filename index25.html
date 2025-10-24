@@ -24,8 +24,34 @@
     <div class="about-me">
         <h3>About Me</h3>
         <p>
-          Welcome to my portfolio! I’ve spent my life learning how to bring structure to chaos and heart to everything I create. This has become my norm through my experiences as an elite ballet dancer, the fourth of nine kids, and a product manager and designer creating technologies that change lives. It is essential to give people tools that empower them and I’d be thrilled to bring my experience, curiosity, and creativity to your projects.
+          Welcome to my portfolio! I've spent my life learning how to bring structure to chaos and heart to everything I create. This has become my norm through my experiences as an elite ballet dancer, the fourth of nine kids, and a product manager and designer creating technologies that change lives. It is essential to give people tools that empower them and I'd be thrilled to bring my experience, curiosity, and creativity to your projects.
         </p>
+
+        <h4>Skills</h4>
+        <div class="tag-container">
+          <span class="skill-tag">Agile</span>
+          <span class="skill-tag">Adobe Creative Suite</span>
+          <span class="skill-tag">Bootstrap.js</span>
+          <span class="skill-tag">D3.js</span>
+          <span class="skill-tag">Communication</span>
+          <span class="skill-tag">Figma</span>
+          <span class="skill-tag">Sketch</span>
+          <span class="skill-tag">InVision</span>
+          <span class="skill-tag">HTML</span>
+          <span class="skill-tag">CSS</span>
+          <span class="skill-tag">UI/UX Design</span>
+        </div>
+
+        <h4>Interests</h4>
+        <div class="tag-container">
+          <span class="skill-tag">Cooking</span>
+          <span class="skill-tag">Dance</span>
+          <span class="skill-tag">Data Visualization</span>
+          <span class="skill-tag">Emerging Tech</span>
+          <span class="skill-tag">Letterpress</span>
+          <span class="skill-tag">Running</span>
+          <span class="skill-tag">Yoga</span>
+        </div>
     </div>
     <div class="animate-on-scroll">
       <a href="projects/helix/helix25.html">
@@ -109,7 +135,7 @@
       </a>
     </div>
     <div class="animate-on-scroll">
-      <a href="ladyg.html">
+      <a href="projects/ladyg/ladyg.html">
         <img class="project-image" src="img/ladyg-sketch.jpg" alt="Lady G personal logo sketch">
         <div class="overlay">
           <h3>Lady g</h3>
@@ -118,7 +144,16 @@
       </a>
     </div>
     <div class="animate-on-scroll">
-      <a href="mobius.html">
+      <a href="projects/typespecimen/typespecimen.html">
+        <img class="project-image" src="projects/typespecimen/img/1. Front and back.jpg" alt="Form for a Function type specimen">
+        <div class="overlay">
+          <h3>Form for a Function</h3>
+          <p>Typography and Editorial Design</p>
+        </div>
+      </a>
+    </div>
+    <div class="animate-on-scroll">
+      <a href="projects/mobius/mobius.html">
         <img class="project-image" src="img/Investor Book.jpg" alt="Mobius theme park concept">
         <div class="overlay">
           <h3>Mobius</h3>
@@ -127,7 +162,7 @@
       </a>
     </div>
     <div class="animate-on-scroll">
-      <a href="elephant-puzzle.html">
+      <a href="projects/elephant-puzzle/elephant-puzzle.html">
         <img class="project-image" src="img/IMG_3813.jpg" alt="L'éléphant puzzle illustration">
         <div class="overlay">
           <h3>L'éléphant</h3>
@@ -135,6 +170,8 @@
         </div>
       </a>
     </div>
+    <div class="grid-spacer"></div>
+    <div class="grid-spacer"></div>
   </div>
   <footer style="font-family: 'Besley', serif; text-align: center;">
     <img src="projects/ladyg/img/bsqladyg.png" alt="Small Logo" style="width: 12px; height: auto; vertical-align: top; margin-right: 4px;">
@@ -151,36 +188,6 @@
       } else {
         contactBar.classList.remove('scrolled');
       }
-    });
-
-    // Intersection Observer for scroll animations
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry, index) => {
-        if (entry.isIntersecting) {
-          // Add staggered delay for cascading effect
-          setTimeout(() => {
-            entry.target.classList.add('animated');
-          }, index * 50); // 50ms delay between each item
-          observer.unobserve(entry.target);
-        }
-      });
-    }, observerOptions);
-
-    // Observe all elements with animate-on-scroll class
-    const animateElements = document.querySelectorAll('.animate-on-scroll');
-    animateElements.forEach((el) => {
-      observer.observe(el);
-    });
-
-    // Observe fade-in elements
-    const fadeElements = document.querySelectorAll('.fade-in-element');
-    fadeElements.forEach((el) => {
-      observer.observe(el);
     });
   </script>
 </body></html>

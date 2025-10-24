@@ -42,11 +42,7 @@ body {
   }
 
   .animate-on-scroll {
-    opacity: 0;
-  }
-
-  .animate-on-scroll.animated {
-    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 1;
   }
 
   .fade-in-element {
@@ -94,6 +90,9 @@ p {
       width: 100vw;
       height: 1px;
       background-color: #0232A1;
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: drawHorizontal 0.8s ease-out 0.3s forwards;
     }
   }
 
@@ -107,6 +106,24 @@ p {
     font-size: 26vw;
     line-height: .85;
     flex-grow: 1;
+  }
+
+  @keyframes drawHorizontal {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes drawVertical {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: scaleY(1);
+    }
   }
   .contact {
     display: flex;
@@ -171,6 +188,9 @@ p {
       right: calc(-100vw / 6);
       height: 1px;
       background-color: #0232A1;
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: drawHorizontal 0.8s ease-out 0.4s forwards;
     }
   }
 
@@ -183,20 +203,59 @@ p {
   }
   .about-me {
     grid-column: 1; /* Always in the first column */
-    grid-row: 1 / span 4; /* Spans all rows to stay static */
+    grid-row: 1 / span 5; /* Spans 5 rows to accommodate all projects */
     padding: 16px;
     font-size: 14px;
     line-height: 1.5;
     background-color: #fff;
     color: #0232A1;
-    border-left: 1px solid #0232A1;
-    border-right: 1px solid #0232A1;
-    border-top:1px solid #0232A1;
     box-sizing: border-box;
     position: sticky; /* Keeps it static while scrolling */
     top: 0;
     height: 100%; /* Full viewport height */
     overflow-y: auto; /* Scrollable if content overflows */
+    border-left: 1px solid #0232A1;
+    border-right: 1px solid #0232A1;
+    border-top: 1px solid #0232A1;
+  }
+
+  /* Animated overlay for left border */
+  .about-me::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background-color: #fff;
+    transform: scaleY(1);
+    transform-origin: top;
+    z-index: 5;
+    animation: hideVertical 0.8s ease-out 0.5s forwards;
+  }
+
+  /* Animated overlay for right border */
+  .about-me::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background-color: #fff;
+    transform: scaleY(1);
+    transform-origin: top;
+    z-index: 5;
+    animation: hideVertical 0.8s ease-out 0.8s forwards;
+  }
+
+  @keyframes hideVertical {
+    from {
+      transform: scaleY(1);
+    }
+    to {
+      transform: scaleY(0);
+    }
   }
 
   .about-me h3 {
@@ -207,14 +266,191 @@ p {
     animation: fadeIn 1s ease-out 0.5s both;
   }
 
+  .about-me h4 {
+    font-family: 'Besley', serif;
+    font-weight: 400;
+    font-size: 16px;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    padding-top: 24px;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    position: relative;
+    border-top: 1px solid #0232A1;
+    animation: fadeIn 1s ease-out 0.7s both;
+  }
+
+  .about-me h4::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #fff;
+    transform: scaleX(1);
+    transform-origin: left;
+    animation: hideHorizontal 0.8s ease-out 1.2s forwards;
+  }
+
+  .about-me h4:first-of-type {
+    padding-top: 24px;
+  }
+
+  .tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    animation: fadeIn 1s ease-out 0.9s both;
+  }
+
+  .skill-tag {
+    font-family: 'neue haas grotesk', sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    color: #0232A1;
+    background-color: transparent;
+    border: 1px solid #0232A1;
+    border-radius: 16px;
+    padding: 4px 12px;
+    display: inline-block;
+    transition: all 0.3s ease;
+    cursor: default;
+    text-transform: uppercase;
+  }
+
+  .skill-tag:hover {
+    background-color: #0232A1;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(2, 50, 161, 0.2);
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(-2px);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+
+  .skill-tag:hover {
+    animation: bounce 0.5s ease;
+  }
+
   .grid > div:not(.about-me) {
     grid-column: span 1; /* Projects occupy columns 2-4 */
     position: relative;
-    border-right: 1px solid #0232A1;
-    border-bottom: 1px solid #0232A1;
     overflow: hidden;
     aspect-ratio: 1 / 1;
+    border-right: 1px solid #0232A1;
+    border-bottom: 1px solid #0232A1;
   }
+
+  /* White overlay on right border that animates away to reveal border */
+  .grid > div:not(.about-me)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background-color: #fff;
+    transform: scaleY(1);
+    transform-origin: top;
+    z-index: 10;
+  }
+
+  /* White overlay on bottom border that animates away to reveal border */
+  .grid > div:not(.about-me)::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #fff;
+    transform: scaleX(1);
+    transform-origin: left;
+    z-index: 10;
+  }
+
+  /* Apply staggered hide animations to each grid item */
+  .grid > div:not(.about-me):nth-child(2)::after { animation: hideVertical 0.8s ease-out 0.5s forwards; }
+  .grid > div:not(.about-me):nth-child(3)::after { animation: hideVertical 0.8s ease-out 0.6s forwards; }
+  .grid > div:not(.about-me):nth-child(4)::after { animation: hideVertical 0.8s ease-out 0.7s forwards; }
+
+  .grid > div:not(.about-me):nth-child(2)::before { animation: hideHorizontal 0.8s ease-out 0.8s forwards; }
+  .grid > div:not(.about-me):nth-child(3)::before { animation: hideHorizontal 0.8s ease-out 0.8s forwards; }
+  .grid > div:not(.about-me):nth-child(4)::before { animation: hideHorizontal 0.8s ease-out 0.8s forwards; }
+  .grid > div:not(.about-me):nth-child(5)::before { animation: hideHorizontal 0.8s ease-out 0.9s forwards; }
+  .grid > div:not(.about-me):nth-child(6)::before { animation: hideHorizontal 0.8s ease-out 0.9s forwards; }
+  .grid > div:not(.about-me):nth-child(7)::before { animation: hideHorizontal 0.8s ease-out 0.9s forwards; }
+  .grid > div:not(.about-me):nth-child(8)::before { animation: hideHorizontal 0.8s ease-out 1.0s forwards; }
+  .grid > div:not(.about-me):nth-child(9)::before { animation: hideHorizontal 0.8s ease-out 1.0s forwards; }
+  .grid > div:not(.about-me):nth-child(10)::before { animation: hideHorizontal 0.8s ease-out 1.0s forwards; }
+  .grid > div:not(.about-me):nth-child(11)::before { animation: hideHorizontal 0.8s ease-out 1.1s forwards; }
+  .grid > div:not(.about-me):nth-child(12)::before { animation: hideHorizontal 0.8s ease-out 1.1s forwards; }
+  .grid > div:not(.about-me):nth-child(13)::before { animation: hideHorizontal 0.8s ease-out 1.1s forwards; }
+
+  @keyframes hideHorizontal {
+    from {
+      transform: scaleX(1);
+    }
+    to {
+      transform: scaleX(0);
+    }
+  }
+
+  /* Grid spacers for empty cells */
+  .grid-spacer {
+    grid-column: span 1;
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background-color: #fff;
+    border-right: 1px solid #0232A1;
+    border-bottom: 1px solid #0232A1;
+  }
+
+  /* White overlay on right border */
+  .grid-spacer::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background-color: #fff;
+    transform: scaleY(1);
+    transform-origin: top;
+    z-index: 10;
+  }
+
+  /* White overlay on bottom border */
+  .grid-spacer::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #fff;
+    transform: scaleX(1);
+    transform-origin: left;
+    z-index: 10;
+  }
+
+  /* Animate spacer 14 (position after elephant puzzle) */
+  .grid-spacer:nth-of-type(14)::after { animation: hideVertical 0.8s ease-out 0.8s forwards; }
+  .grid-spacer:nth-of-type(14)::before { animation: hideHorizontal 0.8s ease-out 1.2s forwards; }
+
+  /* Animate spacer 15 (last position in row 5) */
+  .grid-spacer:nth-of-type(15)::after { animation: hideVertical 0.8s ease-out 0.9s forwards; }
+  .grid-spacer:nth-of-type(15)::before { animation: hideHorizontal 0.8s ease-out 1.2s forwards; }
+
   .project-image {
     width: 75%;
     height: 75%;
