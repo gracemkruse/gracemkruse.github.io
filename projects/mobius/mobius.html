@@ -1,220 +1,714 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Mobius" />
+  <meta property="og:image" content="img/Investor Book.jpg"/>
+  <title>Mobius | Grace Kruse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..900&family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../projects/ladyg/img/bsqladyg.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../projects/ladyg/img/bsqladyg.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../projects/ladyg/img/bsqladyg.png">
+  <link href="../shared-styles.css" rel="stylesheet">
+  <style>
+    /* Override role-tag to be uppercase and smaller */
+    .role-tag {
+      text-transform: uppercase;
+      font-size: 9px;
+    }
 
-<!doctype html>
-<html lang="en">
-    <head>
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124666381-1"></script>
-		<script>
-		  window.dataLayer = window.dataLayer || [];
-		  function gtag(){dataLayer.push(arguments);}
-		  gtag('js', new Date());
+    /* Fun animations */
+    @keyframes shiftUp {
+      0% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(-4px);
+      }
+    }
 
-		  gtag('config', 'UA-124666381-1');
-		</script>
+    @keyframes spinOpen {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(405deg);
+      }
+    }
 
-        <meta charset="utf-8">
-        <meta property="og:title" content="Mobius" />
-        <meta property="og:image" content="img/Investor Book.jpg"/>
-        <title>Mobius | Grace Kruse</title>
-		<link rel="shortcut icon" type="image/png" href="../../img/favicon.png">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="../../css/themify-icons.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="../../css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="../../css/lightbox.min.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="../../css/theme-startup.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="../../css/custom.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="http://fonts.googleapis.com/css?" family="Lato:300,400%7CRaleway:100,400,300,500,600,700%7COpen+Sans:400,500,600' rel='stylesheet' type='text/css">
-        <link href="http://fonts.googleapis.com/css?family=Poppins:100,300,400,600,700" rel="stylesheet" type="text/css">
-        <link href="../../css/font-poppins.css" rel="stylesheet" type="text/css">
-    </head>
+    @keyframes spinClose {
+      0% {
+        transform: rotate(405deg);
+      }
+      100% {
+        transform: rotate(0deg);
+      }
+    }
 
-    <body class="scroll-assist">
-		<div class="nav-container"><nav>
+    /* Accordion-specific styles */
+    .accordion-container {
+      width: 75%;
+      margin: 0 auto;
+      margin-top: max(230px, calc(var(--title-block-height, 200px) + 54px));
+      margin-bottom: 40px;
+    }
 
-		        <div class="nav-bar text-center">
-	              <div class="col-md-2 col-md-push-5 col-sm-12 text-center">
-		                <a href="../../index.html">
-		                    <div class="vnu"><img alt="logo" class="image-xs" src="../../img/ladygbao.png"></div>
-		                </a>
-		            </div>
+    .accordion-section {
+      border-bottom: 1px solid #0232A1;
+      position: relative;
+    }
 
+    .accordion-section:first-child {
+      border-top: 1px solid #0232A1;
+    }
 
+    .accordion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      user-select: none;
+    }
 
-		        <div class="col-sm-12 col-md-5 col-md-pull-2 overflow-hidden-xs mt-sm-8">
-		                <ul class="menu inline-block pull-right">
-		                    <li class="vpf"><a href="tel:719-360-6290">+1.719.360.6290</a></li>
+    .accordion-header:hover {
+      background-color: rgba(2, 50, 161, 0.02);
+      transform: translateY(-4px);
+    }
 
-		                </ul>
-		            </div>
+    .accordion-section.active .accordion-header {
+      background-color: #0232A1;
+    }
 
-		            <div class="col-sm-12 col-md-5 pb-xs-24">
-		                <ul class="menu">
-		                    <li><a href="mailto:grace.m.kruse@gmail.com">grace.m.kruse@gmail.com</a></li>
-		                </ul>
-		            </div>
-			</div>
+    .accordion-section.active .accordion-header:hover {
+      background-color: #021f7a;
+    }
 
-		    </nav>
-		</div>
+    .accordion-header h2 {
+      font-family: 'Besley', serif;
+      font-size: 16px;
+      font-weight: 200;
+      color: #0232A1;
+      margin: 0;
+      transition: color 0.3s ease;
+    }
 
+    .accordion-section.active .accordion-header h2 {
+      color: white;
+    }
 
-		<div class="main-container">
-		<section>
-		        <div class="container">
-		            <div class="feed-item mb96 mb-xs-48">
-		                <div class="row mb16 mb-xs-0">
-		                    <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 text-center">
-		                      <h6 class="uppercase mb16 mb-xs-8">April 2018</h6>
-		                      <h3>Mobius</h3><h4>Theme Park Concept </h4>
-		                    </div>
-		                </div>
+    .accordion-icon {
+      font-family: 'Inter', sans-serif;
+      font-size: 20px;
+      color: #0232A1;
+      font-weight: 300;
+      transition: transform 0.3s ease, color 0.3s ease;
+      line-height: 1;
+    }
 
-		                <div class="row 8 mb-xs-16">
-		                    <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-                          <a href="img/Investor Book.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="8 mb-xs-16" src="img/Investor Book.jpg"></a>
-		                        <p class="lead">
-		                            Mobius, is a theme park designed to let the user experience extreme anxiety to find complete peace. Each room in the escape room is designed to bring about the same type of anxiety and paranoia experienced by a perfectionist in everyday life. The puzzles in the escape room deal with four different aspects of anxiety: ambiguity, opinions, options, and standards. Once you finish the escape room, another experience will begin, which allows the user to be entirely out of control bringing about complete peace, showing that sometimes, the perfect solution, is to stop and let go.
-		                        </p>
+    .accordion-section.active .accordion-icon {
+      color: white;
+      animation: spinOpen 0.5s ease-out forwards;
+    }
 
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
+    .accordion-section:not(.active) .accordion-icon {
+      animation: spinClose 0.5s ease-out forwards;
+    }
 
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-								<h3>Layout</h3>
-                          <a href="img/layout.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="8 mb-xs-16" src="img/layout.jpg"></a>
-		                        <p class="lead" src="img/layout.jpg" alt="Article Image">The Mobius building is shaped so that each room gets progressively smaller, accentuating the feeling of anxiety as you continue throughout the escape room. Once you enter the second floor it is more spacious and free.&nbsp;&nbsp;</p>
+    .accordion-section.active .accordion-content {
+      max-height: 10000px;
+    }
 
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
+    .accordion-inner {
+      padding: 32px 24px 32px 24px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
 
+    .accordion-images {
+      flex: 1 1 60%;
+      min-width: 300px;
+    }
 
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-		                        <h3>Visitor Guide</h3>
-                              <a href="img/Visitor guide outside.jpg" data-lightbox="true">
-    								              <img alt="Article Image" class="8 mb-xs-16" src="img/Visitor guide outside.jpg"></a>
-		                        <p class="lead" src="img/layout.jpg" alt="Article Image">After each room is complete, the guest will collect a stamp on the outside of their visitor guide that will help them complete the final puzzle.&nbsp;</p>
+    .accordion-image-item {
+      margin-bottom: 16px;
+    }
 
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-                          <a href="img/Visitor guide inside.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="8 mb-xs-16" src="img/Visitor guide inside.jpg"></a>
-		                        <p class="lead" src="img/layout.jpg" alt="Article Image">In each room there will be paper that is added to the visitor guide that will help the guest complete each puzzle. On the left is the paper for the Opinions room, and on the right is the clue sheet for Relief.&nbsp;</p>
+    .accordion-image-item:last-child {
+      margin-bottom: 0;
+    }
 
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-		                			<h3>Rooms</h3>
-		                    </div>
+    .accordion-image-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 2px;
+      will-change: transform;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
 
+    .accordion-image-item img:hover {
+      transform: translateY(-4px) scale(1.01) !important;
+      box-shadow: 0 12px 24px rgba(2, 50, 161, 0.15);
+    }
 
-		                    <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-								<h4 class="mb8 mb-xs-8">Ambiguity</h4>
-                  <a href="img/Investor Book8.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-16" src="img/Investor Book8.jpg"></a>
-		                        <p class="lead">
-		                            The first puzzle is a fluid intelligence test. These were initially designed to level the playing field between international students and natives. There are no directions explaining the puzzle. The visitor must complete the puzzle to continue. Throughout the Ambiguity room, there will be no hint of whether the answer is right or wrong, starting off the experience with the stress of not knowing looming over their head.
-		                        </p>
+    /* Parallax effect - disabled on mobile */
+    @media (min-width: 769px) {
+      .accordion-image-item.parallax-active img {
+        transition: transform 0.1s linear;
+      }
+    }
 
-		                    </div>
-		                <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-								<h4 class="mb8 mb-xs-8">Opinions</h4>
-                  <a href="img/Room 2 Space Mockup.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-8" src="img/Room 2 Space Mockup.jpg"></a>
-		                        <p class="lead" src="img/Room 2 Space Mockup.jpg" alt="Article Image">
-		                            The second puzzle is about trying to keep everybody happy, and the realization that its just not possible. When going through the Opinions, the guest will go through the experience of trying to order a meal for a family of eleven. Every person has some specific need and they must balance all of them. While they are in the room, they will receive periodic phone calls from actual people to make them feel like their decision is more than just a puzzle room. Once they have come to conclusion, they must place the order and rank who is most and least satisfied in the family.
-		                        </p>
+    .accordion-image-caption {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      color: #0232A1;
+      margin-top: 8px;
+      font-weight: 400;
+      line-height: 1.4;
+    }
 
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-								<h4 class="mb8 mb-xs-8">Options</h4>
-                  <a href="img/Room 3.1 Space mockup.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-8" src="img/Room 3.1 Space mockup.jpg"></a>
-		                        <p class="lead" src="img/Room 3.1 Space mockup.jpg" alt="Article Image">
-		                            The third puzzle deals with having to choose. In Options, there are three different doors you can choose from, each with a different puzzles and riddles. All of them lead to the same place, but after one gets to be challenging, it is tempting to switch from one door to the next, which ends up wasting time.
-		                        </p>
+    .accordion-text {
+      flex: 1 1 35%;
+      min-width: 250px;
+    }
 
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-								<h4 class="mb8 mb-xs-8">Standards</h4>
-                        <a href="img/Room 4 Space mockup Spell checked.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-8" src="img/Room 4 Space mockup Spell checked.jpg"></a>
-		                        <p class="lead" src="img/Room 4 Space mockup Spell checked.jpg" alt="Article Image">
-		                            The final room of the escape room portion of the theme park causes the user to confront their own expectation as well as, those perceived to be set by others. In Standards, the guest must create a design out of triangles, and submit it once it meets their own expectations. They are told that they can only continue once a committee has reviewed their work and accept it as satisfactory.
-		                        </p>
+    .accordion-text p {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.8;
+      margin: 0 0 16px 0;
+    }
 
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-								<h4 class="mb8 mb-xs-8">Relief</h4>
-                  <a href="img/Investor Book16.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-8" src="img/Investor Book16.jpg"></a>
-		                        <p class="lead" src="img/Investor Book16.jpg" alt="Article Image">
-		                            Once the escape room is complete, the guest will enter an elevator and crack a code to reveal a quote saying, “Incredible change happens when you stop craving control.” After completing the four anxiety filled rooms, they will realize that all the effort and stress put into completing the rooms may not have been necessary. The same is true of life. Although it is helpful to think and prepare, there is a certain kind of relief knowing that it is not always the best way to do something.
-		                        </p>
+    .accordion-text h4 {
+      font-family: 'Besley', serif;
+      font-size: 14px;
+      font-weight: 200;
+      color: #0232A1;
+      margin-bottom: 12px;
+      margin-top: 24px;
+    }
 
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-								<h4 class="mb8 mb-xs-8">Freedom</h4>
-                  <a href="img/Jellyfish Space 5.0 mockup.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-16" src="img/Jellyfish Space 5.0 mockup.jpg"></a>
-		                        <p class="lead" src="img/Jellyfish Space 5.0 mockup.jpg" alt="Article Image">
-		                            The final room of the experience is the reward. After going through five rooms working and controlling situations, the final room forces you to completely give up control. The final room is a roller coaster powered by air. It is designed to simulate the ocean with sounds, scents, and effects. Augmented reality jellyfish will be seen in the room, and the beauty and fluidity in their movement will be a calming visual for the guest. Although there will be things in the room creating a restful environment, they will not be able to enjoy it unless they let go, and enjoy the experience.
-		                        </p>
+    .accordion-text h4:first-child {
+      margin-top: 0;
+    }
 
-		                    </div><div class="col-md-offset-2 col-sm-10 col-sm-offset-1 col-md-7">
+    .accordion-text a {
+      color: #0232A1;
+      text-decoration: underline;
+      transition: color 0.3s ease;
+    }
 
-		                        <h3>Branding</h3>
-							</div><div class="col-md-offset-2 col-sm-10 col-sm-offset-1 col-md-8">
-								<h4 class="mb8 mb-xs-16">Logo</h4>
-                  <a href="img/logoinfo.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-16" src="img/logoinfo.jpg"></a>
+    .accordion-text a:hover {
+      color: #4169E1;
+    }
 
+    /* Room-specific layout */
+    .rooms-layout {
+      flex-direction: column;
+      padding: 0;
+    }
 
-		                   </div>
+    .room-item {
+      display: flex;
+      gap: 24px;
+      padding: 24px;
+      border-bottom: 1px solid #0232A1;
+    }
 
-		                    <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-								<h4 class="mb8 mb-xs-16">Visual Identity Guide: Do</h4>
-                  <a href="img/Do_Don't.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-16" src="img/Do_Don't.jpg"></a>
+    .room-item:last-child {
+      border-bottom: none;
+    }
 
+    .room-image {
+      flex: 0 0 60%;
+    }
 
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-								<h4 class="mb8 mb-xs-8">Visual Identity Guide: Do Not</h4>
-                  <a href="img/Do_Don't2.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-8" src="img/Do_Don't2.jpg"></a>
+    .room-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 2px;
+      will-change: transform;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
 
+    .room-image img:hover {
+      transform: translateY(-4px) scale(1.01) !important;
+      box-shadow: 0 12px 24px rgba(2, 50, 161, 0.15);
+    }
 
-		                    </div><div class="col-md-offset-2 col-sm-10 col-sm-offset-1 col-md-8">
-                          <a href="img/Business Card.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-8" src="img/Business Card.jpg"></a>
-		                        <p class="lead" src="img/layout.jpg" alt="Article Image">I hope you have enjoyed your tour of Mobius. Right now it is just a concept, but I would love to turn it in to an actual experience one day.</p>
+    .room-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
 
-		                   <!-- </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 text-center">
-		                        <a class="mb48 mb-xs-8 btn btn-lg" href="#">Share Project</a>
-		                        <hr>
-		                    </div>-->
-		                </div>
-		            </div>
+    .room-text h4 {
+      font-family: 'Besley', serif;
+      font-size: 14px;
+      font-weight: 200;
+      color: #0232A1;
+      margin: 0 0 12px 0;
+    }
 
-		        </div></section>
+    .room-text p {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.8;
+      margin: 0;
+    }
 
+    /* Mobile responsive */
+    @media (max-width: 1024px) and (min-width: 769px) {
+      .accordion-container {
+        width: 85%;
+      }
+    }
 
-            <footer class="footer-2 bg-dark text-center-xs">
-              <div class="container">
-                <div class="row">
-                  <div class="col-sm-4">
-                    <a href="../../index.html"><img class="image-xs fade-half" alt="Pic" src="img/ladyggs.png"></a>
-                  </div>
+    @media (max-width: 768px) {
+      .accordion-container {
+        width: 100%;
+        margin-top: 0;
+      }
 
+      .accordion-header {
+        padding: 16px 20px;
+      }
 
+      .accordion-header h2 {
+        font-size: 15px;
+      }
 
-                  <div class="col-sm-3 text-center"><span class="fade-half"> © Copyright 2020 Grace Kruse – All rights reserved</span></div>
-                  <div class="col-sm-5 text-right text-center-xs col-md-5"> grace.m.kruse@gmaill.com</div>
-                  <div class="col-sm-5 text-right text-center-xs col-md-5"> +1.719.360.6290</div>
+      .accordion-inner {
+        padding: 24px 20px 24px 20px;
+        flex-direction: column;
+      }
 
-                </div>
-              </div>
-            </footer>
-	</div>
+      .accordion-images,
+      .accordion-text {
+        flex: 1 1 100%;
+        min-width: 100%;
+      }
 
+      .accordion-text p {
+        font-size: 13px;
+      }
 
-	<script src="../../js/jquery.min.js"></script>
-    <script src="../../js/bootstrap.min.js"></script>
-    <script src="../../js/lightbox.min.js"></script>
-    <script src="../../js/parallax.js"></script>
-    <script src="../../js/scripts.js"></script>
-    </body>
-</html>
+      /* Room layout mobile */
+      .room-item {
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .room-image {
+        flex: 1 1 100%;
+      }
+
+      .room-text h4 {
+        font-size: 15px;
+        margin-top: 12px;
+      }
+
+      .room-text p {
+        font-size: 13px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .accordion-header {
+        padding: 14px 16px;
+      }
+
+      .accordion-header h2 {
+        font-size: 14px;
+      }
+
+      .accordion-inner {
+        padding: 20px 16px 20px 16px;
+      }
+
+      .accordion-text p {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div><a href="../../index25.html">← back to overview</a></div>
+      <div><a href="https://www.linkedin.com/in/gracekruse" target="_blank" rel="noopener noreferrer">Contact</a></div>
+    </div>
+  </header>
+
+  <div class="title-block">
+    <div class="title-content">
+      <div class="title-left">
+        <h1>Mobius</h1>
+        <div class="subtitle">Theme Park Concept | April 2018</div>
+        <div class="subtitle2 roles">
+          <span class="role-tag">Experience Design</span>
+          <span class="role-tag">Branding</span>
+        </div>
+      </div>
+      <div class="title-right">
+        <p>Mobius is a theme park designed to let the user experience extreme anxiety to find complete peace. Each room in the escape room is designed to bring about the same type of anxiety and paranoia experienced by a perfectionist in everyday life. The puzzles deal with four different aspects of anxiety: ambiguity, opinions, options, and standards. Once you finish the escape room, another experience will begin, which allows the user to be entirely out of control bringing about complete peace, showing that sometimes, the perfect solution, is to stop and let go.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-container">
+    <!-- Section 1: Rooms (Open by default) -->
+    <div class="accordion-section active">
+      <div class="accordion-header">
+        <h2>Rooms</h2>
+        <span class="accordion-icon">+</span>
+      </div>
+      <div class="accordion-content">
+        <div class="accordion-inner rooms-layout">
+          <!-- Ambiguity Room -->
+          <div class="room-item">
+            <div class="room-image">
+              <img src="img/Investor Book8.jpg" alt="Ambiguity room">
+              <div class="accordion-image-caption">Ambiguity room - fluid intelligence test</div>
+            </div>
+            <div class="room-text">
+              <h4>Ambiguity</h4>
+              <p>The first puzzle is a fluid intelligence test. These were initially designed to level the playing field between international students and natives. There are no directions explaining the puzzle. The visitor must complete the puzzle to continue. Throughout the Ambiguity room, there will be no hint of whether the answer is right or wrong, starting off the experience with the stress of not knowing looming over their head.</p>
+            </div>
+          </div>
+
+          <!-- Opinions Room -->
+          <div class="room-item">
+            <div class="room-image">
+              <img src="img/Room 2 Space Mockup.jpg" alt="Opinions room">
+              <div class="accordion-image-caption">Opinions room - keeping everybody happy</div>
+            </div>
+            <div class="room-text">
+              <h4>Opinions</h4>
+              <p>The second puzzle is about trying to keep everybody happy, and the realization that its just not possible. When going through the Opinions, the guest will go through the experience of trying to order a meal for a family of eleven. Every person has some specific need and they must balance all of them. While they are in the room, they will receive periodic phone calls from actual people to make them feel like their decision is more than just a puzzle room. Once they have come to conclusion, they must place the order and rank who is most and least satisfied in the family.</p>
+            </div>
+          </div>
+
+          <!-- Options Room -->
+          <div class="room-item">
+            <div class="room-image">
+              <img src="img/Room 3.1 Space mockup.jpg" alt="Options room">
+              <div class="accordion-image-caption">Options room - making choices</div>
+            </div>
+            <div class="room-text">
+              <h4>Options</h4>
+              <p>The third puzzle deals with having to choose. In Options, there are three different doors you can choose from, each with a different puzzles and riddles. All of them lead to the same place, but after one gets to be challenging, it is tempting to switch from one door to the next, which ends up wasting time.</p>
+            </div>
+          </div>
+
+          <!-- Standards Room -->
+          <div class="room-item">
+            <div class="room-image">
+              <img src="img/Room 4 Space mockup Spell checked.jpg" alt="Standards room">
+              <div class="accordion-image-caption">Standards room - confronting expectations</div>
+            </div>
+            <div class="room-text">
+              <h4>Standards</h4>
+              <p>The final room of the escape room portion of the theme park causes the user to confront their own expectation as well as, those perceived to be set by others. In Standards, the guest must create a design out of triangles, and submit it once it meets their own expectations. They are told that they can only continue once a committee has reviewed their work and accept it as satisfactory.</p>
+            </div>
+          </div>
+
+          <!-- Relief Room -->
+          <div class="room-item">
+            <div class="room-image">
+              <img src="img/Investor Book16.jpg" alt="Relief room">
+              <div class="accordion-image-caption">Relief room - letting go of control</div>
+            </div>
+            <div class="room-text">
+              <h4>Relief</h4>
+              <p>Once the escape room is complete, the guest will enter an elevator and crack a code to reveal a quote saying, "Incredible change happens when you stop craving control." After completing the four anxiety filled rooms, they will realize that all the effort and stress put into completing the rooms may not have been necessary. The same is true of life. Although it is helpful to think and prepare, there is a certain kind of relief knowing that it is not always the best way to do something.</p>
+            </div>
+          </div>
+
+          <!-- Freedom Room -->
+          <div class="room-item">
+            <div class="room-image">
+              <img src="img/Jellyfish Space 5.0 mockup.jpg" alt="Freedom room">
+              <div class="accordion-image-caption">Freedom room - the final reward</div>
+            </div>
+            <div class="room-text">
+              <h4>Freedom</h4>
+              <p>The final room of the experience is the reward. After going through five rooms working and controlling situations, the final room forces you to completely give up control. The final room is a roller coaster powered by air. It is designed to simulate the ocean with sounds, scents, and effects. Augmented reality jellyfish will be seen in the room, and the beauty and fluidity in their movement will be a calming visual for the guest. Although there will be things in the room creating a restful environment, they will not be able to enjoy it unless they let go, and enjoy the experience.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Layout -->
+    <div class="accordion-section">
+      <div class="accordion-header">
+        <h2>Layout</h2>
+        <span class="accordion-icon">+</span>
+      </div>
+      <div class="accordion-content">
+        <div class="accordion-inner">
+          <div class="accordion-images">
+            <div class="accordion-image-item">
+              <img src="img/layout.jpg" alt="Mobius building layout">
+              <div class="accordion-image-caption">Building layout showing progressively smaller rooms</div>
+            </div>
+          </div>
+          <div class="accordion-text">
+            <p>The Mobius building is shaped so that each room gets progressively smaller, accentuating the feeling of anxiety as you continue throughout the escape room. Once you enter the second floor it is more spacious and free.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Visitor Guide -->
+    <div class="accordion-section">
+      <div class="accordion-header">
+        <h2>Visitor Guide</h2>
+        <span class="accordion-icon">+</span>
+      </div>
+      <div class="accordion-content">
+        <div class="accordion-inner">
+          <div class="accordion-images">
+            <div class="accordion-image-item">
+              <img src="img/Visitor guide outside.jpg" alt="Visitor guide exterior">
+              <div class="accordion-image-caption">Visitor guide exterior with stamp collection</div>
+            </div>
+            <div class="accordion-image-item">
+              <img src="img/Visitor guide inside.jpg" alt="Visitor guide interior">
+              <div class="accordion-image-caption">Visitor guide interior with room clues</div>
+            </div>
+          </div>
+          <div class="accordion-text">
+            <p>After each room is complete, the guest will collect a stamp on the outside of their visitor guide that will help them complete the final puzzle.</p>
+            <p>In each room there will be paper that is added to the visitor guide that will help the guest complete each puzzle. On the left is the paper for the Opinions room, and on the right is the clue sheet for Relief.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Branding -->
+    <div class="accordion-section">
+      <div class="accordion-header">
+        <h2>Branding</h2>
+        <span class="accordion-icon">+</span>
+      </div>
+      <div class="accordion-content">
+        <div class="accordion-inner">
+          <div class="accordion-images">
+            <div class="accordion-image-item">
+              <img src="img/Investor Book.jpg" alt="Mobius investor book cover">
+              <div class="accordion-image-caption">Investor book cover</div>
+            </div>
+            <div class="accordion-image-item">
+              <img src="img/logoinfo.jpg" alt="Logo design and meaning">
+              <div class="accordion-image-caption">Logo design exploration</div>
+            </div>
+            <div class="accordion-image-item">
+              <img src="img/Do_Don't.jpg" alt="Visual identity guide - Do">
+              <div class="accordion-image-caption">Visual identity guide - Do's</div>
+            </div>
+            <div class="accordion-image-item">
+              <img src="img/Do_Don't2.jpg" alt="Visual identity guide - Don't">
+              <div class="accordion-image-caption">Visual identity guide - Don'ts</div>
+            </div>
+            <div class="accordion-image-item">
+              <img src="img/Business Card.jpg" alt="Business card design">
+              <div class="accordion-image-caption">Business card mockup</div>
+            </div>
+          </div>
+          <div class="accordion-text">
+            <p>The visual identity for Mobius reflects the duality of the experience - the tension between control and letting go, anxiety and peace. The branding system provides guidelines for maintaining consistency across all touchpoints.</p>
+            <p>I hope you have enjoyed your tour of Mobius. Right now it is just a concept, but I would love to turn it in to an actual experience one day.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <img src="img/bluelogo.png" alt="Small Logo">
+    Grace Kruse 2025
+  </footer>
+
+  <!-- Image Modal -->
+  <div class="image-modal" id="imageModal">
+    <img src="" alt="Expanded view">
+  </div>
+
+  <script src="../../pagejs.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Update title block height for proper content spacing
+      function updateTitleBlockHeight() {
+        const titleBlock = document.querySelector('.title-block');
+        if (titleBlock && window.innerWidth > 768) {
+          const height = titleBlock.offsetHeight;
+          document.documentElement.style.setProperty('--title-block-height', height + 'px');
+        }
+      }
+
+      // Run on load and resize
+      updateTitleBlockHeight();
+      window.addEventListener('resize', updateTitleBlockHeight);
+
+      // Accordion functionality
+      const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+    accordionHeaders.forEach(header => {
+      header.addEventListener('click', function() {
+        const section = this.parentElement;
+        const wasActive = section.classList.contains('active');
+
+        // Toggle current section
+        section.classList.toggle('active');
+
+        // Scroll to top of opened section
+        if (!wasActive) {
+          // Wait for animation to start, then scroll
+          setTimeout(() => {
+            // Get the title block height to account for fixed header
+            const titleBlock = document.querySelector('.title-block');
+            const titleBlockHeight = titleBlock ? titleBlock.offsetHeight : 200;
+            const headerOffset = titleBlockHeight + 54; // Title block height + buffer
+
+            const sectionTop = section.getBoundingClientRect().top;
+            const offsetPosition = sectionTop + window.pageYOffset - headerOffset;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }, 100);
+        }
+
+        // Optional: Close other sections (comment out if you want multiple sections open)
+        // accordionHeaders.forEach(otherHeader => {
+        //   if (otherHeader !== header) {
+        //     otherHeader.parentElement.classList.remove('active');
+        //   }
+        // });
+      });
+    });
+
+    // Image modal functionality
+    const modal = document.getElementById('imageModal');
+    const modalImg = modal.querySelector('img');
+    const images = document.querySelectorAll('.accordion-image-item img, .room-image img');
+    let currentImageIndex = -1;
+
+    function showImage(index) {
+      if (index >= 0 && index < images.length) {
+        currentImageIndex = index;
+        modal.classList.add('active');
+        modalImg.src = images[index].src;
+        modalImg.alt = images[index].alt;
+      }
+    }
+
+    images.forEach((img, index) => {
+      img.addEventListener('click', function(e) {
+        e.stopPropagation(); // Prevent accordion toggle when clicking image
+        showImage(index);
+      });
+    });
+
+    modal.addEventListener('click', function() {
+      modal.classList.remove('active');
+      currentImageIndex = -1;
+    });
+
+    // Arrow key navigation and escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        modal.classList.remove('active');
+        currentImageIndex = -1;
+      } else if (modal.classList.contains('active')) {
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          const nextIndex = (currentImageIndex + 1) % images.length;
+          showImage(nextIndex);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const prevIndex = (currentImageIndex - 1 + images.length) % images.length;
+          showImage(prevIndex);
+        }
+      }
+    });
+
+    // Subtle parallax effect on images (desktop only)
+    if (window.innerWidth > 768) {
+      let ticking = false;
+
+      function updateParallax() {
+        const imageItems = document.querySelectorAll('.accordion-section.active .accordion-image-item');
+
+        imageItems.forEach((item, index) => {
+          const img = item.querySelector('img');
+          const rect = item.getBoundingClientRect();
+          const windowHeight = window.innerHeight;
+
+          // Only apply parallax if image is in viewport
+          if (rect.top < windowHeight && rect.bottom > 0) {
+            // Calculate how far through the viewport the image is (0 to 1)
+            const scrollProgress = (windowHeight - rect.top) / (windowHeight + rect.height);
+
+            // Subtle movement - max 20px, different speed for each image
+            const parallaxSpeed = 0.15 + (index * 0.05); // Varying speeds create depth
+            const translateY = (scrollProgress - 0.5) * 40 * parallaxSpeed;
+
+            // Apply transform (only if not hovering - hover has its own transform)
+            if (!img.matches(':hover')) {
+              img.style.transform = `translateY(${translateY}px)`;
+            }
+
+            item.classList.add('parallax-active');
+          }
+        });
+
+        ticking = false;
+      }
+
+      function requestParallaxUpdate() {
+        if (!ticking) {
+          window.requestAnimationFrame(updateParallax);
+          ticking = true;
+        }
+      }
+
+      // Update parallax on scroll
+      window.addEventListener('scroll', requestParallaxUpdate);
+
+      // Update parallax when accordion opens
+      accordionHeaders.forEach(header => {
+        header.addEventListener('click', function() {
+          setTimeout(updateParallax, 450); // After accordion animation
+        });
+      });
+
+      // Initial parallax update
+      updateParallax();
+    }
+    }); // End DOMContentLoaded
+  </script>
+</body></html>

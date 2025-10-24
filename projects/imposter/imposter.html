@@ -1,328 +1,1062 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Imposter" />
+  <meta property="og:image" content="img/logo.jpg"/>
+  <title>Imposter | Grace Kruse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..900&family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../projects/ladyg/img/bsqladyg.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../projects/ladyg/img/bsqladyg.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../projects/ladyg/img/bsqladyg.png">
+  <link href="../shared-styles.css" rel="stylesheet">
+  <style>
+    /* Override role-tag to be uppercase and smaller */
+    .role-tag {
+      text-transform: uppercase;
+      font-size: 9px;
+    }
 
-<!doctype html>
-<html lang="en">
-    <head>
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124666381-1"></script>
-		<script>
-		  window.dataLayer = window.dataLayer || [];
-		  function gtag(){dataLayer.push(arguments);}
-		  gtag('js', new Date());
+    /* Fun animations */
+    @keyframes shiftUp {
+      0% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(-4px);
+      }
+    }
 
-		  gtag('config', 'UA-124666381-1');
-		</script>
+    @keyframes spinOpen {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(405deg);
+      }
+    }
 
-        <meta charset="utf-8">
-        <meta property="og:title" content="Imposter" />
-        <meta property="og:image" content="img/imp/logo.jpg"/>
-        <title>Imposter | Grace Kruse</title>
-		<link rel="shortcut icon" type="image/png" href="../../img/favicon.png">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="../../css/themify-icons.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="../../css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="../../css/lightbox.min.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="../../css/theme-startup.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="../../css/custom.css" rel="stylesheet" type="text/css" media="all" />
-        <link href="http://fonts.googleapis.com/css?" family="Lato:300,400%7CRaleway:100,400,300,500,600,700%7COpen+Sans:400,500,600' rel='stylesheet' type='text/css">
-        <link href="http://fonts.googleapis.com/css?family=Poppins:100,300,400,600,700" rel="stylesheet" type="text/css">
-        <link href="../../css/font-poppins.css" rel="stylesheet" type="text/css">
-    </head>
+    @keyframes spinClose {
+      0% {
+        transform: rotate(405deg);
+      }
+      100% {
+        transform: rotate(0deg);
+      }
+    }
 
-    <body class="scroll-assist">
-		<div class="nav-container"><nav>
+    /* Accordion-specific styles */
+    .accordion-container {
+      width: 75%;
+      margin: 0 auto;
+      margin-top: max(230px, calc(var(--title-block-height, 200px) + 54px));
+      margin-bottom: 40px;
+    }
 
-		        <div class="nav-bar text-center">
-	              <div class="col-md-2 col-md-push-5 col-sm-12 text-center">
-		                <a href="../../index.html">
-		                    <div class="vnu"><img alt="logo" class="image-xs" src="../../img/ladygbao.png"></div>
-		                </a>
-		            </div>
+    .accordion-section {
+      border-bottom: 1px solid #0232A1;
+      position: relative;
+    }
 
+    .accordion-section:first-child {
+      border-top: 1px solid #0232A1;
+    }
 
+    .accordion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      user-select: none;
+    }
 
-		        <div class="col-sm-12 col-md-5 col-md-pull-2 overflow-hidden-xs mt-sm-8">
-		                <ul class="menu inline-block pull-right">
-		                    <li class="vpf"><a href="tel:719-360-6290">+1.719.360.6290</a></li>
+    .accordion-header:hover {
+      background-color: rgba(2, 50, 161, 0.02);
+      transform: translateY(-4px);
+    }
 
-		                </ul>
-		            </div>
+    .accordion-section.active .accordion-header {
+      background-color: #0232A1;
+    }
 
-		            <div class="col-sm-12 col-md-5 pb-xs-24">
-		                <ul class="menu">
-		                    <li><a href="mailto:grace.m.kruse@gmail.com">grace.m.kruse@gmail.com</a></li>
-		                </ul>
-		            </div>
-			</div>
+    .accordion-section.active .accordion-header:hover {
+      background-color: #021f7a;
+    }
 
-		    </nav>
-		</div>
+    .accordion-header h2 {
+      font-family: 'Besley', serif;
+      font-size: 16px;
+      font-weight: 200;
+      color: #0232A1;
+      margin: 0;
+      transition: color 0.3s ease;
+    }
 
+    .accordion-section.active .accordion-header h2 {
+      color: white;
+    }
 
-		<div class="main-container">
-		<section>
-		        <div class="container">
-		            <div class="feed-item mb96 mb-xs-48">
-		                <div class="row mb16 mb-xs-0">
-		                    <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 text-center">
-		                      <h6 class="uppercase mb16 mb-xs-8">Spring 2019</h6>
-		                      <h3>Imposter</h3><h4>Genesis Lab Game</h4>
-		                    </div>
-		                </div>
+    .accordion-icon {
+      font-family: 'Inter', sans-serif;
+      font-size: 20px;
+      color: #0232A1;
+      font-weight: 300;
+      transition: transform 0.3s ease, color 0.3s ease;
+      line-height: 1;
+    }
 
-		                <div class="row 8 mb-xs-16">
-		                    <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-                          <a href="img/fbackground.png" data-lightbox="true">
-		                        <img alt="Imposter" class="8 mb-xs-16" src="img/fbackground.png"></a>
-		                        <p class="lead">Imposter is a spy themed card game initially designed at Pepperdine University to help students who feel lonely on campus find activities that will introduce them to people and places they might not know about otherwise. Although people at Pepperdine look like they have every minute of their day together, everyone is in the same boat trying to figure out this new experience called college. Imposter stems from looking at people and seeing someone they are not.</p>
+    .accordion-section.active .accordion-icon {
+      color: white;
+      animation: spinOpen 0.5s ease-out forwards;
+    }
 
-								<h3> How to Play</h3>
-                <a href="img/instructions.jpg" data-lightbox="true">
-								<img alt="Imposter" class="8 mb-xs-16" src="img/instructions.jpg"></a>
-								<p class="lead">
-		                            In order to be inducted into The Agency, people call a phone number hidden on campus to receive a mission packet. Inside the pack there are a variety of cards with challenges, varying in difficulty as people become more involved with the game. Players accrue points by completing the tasks on the card and upload the evidence of their accomplishments to a leaderboard. The top five players get to participate in an experience that caters to their interests. We wanted to shy away from monetary prizes because the end goal of the game was not to get things, but to enjoy and experience everything that Pepperdine, Malibu, and LA have to offer.
+    .accordion-section:not(.active) .accordion-icon {
+      animation: spinClose 0.5s ease-out forwards;
+    }
 
-		                        </p>
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-		                    </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
+    .accordion-section.active .accordion-content {
+      max-height: 15000px;
+    }
 
-				<h3>Starter Pack</h3>
-				<h4>Initiation </h4>
+    .accordion-inner {
+      padding: 32px 24px 32px 24px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
 
-		        <div class="container">
-		            <div class="row mb32 mb-xs-32">
-                  <div class="col-sm-5 col-md-4">
-                      <div class="image-caption cast-shadow mb-xs-32">
-                        <a href="img/initiation.png" data-lightbox="true">
-                          <img alt="Card Pack" src="img/initiation.png"></a>
-                      </div>
-						</div>
-		                <div class="col-sm-5 col-md-4">
-		                    <div class="image-caption cast-shadow mb-xs-32">
-                          <a href="img/initiation1.jpg" data-lightbox="true">
-		                        <img alt="Card Pack" src="img/initiation1.jpg"></a>
-		                    </div>
-						</div>
+    .accordion-images {
+      flex: 1 1 60%;
+      min-width: 300px;
+    }
 
-		                </div>
+    .accordion-image-item {
+      margin-bottom: 16px;
+    }
 
-					</div>
-							<p class="lead">Inside the initiation packet, there are nine cards plus the initiation card. These packets are hidden on campus and players are given a clue to find it.</p>
+    .accordion-image-item:last-child {
+      margin-bottom: 0;
+    }
 
-				</div>
+    .accordion-image-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 2px;
+      will-change: transform;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
 
+    .accordion-image-item img:hover {
+      transform: translateY(-4px) scale(1.01) !important;
+      box-shadow: 0 12px 24px rgba(2, 50, 161, 0.15);
+    }
 
-							</div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
+    /* Parallax effect - disabled on mobile */
+    @media (min-width: 769px) {
+      .accordion-image-item.parallax-active img {
+        transition: transform 0.1s linear;
+      }
+    }
 
-				<h3>Cards</h3>
-				<h4>Assassins </h4>
+    .accordion-image-caption {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      color: #0232A1;
+      margin-top: 8px;
+      font-weight: 400;
+      line-height: 1.4;
+    }
 
-		        <div class="container">
-		            <div class="row mb32 mb-xs-32">
-						<div class="col-sm-5 col-md-4">
-		                    <div class="image-caption cast-shadow mb-xs-32">
-                          <a href="img/acf.png" data-lightbox="true">
-		                        <img alt="Assassins front" src="img/acf.png"></a>
-		                    </div>
-						</div>
-		                <div class="col-sm-5 col-md-4">
-		                    <div class="image-caption cast-shadow mb-xs-32">
-                          <a href="img/acb.jpg" data-lightbox="true">
-		                        <img alt="Assassin back" src="img/acb.jpg"></a>
-		                    </div>
-						</div>
+    .accordion-text {
+      flex: 1 1 35%;
+      min-width: 250px;
+    }
 
-		                </div>
+    .accordion-text p {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.8;
+      margin: 0 0 16px 0;
+    }
 
-					</div>
-							<p class="lead">As the name implies, assassin cards allow you to eliminate other players. They do not permanently remove the other player from the game, but they do suspend their points for a week, which takes them out of the running for the weekly prize. However, the points earned during the week they were suspended are added to the next week and can be turned into a strategy. </p>
+    .accordion-text h3 {
+      font-family: 'Besley', serif;
+      font-size: 15px;
+      font-weight: 200;
+      color: #0232A1;
+      margin-bottom: 12px;
+      margin-top: 24px;
+    }
 
-				<h4>Explorers</h4>
+    .accordion-text h3:first-child {
+      margin-top: 0;
+    }
 
-		        <div class="container">
-		            <div class="row mb32 mb-xs-32">
-						<div class="col-sm-5 col-md-4">
-		                    <div class="image-caption cast-shadow mb-xs-32">
-                          <a href="img/ecf.png" data-lightbox="true">
-		                        <img alt="Explorer front" src="img/ecf.png"></a>
-		                    </div>
-						</div>
-		                <div class="col-sm-5 col-md-4">
-		                    <div class="image-caption cast-shadow mb-xs-32">
-                          <a href="img/ecb2.jpg" data-lightbox="true">
-		                        <img alt="Explorer back" src="img/ecb2.jpg"></a>
-		                    </div>
-						</div>
+    .accordion-text h4 {
+      font-family: 'Besley', serif;
+      font-size: 14px;
+      font-weight: 200;
+      color: #0232A1;
+      margin-bottom: 12px;
+      margin-top: 24px;
+    }
 
-		                </div>
+    .accordion-text h4:first-child {
+      margin-top: 0;
+    }
 
-					</div>
-							<p class="lead">Explorer cards allow you to earn points by completing tasks like geocaching, experiential tasks (eating scary/abnormal food), attending campus rec events, and attending in-game events. These cards are targeted at people who enjoy experiencing new things, but might not know how to find some of the great things Malibu and LA have to offer.</p>
-						<h4>Fabricators</h4>
+    .accordion-text a {
+      color: #0232A1;
+      text-decoration: underline;
+      transition: color 0.3s ease;
+    }
 
-		        <div class="container">
-		            <div class="row mb32 mb-xs-32">
-						<div class="col-sm-5 col-md-4">
-		                    <div class="image-caption cast-shadow mb-xs-32">
-                          <a href="img/fcf.png" data-lightbox="true">
-		                        <img alt="Fabricator front" src="img/fcf.png"></a>
-		                    </div>
-						</div>
-		                <div class="col-sm-5 col-md-4">
-		                    <div class="image-caption cast-shadow mb-xs-32">
-                          <a href="img/fcb2.jpg" data-lightbox="true">
-		                        <img alt="Fabricator back" src="img/fcb2.jpg"></a>
-		                    </div>
-						</div>
+    .accordion-text a:hover {
+      color: #4169E1;
+    }
 
-		                </div>
+    /* Card grid layout */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
 
-					</div>
-							<p class="lead">Fabricator cards involve puzzles, decoding, and creating. These are for inventive people who like making, thinking, and learning new skills.</p>
+    .card-grid .accordion-image-item {
+      margin-bottom: 0;
+    }
 
+    /* Card type item layout (similar to room-item) */
+    .cards-layout {
+      flex-direction: column;
+      padding: 0;
+    }
 
-				</div>
+    .card-type-item {
+      display: flex;
+      gap: 24px;
+      padding: 24px;
+      border-bottom: 1px solid #0232A1;
+    }
 
-		                <div class="col-md-offset-2 col-sm-10 col-sm-offset-1 col-md-7">
-                      <h3>Branding</h3>
-							</div><div class="col-md-offset-2 col-sm-10 col-sm-offset-1 col-md-8">
-								<h4 class="mb8 mb-xs-16">Logo</h4>
-                <a href="img/logosm.jpg" data-lightbox="true">
-		                        <img alt="Article Image" class="mb8 mb-xs-16" src="img/logosm.jpg"></a>
-                            <p class="lead"> Design style: Since our game was spy themed, we wanted to create an element of intrigue and mystique in our design. We looked at one of the most famous spies, James Bond and the 50’s time period. We combined late modern era design and the popular trend of flat style.</p>
-		                   </div><div class="col-md-offset-2 col-sm-10 col-sm-offset-1 col-md-8">
-         								<h4 class="mb8 mb-xs-16">Wordmark</h4>
-                          <a href="img/logotype.jpg" data-lightbox="true">
-         		                        <img alt="Article Image" class="mb8 mb-xs-16" src="img/logotype.jpg"></a>
-                                     <p class="lead"> The logotype is created in the same way as the logo. The only change is that the descender is one unit longer than the regular logo to create enough space for each character. Proportions are now 2 units by 5 units. Space between each character is ½ of a unit. </p>
-         		                   </div>
+    .card-type-item:last-child {
+      border-bottom: none;
+    }
 
-                       <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-								            <h4 class="mb8 mb-xs-16">Visual Identity Guide: Do</h4>
-                            <a href="img/logogrid.jpg" data-lightbox="true">
-		                        <img class="mb8 mb-xs-16" src="img/logogrid.jpg" alt="Article Image"></a>
-                            <p class="lead"> The logo was fun because it was simple enough to do anything we wanted with it. It looks a bit like a little man, but we could also create custom lettering out of it. The logo is made with a square grid. Each piece of the logo is identical with the proportions of 4 units by 2 units.</p>
+    .card-type-images {
+      flex: 0 0 60%;
+    }
 
+    .card-type-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
 
-		                    </div>
+    .card-type-text h3 {
+      font-family: 'Besley', serif;
+      font-size: 14px;
+      font-weight: 200;
+      color: #0232A1;
+      margin: 0 0 12px 0;
+    }
 
-                       <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-                         <h4>Visual Identity Guide: Don't</h4>
-                         <div class="container">
-                             <div class="row mb32 mb-xs-32">
-                                 <div class="col-sm-5 col-md-4">
-                                     <div class="image-caption cast-shadow mb-xs-32">
-                                       <a href="img/dont1.jpg" data-lightbox="true">
-                                         <img src="img/dont1.jpg" alt="Captioned Image"></a>
+    .card-type-text p {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.8;
+      margin: 0;
+    }
 
-                                     </div>
-                                     <p>Don't change proportions of the rectangles</p>
-                                 </div><div class="col-sm-5 col-md-4">
-                                     <div class="image-caption cast-shadow mb-xs-32">
-                                       <a href="img/dont2.jpg" data-lightbox="true">
-                                         <img src="img/dont2.jpg" alt="Captioned Image"></a>
+    /* Bloopers text columns */
+    .bloopers-text-columns {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+    }
 
-                                     </div>
-                                     <p> Don't have different proportions of the rectangles</p>
-                                 </div>
-                             </div>
-                         </div><div class="container">
-                             <div class="row mb32 mb-xs-32">
-                                 <div class="col-sm-5 col-md-4">
-                                     <div class="image-caption cast-shadow mb-xs-32">
-                                       <a href="img/dont3.jpg" data-lightbox="true">
-                                         <img src="img/dont3.jpg" alt="Captioned Image"></a>
-                                     </div>
-                                     <p>Don't change space between each of the rectangles</p>
-                                 </div><div class="col-sm-5 col-md-4">
-                                     <div class="image-caption cast-shadow mb-xs-32">
-                                       <a href="img/dont4.jpg" data-lightbox="true">
-                                         <img src="img/dont4.jpg" alt="Captioned Image"></a>
+    .bloopers-text-columns h3 {
+      font-family: 'Besley', serif;
+      font-size: 14px;
+      font-weight: 200;
+      color: #0232A1;
+      margin: 0 0 12px 0;
+    }
 
-                                     </div>
-                                     <p>Don't have any lines that are not vertical and horizontal</p>
-                                 </div>
-                             </div>
-                         </div>
-           						</div><div class="col-md-offset-2 col-sm-10 col-sm-offset-1 col-md-8">
-                       <h4 class="mb8 mb-xs-16">Colors</h4>
-                        <a href="img/colors.png" data-lightbox="true">
-                                   <img alt="Article Image" class="mb8 mb-xs-16" src="img/colors.png"></a>
-                                    <p class="lead"> Black, white, and red are the main colors for the logo. The rest of the art is done in monochromatic color schemes that fit the usecase</p>
-                              </div><div class="col-md-offset-2 col-sm-10 col-sm-offset-1 col-md-7">
-                                 <h3>Marketing Use</h3>
-                                 <div class="container">
-                                     <div class="row mb32 mb-xs-32">
-                                         <div class="col-sm-5 col-md-4">
-                                             <div class="image-caption cast-shadow mb-xs-32">
-                                               <a href="img/poster1.jpg" data-lightbox="true">
-                                                 <img src="img/poster1.jpg" alt="Captioned Image"></a>
+    .bloopers-text-columns p {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.8;
+      margin: 0;
+    }
 
-                                             </div>
+    /* Branding layout */
+    .branding-layout {
+      flex-direction: column;
+      padding: 0;
+    }
 
-                                         </div><div class="col-sm-5 col-md-4">
-                                             <div class="image-caption cast-shadow mb-xs-32">
-                                               <a href="img/poster3.jpg" data-lightbox="true">
-                                                 <img src="img/poster3.jpg" alt="Captioned Image"></a>
-                                             </div>
-                                         </div>
-                                     </div>
-                                 </div><div class="container">
-                                     <div class="row mb32 mb-xs-32">
-                                         <div class="col-sm-5 col-md-4">
-                                             <div class="image-caption cast-shadow mb-xs-32">
-                                               <a href="img/rock.png" data-lightbox="true">
-                                                 <img src="img/rock.png" alt="Captioned Image"></a>
-                                             </div>
-                                          </div><div class="col-sm-5 col-md-4">
-                                             <div class="image-caption cast-shadow mb-xs-32">
-                                               <a href="img/puzzle.png" data-lightbox="true">
-                                                 <img alt="Captioned Image" src="img/puzzle.png"></a>
+    .branding-row {
+      display: flex;
+      gap: 24px;
+      padding: 24px;
+      border-bottom: 1px solid #0232A1;
+      align-items: flex-start;
+    }
 
-                                             </div>
-                                         </div>
-                                     </div>
-                                 </div><p class="lead">The most successful aspect of Imposter was the intrigue we built into our marketing. We knew from the start that we needed to find a way to get people to register other than adding our posters to the sea of promotional materials lining the walls of the Pepperdine Plaza. We also wanted to find a way for it to fit the theme, which helped us come up with our marketing materials. We came up with ideas like painting the rock with reflective paint and having people take a picture with the flash to find the secret phone number, business cards with a puzzle to solve, fortune cookies with custom riddles inside, a few posters in specific buildings, and quite a few more that we did not end up using. Within the first day we got five calls and by the end of the first week we had almost 50 registered.</p>
-		                </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-            <h3>Contributors</h3>
-            <a href="img/team.jpg" data-lightbox="true">
-            <img alt="Imposter" class="8 mb-xs-16" src="img/team.jpg"></a>
-            <p class="lead">Although I was one of the leads on Imposter, (developing the concept, details, and art), there was an entire team of amazing people who worked with me at the Genesis Lab. Landon Phillips, Director of the Genesis Lab, my mentor, logo designer, and constant sounding board. Chanse Alexander, artist extraordinaire, Esther Wong, our computer science expert. Genesis Trejo, the pre-med student and temporary lawyer(read about that in the bloopers), Isabel Hao and Russell Wijaya who lost many nights of sleep helping me finish details on projects with fast approaching deadlines. Thank you to Christine Deng, the other lead on the project, Anna Speth Co-Director of the Genesis Lab, and the rest of the team: Alex Ksajikian, Treet Allison, and Jane Yi, who did everything else in the Genesis Lab while we obsessed over this game!</p>
-          </div><div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-  <h3>Bloopers</h3>
-  <a href="img/404.jpg" data-lightbox="true">
-  <img alt="Bloopers" class="8 mb-xs-16" src="img/404.jpg"></a>
-  <p class="lead">During Imposter, there were a few bumps in the road. The first problem we ran into was when we got a nice visit from Public Safety. They told us that in order to have these materials distributed throughout campus, we needed to have official documentation saying that it was affiliated with an on campus organization or program. They were justified in their concern, if someone made their way on campus and was asking students in an auspicious voicemail to leave their name, phone number, email, mailbox number, and mother’s maiden name (not actually), then that would be a potential threat to the community. However, our fear was that if we used logos from the Genesis Lab, library, or the university then we would be seen as just another event that might alienate the people we were trying to engage. By the time they shutdown this first part of our operation, we had plenty of people to start the pilot.</p>
+    .branding-row:last-child {
+      border-bottom: none;
+    }
 
-<p class="lead">The second problem we ran into was Google thinking we were sending out spam from our number. One day we were sending out messages to our registered “agents” by copying and pasting the exact same content, using two separate computers, logged into the same account, and sending. We had about thirty of the fifty texts sent when our number was shut off. We couldn’t log in, check messages, or finish sending out the invite to a weekend event. A few days later, Genesis Trejo, a pre-med student and our temporary lawyer, found a loophole in the Google Voice terms and services and got our number reconnected. I will never know how she found the number to Google's legal department, but I appreciated it all the same.</p>
-</div>
-		            </div>
+    .branding-image {
+      flex: 0 0 60%;
+    }
 
-		        </div></section>
+    .branding-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
 
+    .branding-text h3 {
+      font-family: 'Besley', serif;
+      font-size: 14px;
+      font-weight: 200;
+      color: #0232A1;
+      margin: 0 0 12px 0;
+    }
 
-            <footer class="footer-2 bg-dark text-center-xs">
-      				<div class="container">
-      					<div class="row">
-      						<div class="col-sm-4">
-      							<a href="../../index.html"><img class="image-xs fade-half" alt="Pic" src="img/ladyggs.png"></a>
-      						</div>
+    .branding-text h4 {
+      font-family: 'Besley', serif;
+      font-size: 14px;
+      font-weight: 200;
+      color: #0232A1;
+      margin: 0 0 12px 0;
+    }
 
+    .branding-text p {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.8;
+      margin: 0;
+    }
 
+    .branding-full-width {
+      padding: 24px;
+      border-bottom: 1px solid #0232A1;
+    }
 
-      						<div class="col-sm-3 text-center"><span class="fade-half"> © Copyright 2020 Grace Kruse – All rights reserved</span></div>
-      						<div class="col-sm-5 text-right text-center-xs col-md-5"> grace.m.kruse@gmaill.com</div>
-      						<div class="col-sm-5 text-right text-center-xs col-md-5"> +1.719.360.6290</div>
+    .branding-full-width h3 {
+      font-family: 'Besley', serif;
+      font-size: 15px;
+      font-weight: 200;
+      color: #0232A1;
+      margin: 0 0 16px 0;
+    }
 
-      				  </div>
-      				</div>
-      			</footer>
-	</div>
+    /* Don't grid expanded - 2 per row, fills width */
+    .dont-grid-expanded {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
 
+    .dont-item-expanded {
+      display: flex;
+      flex-direction: column;
+    }
 
-	<script src="../../js/jquery.min.js"></script>
-    <script src="../../js/bootstrap.min.js"></script>
-    <script src="../../js/lightbox.min.js"></script>
-    <script src="../../js/parallax.js"></script>
-    <script src="../../js/scripts.js"></script>
-    </body>
-</html>
+    .dont-item-expanded img {
+      width: 100%;
+      height: auto;
+      display: block;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 2px;
+      margin-bottom: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .dont-item-expanded img:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 12px 24px rgba(2, 50, 161, 0.15);
+    }
+
+    .dont-item-expanded p {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* Do/Don't grid (old - kept for compatibility) */
+    .dont-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .dont-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dont-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 2px;
+      margin-bottom: 8px;
+    }
+
+    .dont-item img:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 12px 24px rgba(2, 50, 161, 0.15);
+    }
+
+    .dont-item p {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* Full width content */
+    .full-width-content {
+      flex: 1 1 100%;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 1024px) and (min-width: 769px) {
+      .accordion-container {
+        width: 85%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .accordion-container {
+        width: 100%;
+        margin-top: 0;
+      }
+
+      .accordion-header {
+        padding: 16px 20px;
+      }
+
+      .accordion-header h2 {
+        font-size: 15px;
+      }
+
+      .accordion-inner {
+        padding: 24px 20px 24px 20px;
+        flex-direction: column;
+      }
+
+      .accordion-images,
+      .accordion-text {
+        flex: 1 1 100%;
+        min-width: 100%;
+      }
+
+      .accordion-text p {
+        font-size: 13px;
+      }
+
+      .card-grid,
+      .dont-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* Card type layout mobile */
+      .card-type-item {
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .card-type-images {
+        flex: 1 1 100%;
+      }
+
+      .card-type-text h3 {
+        font-size: 15px;
+        margin-top: 12px;
+      }
+
+      .card-type-text p {
+        font-size: 13px;
+      }
+
+      /* Bloopers text columns mobile */
+      .bloopers-text-columns {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      /* Branding layout mobile */
+      .branding-row {
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .branding-image {
+        flex: 1 1 100%;
+      }
+
+      .branding-text h3,
+      .branding-text h4 {
+        font-size: 15px;
+        margin-top: 12px;
+      }
+
+      .branding-text p {
+        font-size: 13px;
+      }
+
+      .branding-full-width {
+        padding: 20px;
+      }
+
+      .dont-grid-expanded {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .accordion-header {
+        padding: 14px 16px;
+      }
+
+      .accordion-header h2 {
+        font-size: 14px;
+      }
+
+      .accordion-inner {
+        padding: 20px 16px 20px 16px;
+      }
+
+      .accordion-text p {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div><a href="../../index25.html">← back to overview</a></div>
+      <div><a href="https://www.linkedin.com/in/gracekruse" target="_blank" rel="noopener noreferrer">Contact</a></div>
+    </div>
+  </header>
+
+  <div class="title-block">
+    <div class="title-content">
+      <div class="title-left">
+        <h1>Imposter</h1>
+        <div class="subtitle">Genesis Lab Game | Spring 2019</div>
+        <div class="subtitle2 roles">
+          <span class="role-tag">Game Design</span>
+          <span class="role-tag">Branding</span>
+          <span class="role-tag">Project Lead</span>
+        </div>
+      </div>
+      <div class="title-right">
+        <p>Imposter is a spy themed card game initially designed at Pepperdine University to help students who feel lonely on campus find activities that will introduce them to people and places they might not know about otherwise. Although people at Pepperdine look like they have every minute of their day together, everyone is in the same boat trying to figure out this new experience called college. Imposter stems from looking at people and seeing someone they are not.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-container">
+    <!-- Section 1: How to Play (Open by default) -->
+    <div class="accordion-section active">
+      <div class="accordion-header">
+        <h2>How to Play</h2>
+        <span class="accordion-icon">+</span>
+      </div>
+      <div class="accordion-content">
+        <div class="accordion-inner">
+          <div class="accordion-images">
+            <div class="accordion-image-item">
+              <img src="img/fbackground.png" alt="Imposter game background">
+              <div class="accordion-image-caption">Imposter card game concept</div>
+            </div>
+            <div class="accordion-image-item">
+              <img src="img/instructions.jpg" alt="Game instructions">
+              <div class="accordion-image-caption">How to play instructions</div>
+            </div>
+          </div>
+          <div class="accordion-text">
+            <p>In order to be inducted into The Agency, people call a phone number hidden on campus to receive a mission packet. Inside the pack there are a variety of cards with challenges, varying in difficulty as people become more involved with the game. Players accrue points by completing the tasks on the card and upload the evidence of their accomplishments to a leaderboard. The top five players get to participate in an experience that caters to their interests. We wanted to shy away from monetary prizes because the end goal of the game was not to get things, but to enjoy and experience everything that Pepperdine, Malibu, and LA have to offer.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Starter Pack & Cards -->
+    <div class="accordion-section">
+      <div class="accordion-header">
+        <h2>Starter Pack & Cards</h2>
+        <span class="accordion-icon">+</span>
+      </div>
+      <div class="accordion-content">
+        <div class="accordion-inner cards-layout">
+          <!-- Initiation -->
+          <div class="card-type-item">
+            <div class="card-type-images">
+              <div class="card-grid">
+                <div class="accordion-image-item">
+                  <img src="img/initiation.png" alt="Initiation card pack">
+                  <div class="accordion-image-caption">Initiation packet</div>
+                </div>
+                <div class="accordion-image-item">
+                  <img src="img/initiation1.jpg" alt="Initiation cards">
+                  <div class="accordion-image-caption">Starter cards</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-type-text">
+              <h3>Initiation</h3>
+              <p>Inside the initiation packet, there are nine cards plus the initiation card. These packets are hidden on campus and players are given a clue to find it.</p>
+            </div>
+          </div>
+
+          <!-- Assassins -->
+          <div class="card-type-item">
+            <div class="card-type-images">
+              <div class="card-grid">
+                <div class="accordion-image-item">
+                  <img src="img/acf.png" alt="Assassin card front">
+                  <div class="accordion-image-caption">Assassin card front</div>
+                </div>
+                <div class="accordion-image-item">
+                  <img src="img/acb.jpg" alt="Assassin card back">
+                  <div class="accordion-image-caption">Assassin card back</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-type-text">
+              <h3>Assassins</h3>
+              <p>As the name implies, assassin cards allow you to eliminate other players. They do not permanently remove the other player from the game, but they do suspend their points for a week, which takes them out of the running for the weekly prize. However, the points earned during the week they were suspended are added to the next week and can be turned into a strategy.</p>
+            </div>
+          </div>
+
+          <!-- Explorers -->
+          <div class="card-type-item">
+            <div class="card-type-images">
+              <div class="card-grid">
+                <div class="accordion-image-item">
+                  <img src="img/ecf.png" alt="Explorer card front">
+                  <div class="accordion-image-caption">Explorer card front</div>
+                </div>
+                <div class="accordion-image-item">
+                  <img src="img/ecb2.jpg" alt="Explorer card back">
+                  <div class="accordion-image-caption">Explorer card back</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-type-text">
+              <h3>Explorers</h3>
+              <p>Explorer cards allow you to earn points by completing tasks like geocaching, experiential tasks (eating scary/abnormal food), attending campus rec events, and attending in-game events. These cards are targeted at people who enjoy experiencing new things, but might not know how to find some of the great things Malibu and LA have to offer.</p>
+            </div>
+          </div>
+
+          <!-- Fabricators -->
+          <div class="card-type-item">
+            <div class="card-type-images">
+              <div class="card-grid">
+                <div class="accordion-image-item">
+                  <img src="img/fcf.png" alt="Fabricator card front">
+                  <div class="accordion-image-caption">Fabricator card front</div>
+                </div>
+                <div class="accordion-image-item">
+                  <img src="img/fcb2.jpg" alt="Fabricator card back">
+                  <div class="accordion-image-caption">Fabricator card back</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-type-text">
+              <h3>Fabricators</h3>
+              <p>Fabricator cards involve puzzles, decoding, and creating. These are for inventive people who like making, thinking, and learning new skills.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Branding -->
+    <div class="accordion-section">
+      <div class="accordion-header">
+        <h2>Branding</h2>
+        <span class="accordion-icon">+</span>
+      </div>
+      <div class="accordion-content">
+        <div class="accordion-inner branding-layout">
+          <!-- Logo -->
+          <div class="branding-row">
+            <div class="branding-image">
+              <div class="accordion-image-item">
+                <img src="img/logosm.jpg" alt="Imposter logo">
+                <div class="accordion-image-caption">Imposter logo design</div>
+              </div>
+            </div>
+            <div class="branding-text">
+              <h3>Design Style</h3>
+              <p>Since our game was spy themed, we wanted to create an element of intrigue and mystique in our design. We looked at one of the most famous spies, James Bond and the 50's time period. We combined late modern era design and the popular trend of flat style.</p>
+            </div>
+          </div>
+
+          <!-- Logo Construction Grid -->
+          <div class="branding-row">
+            <div class="branding-image">
+              <div class="accordion-image-item">
+                <img src="img/logogrid.jpg" alt="Logo construction grid">
+                <div class="accordion-image-caption">Logo grid system - Do</div>
+              </div>
+            </div>
+            <div class="branding-text">
+              <h4>Logo Construction</h4>
+              <p>The logo was fun because it was simple enough to do anything we wanted with it. It looks a bit like a little man, but we could also create custom lettering out of it. The logo is made with a square grid. Each piece of the logo is identical with the proportions of 4 units by 2 units.</p>
+            </div>
+          </div>
+
+          <!-- Wordmark -->
+          <div class="branding-row">
+            <div class="branding-image">
+              <div class="accordion-image-item">
+                <img src="img/logotype.jpg" alt="Logo wordmark">
+                <div class="accordion-image-caption">Wordmark design</div>
+              </div>
+            </div>
+            <div class="branding-text">
+              <h4>Wordmark</h4>
+              <p>The logotype is created in the same way as the logo. The only change is that the descender is one unit longer than the regular logo to create enough space for each character. Proportions are now 2 units by 5 units. Space between each character is ½ of a unit.</p>
+            </div>
+          </div>
+
+          <!-- Don't Guide - Full Width -->
+          <div class="branding-full-width">
+            <h3>Visual Identity Guide: Don't</h3>
+            <div class="dont-grid-expanded">
+              <div class="dont-item-expanded">
+                <img src="img/dont1.jpg" alt="Don't change proportions">
+                <p>Don't change proportions of the rectangles</p>
+              </div>
+              <div class="dont-item-expanded">
+                <img src="img/dont2.jpg" alt="Don't use different proportions">
+                <p>Don't have different proportions of the rectangles</p>
+              </div>
+              <div class="dont-item-expanded">
+                <img src="img/dont3.jpg" alt="Don't change spacing">
+                <p>Don't change space between each of the rectangles</p>
+              </div>
+              <div class="dont-item-expanded">
+                <img src="img/dont4.jpg" alt="Don't use diagonal lines">
+                <p>Don't have any lines that are not vertical and horizontal</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Colors -->
+          <div class="branding-row">
+            <div class="branding-image">
+              <div class="accordion-image-item">
+                <img src="img/colors.png" alt="Color palette">
+                <div class="accordion-image-caption">Brand colors</div>
+              </div>
+            </div>
+            <div class="branding-text">
+              <h4>Colors</h4>
+              <p>Black, white, and red are the main colors for the logo. The rest of the art is done in monochromatic color schemes that fit the usecase.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Marketing Use -->
+    <div class="accordion-section">
+      <div class="accordion-header">
+        <h2>Marketing Use</h2>
+        <span class="accordion-icon">+</span>
+      </div>
+      <div class="accordion-content">
+        <div class="accordion-inner">
+          <div class="accordion-images">
+            <div class="card-grid">
+              <div class="accordion-image-item">
+                <img src="img/poster1.jpg" alt="Marketing poster 1">
+                <div class="accordion-image-caption">Promotional poster</div>
+              </div>
+              <div class="accordion-image-item">
+                <img src="img/poster3.jpg" alt="Marketing poster 2">
+                <div class="accordion-image-caption">Marketing materials</div>
+              </div>
+              <div class="accordion-image-item">
+                <img src="img/rock.png" alt="Rock painting with reflective paint">
+                <div class="accordion-image-caption">The rock with reflective paint reveal</div>
+              </div>
+              <div class="accordion-image-item">
+                <img src="img/puzzle.png" alt="Puzzle business card">
+                <div class="accordion-image-caption">Business card puzzle</div>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-text">
+            <h3>Creative Marketing</h3>
+            <p>The most successful aspect of Imposter was the intrigue we built into our marketing. We knew from the start that we needed to find a way to get people to register other than adding our posters to the sea of promotional materials lining the walls of the Pepperdine Plaza. We also wanted to find a way for it to fit the theme, which helped us come up with our marketing materials.</p>
+
+            <h4>Innovative Approaches</h4>
+            <p>We came up with ideas like painting the rock with reflective paint and having people take a picture with the flash to find the secret phone number, business cards with a puzzle to solve, fortune cookies with custom riddles inside, a few posters in specific buildings, and quite a few more that we did not end up using.</p>
+
+            <h4>Results</h4>
+            <p>Within the first day we got five calls and by the end of the first week we had almost 50 registered.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Contributors -->
+    <div class="accordion-section">
+      <div class="accordion-header">
+        <h2>Contributors</h2>
+        <span class="accordion-icon">+</span>
+      </div>
+      <div class="accordion-content">
+        <div class="accordion-inner">
+          <div class="accordion-images">
+            <div class="accordion-image-item">
+              <img src="img/team.jpg" alt="Imposter team">
+              <div class="accordion-image-caption">The Imposter team</div>
+            </div>
+          </div>
+          <div class="accordion-text">
+            <p>Although I was one of the leads on Imposter, (developing the concept, details, and art), there was an entire team of amazing people who worked with me at the Genesis Lab.</p>
+
+            <p>Landon Phillips, Director of the Genesis Lab, my mentor, logo designer, and constant sounding board. Chanse Alexander, artist extraordinaire, Esther Wong, our computer science expert. Genesis Trejo, the pre-med student and temporary lawyer (read about that in the bloopers), Isabel Hao and Russell Wijaya who lost many nights of sleep helping me finish details on projects with fast approaching deadlines.</p>
+
+            <p>Thank you to Christine Deng, the other lead on the project, Anna Speth Co-Director of the Genesis Lab, and the rest of the team: Alex Ksajikian, Treet Allison, and Jane Yi, who did everything else in the Genesis Lab while we obsessed over this game!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: Bloopers -->
+    <div class="accordion-section">
+      <div class="accordion-header">
+        <h2>Bloopers</h2>
+        <span class="accordion-icon">+</span>
+      </div>
+      <div class="accordion-content">
+        <div class="accordion-inner">
+          <div class="full-width-content">
+            <div class="accordion-image-item">
+              <img src="img/404.jpg" alt="Bloopers and challenges">
+              <div class="accordion-image-caption">Challenges we faced</div>
+            </div>
+
+            <div class="bloopers-text-columns">
+              <div>
+                <h3>Public Safety Visit</h3>
+                <p>During Imposter, there were a few bumps in the road. The first problem we ran into was when we got a nice visit from Public Safety. They told us that in order to have these materials distributed throughout campus, we needed to have official documentation saying that it was affiliated with an on campus organization or program. They were justified in their concern, if someone made their way on campus and was asking students in an auspicious voicemail to leave their name, phone number, email, mailbox number, and mother's maiden name (not actually), then that would be a potential threat to the community. However, our fear was that if we used logos from the Genesis Lab, library, or the university then we would be seen as just another event that might alienate the people we were trying to engage. By the time they shutdown this first part of our operation, we had plenty of people to start the pilot.</p>
+              </div>
+              <div>
+                <h3>Google Voice Shutdown</h3>
+                <p>The second problem we ran into was Google thinking we were sending out spam from our number. One day we were sending out messages to our registered "agents" by copying and pasting the exact same content, using two separate computers, logged into the same account, and sending. We had about thirty of the fifty texts sent when our number was shut off. We couldn't log in, check messages, or finish sending out the invite to a weekend event. A few days later, Genesis Trejo, a pre-med student and our temporary lawyer, found a loophole in the Google Voice terms and services and got our number reconnected. I will never know how she found the number to Google's legal department, but I appreciated it all the same.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <img src="../../projects/ladyg/img/bluelogo.png" alt="Small Logo">
+    Grace Kruse 2025
+  </footer>
+
+  <!-- Image Modal -->
+  <div class="image-modal" id="imageModal">
+    <img src="" alt="Expanded view">
+  </div>
+
+  <script src="../../pagejs.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Update title block height for proper content spacing
+      function updateTitleBlockHeight() {
+        const titleBlock = document.querySelector('.title-block');
+        if (titleBlock && window.innerWidth > 768) {
+          const height = titleBlock.offsetHeight;
+          document.documentElement.style.setProperty('--title-block-height', height + 'px');
+        }
+      }
+
+      // Run on load and resize
+      updateTitleBlockHeight();
+      window.addEventListener('resize', updateTitleBlockHeight);
+
+      // Accordion functionality
+      const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+      accordionHeaders.forEach(header => {
+        header.addEventListener('click', function() {
+          const section = this.parentElement;
+          const wasActive = section.classList.contains('active');
+
+          // Toggle current section
+          section.classList.toggle('active');
+
+          // Scroll to top of opened section
+          if (!wasActive) {
+            // Wait for animation to start, then scroll
+            setTimeout(() => {
+              // Get the title block height to account for fixed header
+              const titleBlock = document.querySelector('.title-block');
+              const titleBlockHeight = titleBlock ? titleBlock.offsetHeight : 200;
+              const headerOffset = titleBlockHeight + 54; // Title block height + buffer
+
+              const sectionTop = section.getBoundingClientRect().top;
+              const offsetPosition = sectionTop + window.pageYOffset - headerOffset;
+
+              window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+              });
+            }, 100);
+          }
+        });
+      });
+
+      // Image modal functionality
+      const modal = document.getElementById('imageModal');
+      const modalImg = modal.querySelector('img');
+      const images = document.querySelectorAll('.accordion-image-item img, .dont-item img, .dont-item-expanded img');
+      let currentImageIndex = -1;
+
+      function showImage(index) {
+        if (index >= 0 && index < images.length) {
+          currentImageIndex = index;
+          modal.classList.add('active');
+          modalImg.src = images[index].src;
+          modalImg.alt = images[index].alt;
+        }
+      }
+
+      images.forEach((img, index) => {
+        img.addEventListener('click', function(e) {
+          e.stopPropagation(); // Prevent accordion toggle when clicking image
+          showImage(index);
+        });
+      });
+
+      modal.addEventListener('click', function() {
+        modal.classList.remove('active');
+        currentImageIndex = -1;
+      });
+
+      // Arrow key navigation and escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          modal.classList.remove('active');
+          currentImageIndex = -1;
+        } else if (modal.classList.contains('active')) {
+          if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            const nextIndex = (currentImageIndex + 1) % images.length;
+            showImage(nextIndex);
+          } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            const prevIndex = (currentImageIndex - 1 + images.length) % images.length;
+            showImage(prevIndex);
+          }
+        }
+      });
+
+      // Subtle parallax effect on images (desktop only)
+      if (window.innerWidth > 768) {
+        let ticking = false;
+
+        function updateParallax() {
+          const imageItems = document.querySelectorAll('.accordion-section.active .accordion-image-item');
+
+          imageItems.forEach((item, index) => {
+            const img = item.querySelector('img');
+            if (!img) return;
+
+            const rect = item.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+
+            // Only apply parallax if image is in viewport
+            if (rect.top < windowHeight && rect.bottom > 0) {
+              // Calculate how far through the viewport the image is (0 to 1)
+              const scrollProgress = (windowHeight - rect.top) / (windowHeight + rect.height);
+
+              // Subtle movement - max 20px, different speed for each image
+              const parallaxSpeed = 0.15 + (index * 0.05); // Varying speeds create depth
+              const translateY = (scrollProgress - 0.5) * 40 * parallaxSpeed;
+
+              // Apply transform (only if not hovering - hover has its own transform)
+              if (!img.matches(':hover')) {
+                img.style.transform = `translateY(${translateY}px)`;
+              }
+
+              item.classList.add('parallax-active');
+            }
+          });
+
+          ticking = false;
+        }
+
+        function requestParallaxUpdate() {
+          if (!ticking) {
+            window.requestAnimationFrame(updateParallax);
+            ticking = true;
+          }
+        }
+
+        // Update parallax on scroll
+        window.addEventListener('scroll', requestParallaxUpdate);
+
+        // Update parallax when accordion opens
+        accordionHeaders.forEach(header => {
+          header.addEventListener('click', function() {
+            setTimeout(updateParallax, 450); // After accordion animation
+          });
+        });
+
+        // Initial parallax update
+        updateParallax();
+      }
+    }); // End DOMContentLoaded
+  </script>
+</body></html>

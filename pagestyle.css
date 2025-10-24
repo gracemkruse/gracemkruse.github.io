@@ -9,7 +9,17 @@ body {
       font-family: 'Besley', serif;
       font-size: 24px;
       font-weight: 400;
-      margin: 0 0 0 0;
+      margin: 16 0 0 0;
+      padding: 0px 0 0 0;
+      grid-column: 1 / -1; /* Span across all columns */
+      border-bottom: 1px solid #0232A1;
+    }
+
+    h3 {
+      font-family: 'Besley', serif;
+      font-size: 24px;
+      font-weight: 400;
+      margin: 16 0 0 0;
       padding: 0px 0 0 0;
       grid-column: 1 / -1; /* Span across all columns */
     }
@@ -19,7 +29,7 @@ body {
       font-size: 14px;
       font-weight: 400;
       vertical-align: top;
-      margin: 0 8px 0 0px;
+      margin: 0 8px 12px 0px;
     }
 
    header {
@@ -78,7 +88,7 @@ body {
       color:#0232A1;
       margin: 0 10% 4px 10%;
       padding-bottom: 8px;
-      border-bottom: 1px solid #0232A1;
+      border-bottom: 2px solid #0232A1;
     }
 
    
@@ -110,13 +120,18 @@ body {
       gap: 8px 32px;
       align-items: start;
       margin: 0 10%;
-      padding: 275px 0 0 0;
+      padding: 240px 0 0 0;
   
     }
-    .photo-column { 
+
+    .section {
+      background-color:aqua;
+    }
+      .photo-column { 
       grid-column: span 6;
       margin: 0; 
     }
+    
     .photo-column img { 
       width: 100%; 
       height: auto; 
@@ -212,7 +227,7 @@ body {
      
       .main {
         display: flex;
-        flex-direction: column; /* Stack children vertically */
+        flex-direction: column; 
         padding: 0px 5% 0 5%;
         margin: 0 0;
       }

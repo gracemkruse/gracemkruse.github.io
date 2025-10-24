@@ -1,58 +1,525 @@
-<html lang="en"><head><script type="text/javascript" src="/___vscode_livepreview_injected_script"></script>
+<html lang="en"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project Template – Mobile Preview</title>
+  <title>Helix Branding</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-  <link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..900&amp;family=Roboto+Flex:opsz,wght@8..144,100..1000&amp;family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&amp;family=Roboto:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet">
-  <link href="pagestyle.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..900&family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../projects/ladyg/img/bsqladyg.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../projects/ladyg/img/bsqladyg.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../projects/ladyg/img/bsqladyg.png">
+  <link href="../shared-styles.css" rel="stylesheet">
+  <style>
+    /* Override role-tag to be uppercase and smaller */
+    .role-tag {
+      text-transform: uppercase;
+      font-size: 9px;
+    }
+
+    /* Fun animations */
+    @keyframes shiftUp {
+      0% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(-4px);
+      }
+    }
+
+    @keyframes spinOpen {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(405deg);
+      }
+    }
+
+    @keyframes spinClose {
+      0% {
+        transform: rotate(405deg);
+      }
+      100% {
+        transform: rotate(0deg);
+      }
+    }
+
+    /* Accordion-specific styles */
+    .accordion-container {
+      width: 75%;
+      margin: 0 auto;
+      margin-top: max(230px, calc(var(--title-block-height, 200px) + 54px));
+      margin-bottom: 40px;
+    }
+
+    .accordion-section {
+      border-bottom: 1px solid #0232A1;
+      position: relative;
+    }
+
+    .accordion-section:first-child {
+      border-top: 1px solid #0232A1;
+    }
+
+    .accordion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      user-select: none;
+    }
+
+    .accordion-header:hover {
+      background-color: rgba(2, 50, 161, 0.02);
+      transform: translateY(-4px);
+    }
+
+    .accordion-section.active .accordion-header {
+      background-color: #0232A1;
+    }
+
+    .accordion-section.active .accordion-header:hover {
+      background-color: #021f7a;
+    }
+
+    .accordion-header h2 {
+      font-family: 'Besley', serif;
+      font-size: 16px;
+      font-weight: 200;
+      color: #0232A1;
+      margin: 0;
+      transition: color 0.3s ease;
+    }
+
+    .accordion-section.active .accordion-header h2 {
+      color: white;
+    }
+
+    .accordion-icon {
+      font-family: 'Inter', sans-serif;
+      font-size: 20px;
+      color: #0232A1;
+      font-weight: 300;
+      transition: transform 0.3s ease, color 0.3s ease;
+      line-height: 1;
+    }
+
+    .accordion-section.active .accordion-icon {
+      color: white;
+      animation: spinOpen 0.5s ease-out forwards;
+    }
+
+    .accordion-section:not(.active) .accordion-icon {
+      animation: spinClose 0.5s ease-out forwards;
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .accordion-section.active .accordion-content {
+      max-height: 3000px;
+    }
+
+    .accordion-inner {
+      padding: 32px 24px 32px 24px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .accordion-images {
+      flex: 1 1 60%;
+      min-width: 300px;
+    }
+
+    .accordion-image-item {
+      margin-bottom: 16px;
+    }
+
+    .accordion-image-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .accordion-image-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 2px;
+      will-change: transform;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .accordion-image-item img:hover {
+      transform: translateY(-4px) scale(1.01) !important;
+      box-shadow: 0 12px 24px rgba(2, 50, 161, 0.15);
+    }
+
+    /* Parallax effect - disabled on mobile */
+    @media (min-width: 769px) {
+      .accordion-image-item.parallax-active img {
+        transition: transform 0.1s linear;
+      }
+    }
+
+    .accordion-image-caption {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      color: #0232A1;
+      margin-top: 8px;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    .accordion-text {
+      flex: 1 1 35%;
+      min-width: 250px;
+    }
+
+    .accordion-text p {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.8;
+      margin: 0;
+    }
+
+    .accordion-text a {
+      color: #0232A1;
+      text-decoration: underline;
+      transition: color 0.3s ease;
+    }
+
+    .accordion-text a:hover {
+      color: #4169E1;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 1024px) and (min-width: 769px) {
+      .accordion-container {
+        width: 85%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .accordion-container {
+        width: 100%;
+        margin-top: 0;
+      }
+
+      .accordion-header {
+        padding: 16px 20px;
+      }
+
+      .accordion-header h2 {
+        font-size: 15px;
+      }
+
+      .accordion-inner {
+        padding: 24px 20px 24px 20px;
+        flex-direction: column;
+      }
+
+      .accordion-images,
+      .accordion-text {
+        flex: 1 1 100%;
+        min-width: 100%;
+      }
+
+      .accordion-text p {
+        font-size: 13px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .accordion-header {
+        padding: 14px 16px;
+      }
+
+      .accordion-header h2 {
+        font-size: 14px;
+      }
+
+      .accordion-inner {
+        padding: 20px 16px 20px 16px;
+      }
+
+      .accordion-text p {
+        font-size: 12px;
+      }
+    }
+  </style>
 </head>
-<body style="overflow-x:hidden;">
+<body>
   <header>
-    <div><a href="home3" style="color: white; text-decoration: none;">← back to overview</a></div>
-    <div><a href="mailto:grace.m.kruse@gmail.com" style="color: white; text-decoration: none;">Email Grace</a></div>
-    <div>719.360.6290</div>
+    <div class="header-content">
+      <div><a href="../../index25.html">← back to overview</a></div>
+      <div><a href="https://www.linkedin.com/in/gracekruse" target="_blank" rel="noopener noreferrer">Contact</a></div>
+    </div>
   </header>
+
   <div class="title-block">
-    <h1>Helix Branding</h1>
-    <div class="subtitle">Visual Identity for the Helix | Jul 2021–Dec 2021</div>
-   <!-- <div class="subtitle">Award 1 | Award 2 | Award 3</div>-->
-    <div class="subtitle2">Creative Direction | Digital Design Lead</div>
+    <div class="title-content">
+      <div class="title-left">
+        <h1>Helix Branding</h1>
+        <div class="subtitle">Visual Identity for the Helix | Jul 2021–Dec 2021</div>
+        <div class="subtitle2 roles">
+          <span class="role-tag">Creative Direction</span>
+          <span class="role-tag">Digital Design Lead</span>
+        </div>
+      </div>
+      <div class="title-right">
+        <p>The creative inspiration was the idea of biomimicry since nature is the ultimate problem solver. We wanted to position ourselves as a company that will timelessly solve audacious challenges to support the government. When creating the visual identity guide, I wanted to create something that could be used by designers along with the many non-designers creating content in the space.</p>
+      </div>
+    </div>
   </div>
- 
-    <div class="main">
-        <h2>Inspiration</h2> 
-      <div class="photo-column"><img src="img/inspo.png" alt="Helix lobby entrance"></div>
-      <div class="text-column"><p>The creative inspiration was the idea of biomimicry since nature is the ultimate problem solver. We wanted to position ourselves as a company that will timelessly solve audacious challenges to support the government. When creating the visual identity guide, I wanted to create something that could be used by designers along with the many non-designers creating content in the space. I’ve always been inspired by how educational some visual identity guides can be and wanted that to be a core element. In addition to including mini design lessons, I also included tips, tricks and directions for creating more complicated work in Microsoft PowerPoint since that was the primary design tool used by the Helix team. <a href="https://drive.google.com/file/d/18yKJFvFDqBIm-yI4g1ywneA8_VBXrgyK/view?usp=sharing"> See the full document here.</a>
-    </p></div>
-      <h2>Colors</h2> 
-      <div class="photo-column">
-          <img src="img/helixcolors.png" class="active" alt="Color palette">
+
+  <div class="accordion-container">
+    <!-- Section 1: Visual Identity Guide (Open by default) -->
+    <div class="accordion-section active">
+      <div class="accordion-header">
+        <h2>Visual Identity Guide</h2>
+        <span class="accordion-icon">+</span>
       </div>
-      <div class="text-column"><p>The goal of the Helix is to showcase Booz Allen’s ability to adapt their processes to solve audacious challenges in the government. Each color in the palette has a purpose. Some build trust, others excitement, with the combination them creating striking contrast that represents our ability to develop technical solutions while keeping a very human mission at the core. The team worked to stay within the bounds of Booz Allen's standard branding guidelines and deviated where necessary to get the desired effects.
-    </p></div>
-    <h2>Logo</h2> 
-    <div class="photo-column">
-      <div class="gallery">
-        <img src="img/applicationshelix.png" class="active" alt="AI Studio space">
-        <img src="img/logowip.png" alt="Digital Library space">
-        <img src="img/rotunda.jpg" alt="Rotunda space">
-        <img src="img/entrance.jpg" alt="AI Adoption Studio">
-      </div>
-      <div class="gallery-controls">
-        <button onclick="changeSlide(-1)">← Prev</button>
-        <button onclick="changeSlide(1)">Next →</button>
+      <div class="accordion-content">
+        <div class="accordion-inner">
+          <div class="accordion-images">
+            <div class="accordion-image-item">
+              <img src="img/inspo.png" alt="Helix biomimicry inspiration">
+              <div class="accordion-image-caption">Biomimicry inspiration</div>
+            </div>
+          </div>
+          <div class="accordion-text">
+            <p>I've always been inspired by how educational some visual identity guides can be and wanted that to be a core element. In addition to including mini design lessons, I also included tips, tricks and directions for creating more complicated work in Microsoft PowerPoint since that was the primary design tool used by the Helix team. <a href="https://drive.google.com/file/d/18yKJFvFDqBIm-yI4g1ywneA8_VBXrgyK/view?usp=sharing" target="_blank" rel="noopener noreferrer">See the full document here.</a></p>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="text-column"><p>The Helix logo is a dichotomy of an organic shape while following a system to create the initial form. Each piece in the smooth spiral, draws you into the center. Similarly, when working with our clients and community, we start from a world of possibilities and bring focus to the center of their needs and work to solve their problems with our technology, ecosystem, people, and values.</p></div>
+
+    <!-- Section 2: Colors (Collapsed) -->
+    <div class="accordion-section">
+      <div class="accordion-header">
+        <h2>Colors</h2>
+        <span class="accordion-icon">+</span>
+      </div>
+      <div class="accordion-content">
+        <div class="accordion-inner">
+          <div class="accordion-images">
+            <div class="accordion-image-item">
+              <img src="img/helixcolors.png" alt="Color palette">
+              <div class="accordion-image-caption">Color palette</div>
+            </div>
+          </div>
+          <div class="accordion-text">
+            <p>The goal of the Helix is to showcase Booz Allen's ability to adapt their processes to solve audacious challenges in the government. Each color in the palette has a purpose. Some build trust, others excitement, with the combination them creating striking contrast that represents our ability to develop technical solutions while keeping a very human mission at the core. The team worked to stay within the bounds of Booz Allen's standard branding guidelines and deviated where necessary to get the desired effects.</p>
+          </div>
+        </div>
+      </div>
     </div>
-    
-  
-  <footer style="font-family: 'Besley', serif; text-align: center;">
-    <img src="img/ladyg-01.jpg" alt="Small Logo" style="width: 16px; height: auto; vertical-align: middle; margin-right: 0px;">
+
+    <!-- Section 3: Logo (Collapsed) -->
+    <div class="accordion-section">
+      <div class="accordion-header">
+        <h2>Logo</h2>
+        <span class="accordion-icon">+</span>
+      </div>
+      <div class="accordion-content">
+        <div class="accordion-inner">
+          <div class="accordion-images">
+            <div class="accordion-image-item">
+              <img src="img/applicationshelix.png" alt="Logo applications">
+              <div class="accordion-image-caption">Logo applications</div>
+            </div>
+            <div class="accordion-image-item">
+              <img src="img/logowip.png" alt="Logo work in progress">
+              <div class="accordion-image-caption">Logo work in progress</div>
+            </div>
+            <div class="accordion-image-item">
+              <img src="img/rotunda.jpg" alt="Rotunda space">
+              <div class="accordion-image-caption">Rotunda space</div>
+            </div>
+            <div class="accordion-image-item">
+              <img src="img/entrance.jpg" alt="Helix entrance">
+              <div class="accordion-image-caption">Helix entrance</div>
+            </div>
+          </div>
+          <div class="accordion-text">
+            <p>The Helix logo is a dichotomy of an organic shape while following a system to create the initial form. Each piece in the smooth spiral, draws you into the center. Similarly, when working with our clients and community, we start from a world of possibilities and bring focus to the center of their needs and work to solve their problems with our technology, ecosystem, people, and values.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <img src="img/bluelogo.png" alt="Small Logo">
     Grace Kruse 2025
   </footer>
+
+  <!-- Image Modal -->
+  <div class="image-modal" id="imageModal">
+    <img src="" alt="Expanded view">
+  </div>
+
   <script src="pagejs.js"></script>
+  <script>
+    // Update title block height for proper content spacing
+    function updateTitleBlockHeight() {
+      const titleBlock = document.querySelector('.title-block');
+      if (titleBlock && window.innerWidth > 768) {
+        const height = titleBlock.offsetHeight;
+        document.documentElement.style.setProperty('--title-block-height', height + 'px');
+      }
+    }
 
+    // Run on load and resize
+    updateTitleBlockHeight();
+    window.addEventListener('resize', updateTitleBlockHeight);
 
+    // Accordion functionality
+    const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+    accordionHeaders.forEach(header => {
+      header.addEventListener('click', function() {
+        const section = this.parentElement;
+        const wasActive = section.classList.contains('active');
+
+        // Toggle current section
+        section.classList.toggle('active');
+
+        // Scroll to top of opened section
+        if (!wasActive) {
+          // Wait for animation to start, then scroll
+          setTimeout(() => {
+            // Get the title block height to account for fixed header
+            const titleBlock = document.querySelector('.title-block');
+            const titleBlockHeight = titleBlock ? titleBlock.offsetHeight : 200;
+            const headerOffset = titleBlockHeight + 54; // Title block height + buffer
+
+            const sectionTop = section.getBoundingClientRect().top;
+            const offsetPosition = sectionTop + window.pageYOffset - headerOffset;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }, 100);
+        }
+
+        // Optional: Close other sections (comment out if you want multiple sections open)
+        // accordionHeaders.forEach(otherHeader => {
+        //   if (otherHeader !== header) {
+        //     otherHeader.parentElement.classList.remove('active');
+        //   }
+        // });
+      });
+    });
+
+    // Image modal functionality
+    const modal = document.getElementById('imageModal');
+    const modalImg = modal.querySelector('img');
+    const images = document.querySelectorAll('.accordion-image-item img');
+    let currentImageIndex = -1;
+
+    function showImage(index) {
+      if (index >= 0 && index < images.length) {
+        currentImageIndex = index;
+        modal.classList.add('active');
+        modalImg.src = images[index].src;
+        modalImg.alt = images[index].alt;
+      }
+    }
+
+    images.forEach((img, index) => {
+      img.addEventListener('click', function(e) {
+        e.stopPropagation(); // Prevent accordion toggle when clicking image
+        showImage(index);
+      });
+    });
+
+    modal.addEventListener('click', function() {
+      modal.classList.remove('active');
+      currentImageIndex = -1;
+    });
+
+    // Arrow key navigation and escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        modal.classList.remove('active');
+        currentImageIndex = -1;
+      } else if (modal.classList.contains('active')) {
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          const nextIndex = (currentImageIndex + 1) % images.length;
+          showImage(nextIndex);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const prevIndex = (currentImageIndex - 1 + images.length) % images.length;
+          showImage(prevIndex);
+        }
+      }
+    });
+
+    // Subtle parallax effect on images (desktop only)
+    if (window.innerWidth > 768) {
+      let ticking = false;
+
+      function updateParallax() {
+        const imageItems = document.querySelectorAll('.accordion-section.active .accordion-image-item');
+
+        imageItems.forEach((item, index) => {
+          const img = item.querySelector('img');
+          const rect = item.getBoundingClientRect();
+          const windowHeight = window.innerHeight;
+
+          // Only apply parallax if image is in viewport
+          if (rect.top < windowHeight && rect.bottom > 0) {
+            // Calculate how far through the viewport the image is (0 to 1)
+            const scrollProgress = (windowHeight - rect.top) / (windowHeight + rect.height);
+
+            // Subtle movement - max 20px, different speed for each image
+            const parallaxSpeed = 0.15 + (index * 0.05); // Varying speeds create depth
+            const translateY = (scrollProgress - 0.5) * 40 * parallaxSpeed;
+
+            // Apply transform (only if not hovering - hover has its own transform)
+            if (!img.matches(':hover')) {
+              img.style.transform = `translateY(${translateY}px)`;
+            }
+
+            item.classList.add('parallax-active');
+          }
+        });
+
+        ticking = false;
+      }
+
+      function requestParallaxUpdate() {
+        if (!ticking) {
+          window.requestAnimationFrame(updateParallax);
+          ticking = true;
+        }
+      }
+
+      // Update parallax on scroll
+      window.addEventListener('scroll', requestParallaxUpdate);
+
+      // Update parallax when accordion opens
+      accordionHeaders.forEach(header => {
+        header.addEventListener('click', function() {
+          setTimeout(updateParallax, 450); // After accordion animation
+        });
+      });
+
+      // Initial parallax update
+      updateParallax();
+    }
+  </script>
 </body></html>
