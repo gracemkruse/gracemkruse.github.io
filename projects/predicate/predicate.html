@@ -11,13 +11,164 @@
   <link rel="apple-touch-icon" sizes="180x180" href="../../projects/ladyg/img/bsqladyg.png">
   <link href="../shared-styles.css" rel="stylesheet">
   <style>
-    .image-item {
+    /* Custom layout for predicate - section-based instead of sticky scrolling */
+
+    /* Override shared-styles to remove sticky behavior */
+    .images-column {
+      position: static;
+      max-height: none;
+      overflow-y: visible;
+      top: auto;
+      padding: 0;
+      width: 100%;
+    }
+
+    .two-column-layout {
+      margin-top: calc(var(--title-block-height, 250px) + 30px);
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .text-column-container {
+      width: 100%;
+      padding: 0;
+      position: static;
+    }
+
+    .text-column-container::after {
+      display: none;
+    }
+
+    /* Create section-based layout */
+    .content-section {
+      display: flex;
+      width: 100%;
+      border-bottom: 1px solid #0232A1;
+      padding: 32px 0;
+      position: relative;
+    }
+
+    .content-section:first-child {
+      padding-top: 32px;
+    }
+
+    .content-section:last-child {
+      border-bottom: none;
+    }
+
+    .section-images {
+      width: 66.67%;
+      padding: 0 24px 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    .section-text {
+      width: 33.33%;
+      padding: 0 24px 0 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      position: relative;
+    }
+
+    /* Single continuous vertical line on the layout container */
+    .two-column-layout::after {
+      content: '';
+      position: absolute;
+      left: 66.67%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: #0232A1;
+      animation: drawLine 0.8s ease-out 0.7s backwards;
+      transform-origin: top;
+      z-index: 1;
+    }
+
+    .section-images .image-item {
+      margin-bottom: 0;
+      cursor: pointer;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       transition: box-shadow 0.3s ease;
     }
 
-    .image-item:hover {
+    .section-images .image-item:hover {
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .section-images img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer !important;
+    }
+
+    .section-images img:hover {
+      transform: scale(1.02);
+    }
+
+    .section-text h2 {
+      font-family: 'Besley', serif;
+      font-size: 14px;
+      font-weight: 200;
+      color: #0232A1;
+      margin-bottom: 12px;
+      margin-top: 0;
+    }
+
+    .section-text p {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .section-text p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .two-column-layout {
+        margin-top: 0;
+      }
+
+      .content-section {
+        flex-direction: column;
+        padding: 30px 20px;
+      }
+
+      .section-images,
+      .section-text {
+        width: 100%;
+        padding: 0;
+      }
+
+      .section-images {
+        margin-bottom: 20px;
+        gap: 20px;
+      }
+
+      .section-text h2 {
+        font-size: 16px;
+        margin-bottom: 14px;
+      }
+
+      .section-text p {
+        font-size: 13px;
+      }
+
+      .two-column-layout::after {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -47,35 +198,39 @@
   </div>
 
   <div class="two-column-layout">
-    <div class="images-column">
-      <div class="image-item">
-        <img src="img/predicate1.png" alt="Predicate Logotype">
-        <div class="image-caption">Full logotype incorporating formal methods symbols</div>
+    <!-- Section 1: Project Background & Logo -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/predicate1.png" alt="Predicate Logotype">
+          <div class="image-caption"></div>
+        </div>
+        <div class="image-item visible">
+          <img src="img/predicate2.png" alt="Predicate Logo Symbol">
+          <div class="image-caption"></div>
+        </div>
       </div>
-      <div class="image-item">
-        <img src="img/predicate2.png" alt="Predicate Logo Symbol">
-        <div class="image-caption">Logo mark based on the predicate symbol</div>
-      </div>
-      <div class="image-item">
-        <img src="img/predicate3.png" alt="Predicate Wireframes">
-        <div class="image-caption">Initial wireframes and interface planning</div>
-      </div>
-      <div class="image-item">
-        <img src="img/predicate4.png" alt="Predicate Final Design">
-        <div class="image-caption">Finished interface design</div>
-      </div>
-    </div>
-
-    <div class="text-column-container">
-      <div class="text-section">
+      <div class="section-text">
         <h2>Project Background</h2>
         <p>This project emerged from a real educational need: formal methods students were submitting handwritten assignments that were difficult for graders to read and evaluate. Our solution was to create a digital editor that would allow students to input complex mathematical equations and logical expressions using a clean, intuitive interface.</p>
-      </div>
-      <div class="text-section">
         <h2>Logo Design</h2>
         <p>The logo was based off of the predicate symbol in formal methods, creating an immediate visual connection to the application's purpose. The logotype used other symbols found in the editor as well as my own creative system to make additional symbols, ensuring a cohesive visual language throughout the application.</p>
       </div>
-      <div class="text-section">
+    </div>
+
+    <!-- Section 2: Design Process -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/predicate3.png" alt="Predicate Wireframes">
+          <div class="image-caption">Initial wireframes and interface planning</div>
+        </div>
+        <div class="image-item visible">
+          <img src="img/predicate4.png" alt="Predicate Final Design">
+          <div class="image-caption">Finished interface design</div>
+        </div>
+      </div>
+      <div class="section-text">
         <h2>Design Process</h2>
         <p>Starting with wireframes, I mapped out the user flow and interface structure. The challenge was making complex mathematical notation accessible through a digital interface while maintaining readability and ease of use. The final design balanced functionality with aesthetics, creating a tool that was both powerful and pleasant to use.</p>
       </div>
@@ -110,7 +265,7 @@
     // Image modal functionality
     const modal = document.getElementById('imageModal');
     const modalImg = modal.querySelector('img');
-    const images = document.querySelectorAll('.images-column img');
+    const images = document.querySelectorAll('.image-item img');
     let currentImageIndex = -1;
 
     function showImage(index) {
@@ -167,19 +322,9 @@
       });
     }, observerOptions);
 
-    // Observe image items
-    document.querySelectorAll('.image-item').forEach((item) => {
-      observer.observe(item);
-    });
-
-    // Observe text sections
-    document.querySelectorAll('.text-section').forEach((section) => {
+    // Observe content sections
+    document.querySelectorAll('.content-section').forEach((section) => {
       observer.observe(section);
-    });
-
-    // Add stagger delay to image items
-    document.querySelectorAll('.image-item').forEach((item, index) => {
-      item.style.transitionDelay = `${index * 0.1}s`;
     });
   </script>
 </body></html>

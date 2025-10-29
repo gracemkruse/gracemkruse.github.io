@@ -10,6 +10,163 @@
   <link rel="icon" type="image/png" sizes="32x32" href="../../projects/ladyg/img/bsqladyg.png">
   <link rel="apple-touch-icon" sizes="180x180" href="../../projects/ladyg/img/bsqladyg.png">
   <link href="../shared-styles.css" rel="stylesheet">
+  <style>
+    /* Custom layout for techscouting - section-based instead of sticky scrolling */
+
+    /* Override shared-styles to remove sticky behavior */
+    .images-column {
+      position: static;
+      max-height: none;
+      overflow-y: visible;
+      top: auto;
+      padding: 0;
+      width: 100%;
+    }
+
+    .two-column-layout {
+      margin-top: calc(var(--title-block-height, 250px) + 30px);
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .text-column-container {
+      width: 100%;
+      padding: 0;
+      position: static;
+    }
+
+    .text-column-container::after {
+      display: none;
+    }
+
+    /* Create section-based layout */
+    .content-section {
+      display: flex;
+      width: 100%;
+      border-bottom: 1px solid #0232A1;
+      padding: 32px 0;
+      position: relative;
+    }
+
+    .content-section:first-child {
+      padding-top: 32px;
+    }
+
+    .content-section:last-child {
+      border-bottom: none;
+    }
+
+    .section-images {
+      width: 66.67%;
+      padding: 0 24px 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    .section-text {
+      width: 33.33%;
+      padding: 0 24px 0 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      position: relative;
+    }
+
+    /* Single continuous vertical line on the layout container */
+    .two-column-layout::after {
+      content: '';
+      position: absolute;
+      left: 66.67%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: #0232A1;
+      animation: drawLine 0.8s ease-out 0.7s backwards;
+      transform-origin: top;
+      z-index: 1;
+    }
+
+    .section-images .image-item {
+      margin-bottom: 0;
+      cursor: pointer;
+    }
+
+    .section-images img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .section-images img:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .section-text h2 {
+      font-family: 'Besley', serif;
+      font-size: 14px;
+      font-weight: 200;
+      color: #0232A1;
+      margin-bottom: 12px;
+      margin-top: 0;
+    }
+
+    .section-text p {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .section-text p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .two-column-layout {
+        margin-top: 0;
+      }
+
+      .content-section {
+        flex-direction: column;
+        padding: 30px 20px;
+      }
+
+      .section-images,
+      .section-text {
+        width: 100%;
+        padding: 0;
+      }
+
+      .section-images {
+        margin-bottom: 20px;
+        gap: 20px;
+      }
+
+      .section-text h2 {
+        font-size: 16px;
+        margin-bottom: 14px;
+      }
+
+      .section-text p {
+        font-size: 13px;
+      }
+
+      .two-column-layout::after {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -35,41 +192,47 @@
   </div>
 
   <div class="two-column-layout">
-    <div class="images-column">
-      <div class="image-item">
-        <a href="https://www.boozallen.com/expertise/tech-ecosystem/technology-scouting.html" target="_blank" rel="noopener">
-          <img src="img/tsvideo.jpg" alt="Tech Scouting Video">
-        </a>
-        <div class="image-caption">Tech Scouting promotional video</div>
+    <!-- Section 1: Creative Strategy -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <a href="https://www.boozallen.com/expertise/tech-ecosystem/technology-scouting.html" target="_blank" rel="noopener">
+            <img src="img/tsvideo.jpg" alt="Tech Scouting Video">
+          </a>
+          <div class="image-caption">Tech Scouting promotional video</div>
+        </div>
+        <div class="image-item visible">
+          <img src="img/ts1.jpg" alt="Tech Scouting Website Homepage">
+          <div class="image-caption">Website homepage</div>
+        </div>
+        <div class="image-item visible">
+          <img src="img/ts2.jpeg" alt="Website Section 2">
+          <div class="image-caption">Innovation ecosystem overview</div>
+        </div>
       </div>
-      <div class="image-item">
-        <img src="img/ts1.jpg" alt="Tech Scouting Website Homepage">
-        <div class="image-caption">Website homepage</div>
-      </div>
-      <div class="image-item">
-        <img src="img/ts2.jpeg" alt="Website Section 2">
-        <div class="image-caption">Innovation ecosystem overview</div>
-      </div>
-      <div class="image-item">
-        <img src="img/ts3.jpeg" alt="Website Section 3">
-        <div class="image-caption">Team and capabilities showcase</div>
-      </div>
-      <div class="image-item">
-        <img src="img/ts4.jpeg" alt="Website Section 4">
-        <div class="image-caption">Case studies and success stories</div>
-      </div>
-      <div class="image-item">
-        <img src="img/ts5.jpeg" alt="Website Section 5">
-        <div class="image-caption">Partnership opportunities</div>
-      </div>
-    </div>
-
-    <div class="text-column-container">
-      <div class="text-section">
+      <div class="section-text">
         <h2>Creative Strategy</h2>
         <p>The creative strategy was to visually see the nationwide network that connects Washington, DC to Silicon Valley. Throughout the video, there are various lines bringing the technology across the country back to the government's most important missions. The goal was to make the video exciting but not overwhelming or out of reach.</p>
       </div>
-      <div class="text-section">
+    </div>
+
+    <!-- Section 2: Website Design -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/ts3.jpeg" alt="Website Section 3">
+          <div class="image-caption">Team and capabilities showcase</div>
+        </div>
+        <div class="image-item visible">
+          <img src="img/ts4.jpeg" alt="Website Section 4">
+          <div class="image-caption">Case studies and success stories</div>
+        </div>
+        <div class="image-item visible">
+          <img src="img/ts5.jpeg" alt="Website Section 5">
+          <div class="image-caption">Partnership opportunities</div>
+        </div>
+      </div>
+      <div class="section-text">
         <h2>Website Design</h2>
         <p>The website was a scrolling single page internal site that needed to follow Booz Allen's branding guidelines. A core feature of their brand is to include people as often as possible. The sample pages showcase how we integrated this principle throughout the design while maintaining a clean, modern aesthetic that highlights the innovative nature of the Tech Scouting program.</p>
       </div>
@@ -104,7 +267,7 @@
     // Image modal functionality
     const modal = document.getElementById('imageModal');
     const modalImg = modal.querySelector('img');
-    const images = document.querySelectorAll('.images-column img');
+    const images = document.querySelectorAll('.image-item img');
     let currentImageIndex = -1;
 
     function showImage(index) {
@@ -161,19 +324,9 @@
       });
     }, observerOptions);
 
-    // Observe image items
-    document.querySelectorAll('.image-item').forEach((item) => {
-      observer.observe(item);
-    });
-
-    // Observe text sections
-    document.querySelectorAll('.text-section').forEach((section) => {
+    // Observe content sections
+    document.querySelectorAll('.content-section').forEach((section) => {
       observer.observe(section);
-    });
-
-    // Add stagger delay to image items
-    document.querySelectorAll('.image-item').forEach((item, index) => {
-      item.style.transitionDelay = `${index * 0.1}s`;
     });
   </script>
 </body></html>
