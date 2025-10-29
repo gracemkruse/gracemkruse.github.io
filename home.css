@@ -99,13 +99,30 @@ p {
   @media (max-width: 768px) {
     .header {
       width: 100%;
-      padding: 32px;
+      padding: 32px 0 48px 0;
+      min-height: fit-content;
+    }
+
+    .name {
+      overflow: visible;
+      padding: 0 16px;
     }
   }
   .name {
     font-size: 26vw;
     line-height: .85;
     flex-grow: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .name img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
   }
 
   @keyframes drawHorizontal {
@@ -545,10 +562,39 @@ p {
 
   footer {
     text-align: center;
-    padding: 24px;
-    border-top: 1px solid #0232A1;
-    font-size: 14px;
+    padding: 12px 0;
+    font-family: 'Besley', serif;
+    font-size: 12px;
     color: #0232A1;
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+  }
+
+  footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: calc(-12.5vw);
+    width: 100vw;
+    height: 1px;
+    background-color: #0232A1;
+    animation: drawHorizontal 1s ease-out 0.7s backwards;
+    transform-origin: left;
+  }
+
+  footer img {
+    width: 12px;
+    height: auto;
+    vertical-align: top;
+    margin-right: 4px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+
+  footer img:hover {
+    transform: rotate(180deg) scale(1.2);
   }
   @media (max-width: 768px) {
     .grid {
@@ -559,6 +605,10 @@ p {
       grid-row: auto; /* No fixed row span */
       position: relative; /* No sticky behavior */
       height: auto;
+      border-bottom: 1px solid #0232A1;
+    }
+    .grid-spacer {
+      display: none; /* Hide grid spacers on mobile */
     }
   }
   @media (max-width: 480px) {

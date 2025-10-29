@@ -26,13 +26,23 @@
     }
 
     .two-column-layout {
-      margin-top: max(280px, calc(var(--title-block-height, 250px) + 54px));
+      margin-top: calc(var(--title-block-height, 250px) + 30px);
       flex-direction: column;
       gap: 0;
+      position: relative;
     }
 
     .two-column-layout::after {
-      display: none;
+      content: '';
+      position: absolute;
+      left: 66.67%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: #0232A1;
+      animation: drawLine 0.8s ease-out 0.7s backwards;
+      transform-origin: top;
+      z-index: 1;
     }
 
     .text-column-container {
@@ -55,7 +65,7 @@
     }
 
     .content-section:first-child {
-      padding-top: 0;
+      padding-top: 32px;
     }
 
     .content-section:last-child {
@@ -81,35 +91,25 @@
       position: relative;
     }
 
-    .section-text::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: -32px;
-      width: 1px;
-      background-color: #0232A1;
-      animation: drawLine 0.8s ease-out 0.7s backwards;
-      transform-origin: top;
-    }
-
-    .content-section:last-child .section-text::before {
-      bottom: 0;
-    }
-
-    .content-section:first-child .section-text::before {
-      top: 0;
-    }
 
     .section-images .image-item {
       margin-bottom: 0;
+      cursor: pointer;
     }
 
     .section-images img {
-      max-height: 60vh;
       width: 100%;
       height: auto;
       object-fit: contain;
+      display: block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .section-images img:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     }
 
     .section-text h2 {
@@ -165,7 +165,7 @@
         font-size: 13px;
       }
 
-      .section-text::before {
+      .two-column-layout::after {
         display: none;
       }
     }
@@ -278,7 +278,7 @@
   </div>
 
   <footer>
-    <img src="../mobius/img/bluelogo.png" alt="Small Logo">
+    <img src="img/bluelogo.png" alt="Small Logo">
     Grace Kruse 2025
   </footer>
 
