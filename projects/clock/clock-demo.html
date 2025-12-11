@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Generative Clock Demo | Grace Kruse" />
+  <meta property="og:image" content="img/thumbnail.jpg"/>
+  <title>Generative Clock Demo | Grace Kruse</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..900&family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="16x16" href="../../projects/ladyg/img/bsqladyg.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../projects/ladyg/img/bsqladyg.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../projects/ladyg/img/bsqladyg.png">
+
+  <!-- Shared Styles -->
+  <link href="../shared-styles.css" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      transition: background-color 1s ease;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(2, 50, 161, 0.95);
+      backdrop-filter: blur(10px);
+    }
+
+    .clock-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.5s ease;
+    }
+
+    #clockCanvas {
+      max-width: 400px;
+      max-height: 866px;
+      width: 45vw;
+      height: 97.5vw;
+      cursor: pointer;
+    }
+
+    @media (min-width: 768px) {
+      #clockCanvas {
+        width: 25vw;
+        height: 54.17vw;
+        max-width: 400px;
+        max-height: 866px;
+      }
+    }
+
+    .digital-time {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Inter', sans-serif;
+      font-size: 4rem;
+      font-weight: 300;
+      color: white;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+      opacity: 1;
+      pointer-events: none;
+      z-index: 10;
+      letter-spacing: 0.1em;
+    }
+
+    @media (max-width: 768px) {
+      .digital-time {
+        font-size: 2.5rem;
+      }
+    }
+
+    .demo-info {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(2, 50, 161, 0.95);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      z-index: 1000;
+      text-align: center;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(2, 50, 161, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem;
+      text-align: center;
+      color: white;
+      font-size: 0.9rem;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div><a href="../../index.html">← back to overview</a></div>
+      <div><a href="https://www.linkedin.com/in/gracekruse">Contact</a></div>
+    </div>
+  </header>
+
+  <!-- Demo Info -->
+  <div class="demo-info">
+    <strong>DEMO MODE:</strong> 24-hour cycle in 24 minutes
+  </div>
+
+  <!-- Clock Container -->
+  <div class="clock-container">
+    <canvas id="clockCanvas"></canvas>
+    <div class="digital-time" id="digitalTime">00:00</div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    Grace Kruse 2025
+  </footer>
+
+  <!-- Global page script -->
+  <script src="../../pagejs.js"></script>
+
+  <!-- Clock Logic -->
+  <script>
+    const canvas = document.getElementById('clockCanvas');
+    const ctx = canvas.getContext('2d');
+    const digitalTime = document.getElementById('digitalTime');
+
+    // Demo mode: cycle through 24 hours in 24 minutes
+    const DEMO_DURATION = 24 * 60 * 1000; // 24 minutes in milliseconds
+    const startTime = Date.now();
+
+    // Set canvas size (2:3 aspect ratio for portrait)
+    function resizeCanvas() {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+    }
+
+    // Color palettes for each hour (24-hour cycle)
+    // Background transitions from black (midnight) to white (noon) and back
+    const hourColors = [
+      // Midnight to early morning (0-5) - Black backgrounds
+      { bg: '#000000', lines: ['#1a1d4a', '#2d3270', '#3d4a9c'] }, // 0am - darkest
+      { bg: '#0a0a0a', lines: ['#1a2550', '#2a3875', '#3a4da0'] }, // 1am
+      { bg: '#141414', lines: ['#1a2d60', '#2a4085', '#3a54aa'] }, // 2am
+      { bg: '#1e1e1e', lines: ['#1a3670', '#2a4995', '#3a5cc0'] }, // 3am
+      { bg: '#282828', lines: ['#1a3e80', '#2a51a5', '#3a64d0'] }, // 4am
+      { bg: '#323232', lines: ['#1a4890', '#2a5bb5', '#3a6ee0'] }, // 5am
+
+      // Dawn (6-8) - Transitioning to lighter
+      { bg: '#4b4b4b', lines: ['#8b5fbf', '#b57edc', '#d4a5f5'] }, // 6am - sunrise start
+      { bg: '#6e6e6e', lines: ['#b57edc', '#ff8fab', '#ffc2b4'] }, // 7am - pink/purple
+      { bg: '#919191', lines: ['#ff8fab', '#ffb366', '#ffd9a3'] }, // 8am - warm morning
+
+      // Morning (9-11) - Getting brighter
+      { bg: '#b4b4b4', lines: ['#4169e1', '#5a7de6', '#7391eb'] }, // 9am
+      { bg: '#d2d2d2', lines: ['#3a5fcd', '#4b70d8', '#5c81e3'] }, // 10am
+      { bg: '#e6e6e6', lines: ['#2e4fa6', '#3f60b1', '#5071bc'] }, // 11am
+
+      // Midday (12-14) - White/brightest
+      { bg: '#ffffff', lines: ['#4ecdc4', '#5dd8cf', '#6ce3da'] }, // 12pm - brightest
+      { bg: '#f5f5f5', lines: ['#ffbe0b', '#ffc935', '#ffd45f'] }, // 1pm
+      { bg: '#ebebeb', lines: ['#fb8500', '#fc962a', '#fda754'] }, // 2pm
+
+      // Afternoon (15-17) - Starting to darken
+      { bg: '#d7d7d7', lines: ['#ff9f1c', '#ffaa46', '#ffb570'] }, // 3pm
+      { bg: '#bebebe', lines: ['#ff8c42', '#ff9d6c', '#ffae96'] }, // 4pm
+      { bg: '#a5a5a5', lines: ['#ff6b35', '#ff825f', '#ff9989'] }, // 5pm
+
+      // Sunset (18-20) - Darker
+      { bg: '#878787', lines: ['#d62828', '#e14a4a', '#ec6c6c'] }, // 6pm - golden hour
+      { bg: '#646464', lines: ['#9d4edd', '#ad68e8', '#bd82f3'] }, // 7pm - purple sunset
+      { bg: '#464646', lines: ['#6a4c93', '#8466ad', '#9e80c7'] }, // 8pm - dusk
+
+      // Evening (21-23) - Back to dark
+      { bg: '#323232', lines: ['#564f6f', '#706989', '#8a83a3'] }, // 9pm
+      { bg: '#1e1e1e', lines: ['#3d2e5c', '#574876', '#716290'] }, // 10pm
+      { bg: '#0f0f0f', lines: ['#2d1b4e', '#473568', '#614f82'] }  // 11pm
+    ];
+
+    function getColorForTime(hours, minutes) {
+      const currentHour = hourColors[hours];
+      const nextHour = hourColors[(hours + 1) % 24];
+      const t = minutes / 60; // Interpolation factor
+
+      // Interpolate between current and next hour
+      return {
+        bg: currentHour.bg, // Keep bg static for cleaner look
+        lines: currentHour.lines.map((color, i) => {
+          return color; // Could interpolate here if desired
+        })
+      };
+    }
+
+    function drawClock() {
+      // Calculate demo time (24 hours in 24 minutes)
+      const elapsed = Date.now() - startTime;
+      const progress = (elapsed % DEMO_DURATION) / DEMO_DURATION; // 0 to 1 over 24 minutes
+
+      // Map progress to 24 hours (0-23)
+      const totalMinutes = progress * 24 * 60; // 0 to 1440 minutes
+      const hours = Math.floor(totalMinutes / 60) % 24;
+      const minutes = totalMinutes % 60;
+      const seconds = (totalMinutes * 60) % 60;
+      const milliseconds = (totalMinutes * 60000) % 1000;
+
+      // Smooth minute transition including seconds
+      const smoothMinutes = minutes + (seconds + milliseconds / 1000) / 60;
+
+      // Update digital time
+      const displayHours = hours % 12 || 12;
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      digitalTime.textContent = `${displayHours.toString().padStart(2, '0')}:${Math.floor(minutes).toString().padStart(2, '0')} ${ampm}`;
+
+      // Get colors for current time
+      const colors = getColorForTime(hours, Math.floor(minutes));
+      document.body.style.backgroundColor = colors.bg;
+      document.querySelector('.clock-container').style.backgroundColor = colors.bg;
+
+      // Clear canvas
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+
+      // Calculate rotation angle - full 360° rotation every hour (clockwise)
+      // Start vertical at :00, horizontal at :15, vertical at :30, horizontal at :45, vertical at :60
+      // Lines are naturally horizontal, so start at -90° to make them vertical at 0 minutes
+      const minutesInHour = totalMinutes % 60; // Current minute within the hour (0-59)
+      const rotationAngle = (minutesInHour / 60) * (Math.PI * 2) - (Math.PI / 2); // Start at -90° for vertical
+
+      // Calculate number of lines based on how horizontal/vertical the lines are
+      // When vertical (0°, 180°, 360°) = 8 lines
+      // When horizontal (90°, 270°) = 13 lines
+      const minLines = 8;
+      const maxLines = 13;
+
+      // Use cos to determine how "vertical" we are (0 at 90° and 270°, 1 at 0° and 180°)
+      // Then invert it to get horizontalness
+      const verticalness = Math.abs(Math.cos(rotationAngle)); // 1 at 0°/180°, 0 at 90°/270°
+      const horizontalness = 1 - verticalness; // Invert: 0 at 0°/180°, 1 at 90°/270°
+      const lineCount = Math.floor(minLines + horizontalness * (maxLines - minLines));
+
+      // Canvas dimensions
+      const width = rect.width;
+      const height = rect.height;
+      const centerX = width / 2;
+      const centerY = height / 2;
+
+      // Line properties - length changes based on rotation angle
+      // At vertical (0°, 180°, 360°): lines fill full height
+      // At horizontal (90°, 270°): lines are shorter
+      const lineWidth = 8;
+
+      // Fixed spacing based on maximum dimension (height)
+      const spacing = height / (maxLines + 1);
+
+      // Calculate how much of the available space the lines should use
+      // When vertical: use height, when horizontal: use width
+      const maxDimension = height; // Maximum length (when vertical)
+      const minDimension = width * 0.6; // Minimum length (when horizontal)
+
+      // Interpolate line length based on rotation
+      // verticalness = 1 when vertical (use height), 0 when horizontal (use width)
+      const lineLength = minDimension + (verticalness * (maxDimension - minDimension));
+
+      // Draw lines
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(rotationAngle);
+
+      for (let i = 0; i < lineCount; i++) {
+        const offset = -lineLength / 2 + spacing * (i + 1);
+        const colorIndex = Math.floor((i / lineCount) * colors.lines.length);
+        const gradient = ctx.createLinearGradient(-width / 2, 0, width / 2, 0);
+
+        // Create gradient with current color palette
+        gradient.addColorStop(0, colors.lines[0]);
+        gradient.addColorStop(0.5, colors.lines[1] || colors.lines[0]);
+        gradient.addColorStop(1, colors.lines[2] || colors.lines[1] || colors.lines[0]);
+
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = lineWidth;
+        ctx.lineCap = 'butt';
+
+        ctx.beginPath();
+        ctx.moveTo(-lineLength / 2, offset);
+        ctx.lineTo(lineLength / 2, offset);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+
+      requestAnimationFrame(drawClock);
+    }
+
+    // Initialize
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    drawClock();
+  </script>
+</body>
+</html>

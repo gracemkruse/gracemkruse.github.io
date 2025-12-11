@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HydroSense - Medical Device Case Study</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..900&family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../projects/ladyg/img/bsqladyg.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../projects/ladyg/img/bsqladyg.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../projects/ladyg/img/bsqladyg.png">
+  <link href="../shared-styles.css" rel="stylesheet">
+  <style>
+    /* Custom layout - section-based instead of sticky scrolling */
+    .images-column {
+      position: static;
+      max-height: none;
+      overflow-y: visible;
+      top: auto;
+      padding: 0;
+      width: 100%;
+    }
+
+    .two-column-layout {
+      margin-top: calc(var(--title-block-height, 250px) + 30px);
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .text-column-container {
+      width: 100%;
+      padding: 0;
+      position: static;
+    }
+
+    .text-column-container::after {
+      display: none;
+    }
+
+    .content-section {
+      display: flex;
+      width: 100%;
+      border-bottom: 1px solid #0232A1;
+      padding: 32px 0;
+      position: relative;
+    }
+
+    .content-section:first-child {
+      padding-top: 32px;
+    }
+
+    .content-section:last-child {
+      border-bottom: none;
+    }
+
+    .section-images {
+      width: 66.67%;
+      padding: 0 24px 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    .section-text {
+      width: 33.33%;
+      padding: 0 24px 0 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      position: relative;
+    }
+
+    .two-column-layout::after {
+      content: '';
+      position: absolute;
+      left: 66.67%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: #0232A1;
+      animation: drawLine 0.8s ease-out 0.7s backwards;
+      transform-origin: top;
+      z-index: 1;
+    }
+
+    .section-images .image-item {
+      margin-bottom: 0;
+      cursor: pointer;
+    }
+
+    .section-images img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .section-images img:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .section-text h2 {
+      font-family: 'Besley', serif;
+      font-size: 14px;
+      font-weight: 200;
+      color: #0232A1;
+      margin-bottom: 12px;
+      margin-top: 0;
+    }
+
+    .section-text p {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .section-text ul {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #0232A1;
+      line-height: 1.8;
+      margin-bottom: 16px;
+      padding-left: 20px;
+    }
+
+    .section-text li {
+      margin-bottom: 8px;
+    }
+
+    .section-text p:last-child,
+    .section-text ul:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .two-column-layout {
+        margin-top: 0;
+      }
+
+      .content-section {
+        flex-direction: column;
+        padding: 30px 20px;
+      }
+
+      .section-images,
+      .section-text {
+        width: 100%;
+        padding: 0;
+      }
+
+      .section-images {
+        margin-bottom: 20px;
+        gap: 20px;
+      }
+
+      .section-text h2 {
+        font-size: 16px;
+        margin-bottom: 14px;
+      }
+
+      .section-text p,
+      .section-text ul {
+        font-size: 13px;
+      }
+
+      .two-column-layout::after {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div><a href="../../index.html">← back to overview</a></div>
+      <div><a href="https://www.linkedin.com/in/gracekruse" target="_blank" rel="noopener noreferrer">Contact</a></div>
+    </div>
+  </header>
+
+  <div class="title-block">
+    <div class="title-content">
+      <div class="title-left">
+        <h1>HydroSense</h1>
+        <div class="subtitle">Mobile Medical Device | 2023–2025</div>
+        <div class="subtitle2 roles">
+          <span class="role-tag">Product Management</span>
+          <span class="role-tag">Cross-Functional Leadership</span>
+          <span class="role-tag">Medical Device Development</span>
+        </div>
+      </div>
+      <div class="title-right">
+        <p>HydroSense was a multi-year effort to develop a Class II medical deviceto give patients with hyrdocephalus and their care teams quantitative data about their condition. I took an early stage concept and turned it into an FDA-regulated connected health platform that will change the standard of care for people with hydrocephalus. My time working on this project allowed me to work with incredibly resiliant people and it was honor to bring innovation to such a rare disease.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-column-layout">
+    <!-- Section 1: Overview & Team Structure -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/overview.jpg" alt="HydroSense project overview and timeline">
+          <div class="image-caption">Project phases from research through launch and iteration (2007–2029)</div>
+        </div>
+      </div>
+      <div class="section-text">
+      <!--<h2>Background</h2>
+        <p>Something that made this project so unique was the fact that everyone was highly motivated to develop this product that everyone working on the project had a strong opinion about how everything was done and would have done it singlehandedly if they were allowed. Becuase of the level of ownership everyone felt, the project followed four guiding principles to ensure we were alinged around developing the best product instead of personal preferences. <p>1. push new ideas based on medical research</p><p>2. Respect clinician mental models</p><p>3. Enable user decision-making</p> <p> 4. Leverage industry best practices while maintaining configurability when conflicts arise.</p>-->
+      </div>
+    </div> 
+
+    <!-- Section 2: Problem & Background -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/hydrooverview.png" alt="Hydrocephalus condition and current treatment diagram">
+          <div class="image-caption">Current treatment involves implanting a shunt to drain excess cerebrospinal fluid</div>
+        </div>
+        <div class="image-item visible">
+          <img src="img/problem.jpg" alt="Patient and healthcare system burden visualization">
+          <div class="image-caption">Key challenges facing patients and the healthcare system</div>
+        </div>
+      </div>
+      <div class="section-text">
+        <h2>What is Hydrocephalus?</h2>
+        <p>Hydrocephalus is a condition affecting 8 million patients globally (1 million in the US) where excess cerebrospinal fluid (CSF) accumulates in the brain, creating dangerous intracranial pressure. Without treatment, it leads to long-term health conditions and death.</p>
+        <h2>Current Treatment</h2>
+        <p>Shunts are implanted between the skull and the skin to drain fluid, but failure rates are alarmingly high—up to 50% revision rates in pediatric patients in year one, and 17-33% annual complication rates in adults.</p>
+        <h2>Problem</h2>
+        <p>Uncertainty about shunt function leads to unnecessary clinic and ER visits, damaging radiation exposure from scans, unnecessary surgeries, and long travel times to limited neuro specialists. For the healthcare system, these procedures aren't profitable, MRI and CT scans aren't able to show shunt function, neurosurgeons spend valuable time checking shunts instead of conducting other surgeries, and US hospital charges for hydrocephalus exceed $2 billion annually.</p>
+      </div>
+    </div>
+
+    <!-- Section 3: Solution -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/solution.jpg" alt="HydroSense product system diagram">
+          <div class="image-caption">End-to-end system: implanted sensor → NFC puck → mobile app → secure cloud server</div>
+        </div>
+      </div>
+      <div class="section-text">
+        <h2>The Solution</h2>
+        <p>HydroSense is a pressure sensor implanted in-line with a shunt that measures ICP, providing neurosurgeons and care teams with quantitative data to better understand a patient's condition.</p>
+        <p><strong>System Components:</strong></p>
+        <ul>
+          <li><strong>Implanted Sensor:</strong> In-line pressure sensor integrated with existing shunt hardware</li>
+          <li><strong>HydroSense Puck:</strong> External device that connects to the implant using NFC-type technology to collect ICP data</li>
+          <li><strong>Mobile App:</strong> Clinician-facing application that connects to the puck via Bluetooth to view and analyze ICP data in real-time</li>
+          <li><strong>Secure Server:</strong> Cloud infrastructure that pulls data from the app via WiFi to store longitudinal ICP data for historical analysis</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Section 4: App Features -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/app-overview.jpg" alt="HydroSense app core features and navigation">
+          <div class="image-caption">Main app interface showing Live ICP, Logbook, and ICP Study features</div>
+        </div>
+        <div class="image-item visible">
+          <img src="img/live-icp.jpg" alt="Live ICP measurement screen">
+          <div class="image-caption">Real-time ICP waveform display with measurement averages</div>
+        </div>
+        <div class="image-item visible">
+          <img src="img/save-icp.jpg" alt="Saving ICP measurement with patient position">
+          <div class="image-caption">Capture and annotate ICP measurements with patient position and context</div>
+        </div>
+        <div class="image-item visible">
+          <img src="img/logbook.jpg" alt="Historical logbook view">
+          <div class="image-caption">Historical logbook showing ICP trends over time with patient symptoms</div>
+        </div>
+      </div>
+      <div class="section-text">
+        <h2>Core Application Features</h2>
+        <p><strong>Live ICP Monitoring:</strong> Real-time pressure waveform display showing both ICP (intracranial pressure) and MWA (mean wave amplitude) measurements. Clinicians can observe live readings over configurable time windows and save snapshots for longitudinal tracking.</p>
+        <p><strong>Measurement Capture:</strong> Save ICP measurements with contextual data including patient position (standing, sitting, lying down), symptoms, and valve settings. This allows correlation between ICP readings and patient experience.</p>
+        <p><strong>Historical Logbook:</strong> Access patient records remotely with a comprehensive view of all past ICP measurements, valve adjustments, and reported symptoms. The logbook provides trend analysis to identify patterns and inform treatment decisions.</p>
+        <p><strong>ICP Study Templates:</strong> Define standardized measurement protocols to ensure consistent data collection across patients and clinical sites.</p>
+      </div>
+    </div>
+
+    <!-- Section 5: Market Research -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/market-research.jpg" alt="Market research participant breakdown">
+          <div class="image-caption">212 participants across 17 countries contributed 225 hours of co-development</div>
+        </div>
+      </div>
+      <div class="section-text">
+        <h2>Market Research & Validation</h2>
+        <p>Conducted extensive market research with <strong>212 participants</strong> across <strong>17 countries</strong>, including adult and pediatric neurosurgeons, neurosurgical PAs and NPs, patients, and hospital administrators. This resulted in <strong>225 hours of co-development</strong> and <strong>11 product iterations</strong>.</p>
+        <p><strong>Key Findings:</strong></p>
+        <ul>
+          <li>Surgeons indicated they would use HydroSense in 70-80% of patients with a new shunt</li>
+          <li>Conservative pricing without reimbursement is ~$2,000 per unit</li>
+          <li>"If you keep even one patient out of the ER, this will pay for itself"</li>
+          <li>"ICP monitoring needs to become a standard of care and not only used for problematic patients"</li>
+          <li>"This will dramatically change patient care, allowing people to respond to more than crisis but create better quality of life"</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Section 6: Development Timeline & Business Impact -->
+    <div class="content-section">
+      <div class="section-images">
+        <div class="image-item visible">
+          <img src="img/timeline.jpg" alt="Development and launch timeline 2023-2029">
+          <div class="image-caption">Multi-year development roadmap from market research through global expansion</div>
+        </div>
+      </div>
+      <div class="section-text">
+        <h2>Development Timeline & Impact</h2>
+        <p><strong>Development Phases (2023-2026):</strong></p>
+        <ul>
+          <li>2023: Market research and foundational work</li>
+          <li>2024: Alpha hardware design and software requirements finalization</li>
+          <li>2025: Beta unit builds, hardware integration, formative usability testing, and app development under design controls</li>
+          <li>2026: FDA submission</li>
+        </ul>
+        <p><strong>Launch Strategy (2027-2029):</strong> Phased global rollout starting with US launch, followed by UK, Canada, Europe, Japan, China, and AU/NZ. Post-launch focus on BYOD (Bring Your Own Device) strategy and expanded indications for use.</p>
+        <p><strong>Business Projections:</strong></p>
+        <ul>
+          <li>Unit Price: $2,000 | Cost of Goods: $450</li>
+          <li>Year 3 US market penetration: 70% of newly diagnosed patients (52,500 patients)</li>
+          <li>Projected Gross Profits: $81.4M</li>
+        </ul>
+        <p><strong>Success Metrics:</strong> Adoption rate, increased usage, session time after onboarding, login frequency, logbook utilization, and remote study/patient app engagement.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <img src="img/bluelogo.png" alt="Small Logo">
+    Grace Kruse 2025
+  </footer>
+
+  <!-- Image Modal -->
+  <div class="image-modal" id="imageModal">
+    <img src="" alt="Expanded view">
+  </div>
+
+  <script>
+    // Update title block height for proper content spacing
+    function updateTitleBlockHeight() {
+      const titleBlock = document.querySelector('.title-block');
+      if (titleBlock && window.innerWidth > 768) {
+        const height = titleBlock.offsetHeight;
+        document.documentElement.style.setProperty('--title-block-height', height + 'px');
+      }
+    }
+
+    updateTitleBlockHeight();
+    window.addEventListener('resize', updateTitleBlockHeight);
+
+    // Image modal functionality
+    const modal = document.getElementById('imageModal');
+    const modalImg = modal.querySelector('img');
+    const images = document.querySelectorAll('.image-item img');
+    let currentImageIndex = -1;
+
+    function showImage(index) {
+      if (index >= 0 && index < images.length) {
+        currentImageIndex = index;
+        modal.classList.add('active');
+        modalImg.src = images[index].src;
+        modalImg.alt = images[index].alt;
+      }
+    }
+
+    images.forEach((img, index) => {
+      img.addEventListener('click', function() {
+        showImage(index);
+      });
+    });
+
+    modal.addEventListener('click', function() {
+      modal.classList.remove('active');
+      currentImageIndex = -1;
+    });
+
+    // Arrow key navigation and escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        modal.classList.remove('active');
+        currentImageIndex = -1;
+      } else if (modal.classList.contains('active')) {
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          const nextIndex = (currentImageIndex + 1) % images.length;
+          showImage(nextIndex);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const prevIndex = (currentImageIndex - 1 + images.length) % images.length;
+          showImage(prevIndex);
+        }
+      }
+    });
+
+    // Scroll animations
+    const observerOptions = {
+      threshold: 0,
+      rootMargin: '0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, index * 100);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.content-section').forEach((section) => {
+      observer.observe(section);
+    });
+  </script>
+</body>
+</html>
