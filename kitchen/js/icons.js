@@ -21,6 +21,22 @@ const PATHS = {
   serves: `<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4" ${D}/><circle cx="12" cy="12" r="1" ${F}/>`,
   made: `<path d="M4 12a8 8 0 1 0 2.5-5.8M4 4v4h4"/><circle cx="12" cy="12" r="1" ${F}/>`,
   source: `<path d="M7 17L17 7M9 7h8v8"/>`,
+  // ingredients (shopping rows; anything unmatched uses its category icon)
+  lemon: `<ellipse cx="12" cy="12" rx="8" ry="6"/><path d="M4 12H2M20 12h2"/><circle cx="12" cy="12" r="1" ${F}/>`,
+  onion: `<path d="M12 4c-1 3-7 6-7 11a7 7 0 0 0 14 0c0-5-6-8-7-11z"/><path d="M12 8c-2 3-3 5-3 9M12 8c2 3 3 5 3 9" ${D}/>`,
+  garlic: `<path d="M12 3v4M12 7c-5 2-7 5-7 8a7 5 0 0 0 14 0c0-3-2-6-7-8z"/><path d="M12 9v11" ${D}/>`,
+  tomato: `<circle cx="12" cy="13" r="8"/><path d="M8 6l4 2 4-2M12 8V4"/><circle cx="12" cy="8" r="1" ${F}/>`,
+  chicken: `<path d="M14 10a6 6 0 1 0-4 7l3 3M13 20l1-1M20 17l-1 1M14 10l4 4"/><circle cx="11" cy="11" r="1" ${F}/>`,
+  egg: `<path d="M12 3c4 0 7 6 7 11a7 7 0 0 1-14 0c0-5 3-11 7-11z"/>`,
+  feta: `<path d="M4 9l8-4 8 4v8l-8 4-8-4z"/><path d="M4 9l8 4 8-4M12 13v8"/><circle cx="16" cy="13" r="1" ${F}/>`,
+  yogurt: `<path d="M5 8h14l-2 12H7z"/><path d="M5 5h14v3H5z"/><path d="M7 13h10" ${D}/>`,
+  beans: `<path d="M6 4h12v16H6z"/><path d="M6 8h12M6 16h12"/><circle cx="12" cy="12" r="1" ${F}/>`,
+  stock: `<path d="M5 9h14v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/><path d="M3 9h18M9 6c0-1 1-1 1-2M14 6c0-1 1-1 1-2"/>`,
+  flour: `<path d="M7 6l2-2h6l2 2v14H7z"/><path d="M7 10h10"/><path d="M10 14h4" ${D}/>`,
+  paprika: `<path d="M9 8h6v12H9z"/><path d="M9 5h6v3H9z"/><path d="M9 14h6" ${D}/><circle cx="12" cy="17" r="1" ${F}/>`,
+  coffee: `<path d="M5 9h11v6a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 11h2a2 2 0 0 1 0 4h-2M9 6V4M12 6V4"/>`,
+  towels: `<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 19h8" ${D}/>`,
+  parsley: `<path d="M12 21V11M12 11c-4 0-6-3-5-7 3 0 5 3 5 7zM12 14c3 0 5-2 5-6-3 0-5 2-5 6z"/>`,
   // interface
   search: `<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/>`,
   plus: `<path d="M12 5v14M5 12h14"/>`,
@@ -50,4 +66,22 @@ export function densityGlyph(n, active) {
   const r = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" ${fill} stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
   const shapes = n === 1 ? r(4.5, 2.5, 11, 15) : n === 2 ? r(3.5, 2.5, 5, 15) + r(11.5, 2.5, 5, 15) : r(3.5, 2.5, 5, 6) + r(11.5, 2.5, 5, 6) + r(3.5, 11.5, 5, 6) + r(11.5, 11.5, 5, 6);
   return `<svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">${shapes}</svg>`;
+}
+
+// Ingredient icon for a shopping row: a matching drawing, otherwise the category icon.
+const ING_ICON = [
+  ["lemon", /\b(lemons?|limes?)\b/], ["onion", /\b(onions?|shallots?|scallions?|leeks?)\b/], ["garlic", /\bgarlic\b/],
+  ["beans", /\b(beans|chickpeas|lentils|crushed|canned)\b/], // before tomato: canned tomatoes get the can
+  ["tomato", /\btomato(es)?\b/], ["chicken", /\b(chicken|turkey)\b/], ["egg", /\beggs?\b/],
+  ["feta", /\b(feta|cheddar|parmesan|pecorino|mozzarella|cheese)\b/], ["yogurt", /\b(yogh?urt|sour cream|miso)\b/],
+  ["stock", /\b(stock|broth|dashi)\b/],
+  ["flour", /\b(flour|sugar|yeast)\b/], ["paprika", /\b(paprika|cumin|black pepper|peppercorns|salt|chili|cinnamon|turmeric)\b/],
+  ["coffee", /\b(coffee|tea)\b/], ["towels", /\b(paper towels?|towels?|toilet paper)\b/], ["parsley", /\b(parsley|cilantro|basil|dill|mint|herbs)\b/],
+];
+const CAT_ICON = { "produce": "produce", "protein": "protein", "dairy": "dairy", "pantry": "pantry", "herbs & spices": "herbs", "household": "household" };
+export function catIcon(category) { return CAT_ICON[String(category || "").toLowerCase()] || "pantry"; }
+export function ingredientIcon(name, category) {
+  const n = String(name || "").toLowerCase();
+  for (const [k, re] of ING_ICON) if (re.test(n)) return k;
+  return catIcon(category);
 }
