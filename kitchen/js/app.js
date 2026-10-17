@@ -8,11 +8,13 @@ import { detailView } from "./views/detail.js";
 import { editView } from "./views/edit.js";
 import { listView } from "./views/list.js";
 import { cookView } from "./views/cook.js";
+import { importView } from "./views/import.js";
 import { weekView, resetWeekEditing } from "./views/week.js";
 
 const routes = [
   { re: /^#\/login$/, view: (p, app) => loginView(app), public: true, tab: null },
   { re: /^#\/recipes$/, view: (p, app) => galleryView(app), tab: "recipes" },
+  { re: /^#\/import$/, view: (p, app) => importView(app), tab: "recipes" },
   { re: /^#\/add$/, view: (p, app) => editView(null, app), tab: "recipes" },
   { re: /^#\/recipe\/([^/]+)\/cook$/, view: ([id], app) => cookView(id, app), tab: null },
   { re: /^#\/recipe\/([^/]+)\/edit$/, view: ([id], app) => editView(id, app), tab: "recipes" },
