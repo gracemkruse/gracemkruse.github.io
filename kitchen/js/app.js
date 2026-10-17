@@ -6,7 +6,7 @@ import { loginView } from "./views/login.js";
 import { galleryView } from "./views/gallery.js";
 import { detailView } from "./views/detail.js";
 import { editView } from "./views/edit.js";
-import { comingView } from "./views/coming.js";
+import { listView } from "./views/list.js";
 import { weekView, resetWeekEditing } from "./views/week.js";
 
 const routes = [
@@ -16,7 +16,7 @@ const routes = [
   { re: /^#\/recipe\/([^/]+)\/edit$/, view: ([id], app) => editView(id, app), tab: "recipes" },
   { re: /^#\/recipe\/([^/]+)$/, view: ([id], app) => detailView(id, app), tab: "recipes" },
   { re: /^#\/week(?:\?w=(\d{4}-\d{2}-\d{2}))?$/, view: ([w], app) => weekView(app, w), tab: "week" },
-  { re: /^#\/list$/, view: (p, app) => comingView(app, "Shopping List", "To buy, Week and Pantry tabs, generated from This Week, with your hand-added items. Coming after This Week."), tab: "list" },
+  { re: /^#\/list(?:\?tab=(week|pantry))?$/, view: ([tab], app) => listView(app, tab || "buy"), tab: "list" },
 ];
 
 async function render() {

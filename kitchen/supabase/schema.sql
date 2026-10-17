@@ -45,6 +45,7 @@ create table if not exists ingredients (
   icon          text,
   stock_status  text not null default 'not_tracked'
                 check (stock_status in ('in_stock','low','out','not_tracked')),
+  in_cart       boolean not null default false,   -- checked off on the shopping list
   created_at    timestamptz not null default now(),
   unique (owner_id, name_norm)
 );
