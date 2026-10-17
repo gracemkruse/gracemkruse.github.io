@@ -1,6 +1,6 @@
 import * as data from "../data.js";
 import { icon } from "../icons.js";
-import { esc, $, $$, toast } from "../ui.js";
+import { esc, $, $$, toast, photoStyle } from "../ui.js";
 
 // Manual entry + edit. Required: title and servings.
 export async function editView(id, app) {
@@ -29,7 +29,18 @@ export async function editView(id, app) {
         <label class="field"><span class="t-label">Serves (required)</span><input class="t-item" name="servings" inputmode="numeric" required value="${esc(r.servings ?? "")}" placeholder="4"></label>
         <label class="field"><span class="t-label">Time in minutes</span><input class="t-item" name="total_minutes" inputmode="numeric" value="${esc(r.total_minutes ?? "")}" placeholder="45"></label>
       </div>
-      <label class="field"><span class="t-label">Photo link</span><input class="t-item" name="image_url" value="${esc(r.image_url ?? "")}" placeholder="https://…"><span class="hint t-label">Photo upload comes later — paste an image link for now.</span></label>
+      <div class="field">
+        <span class="t-label">Photo</span>
+        <div class="photo-pick">
+          <div class="photo-preview" style="${photoStyle({ ...r, id: id || "new" })}"></div>
+          <div class="photo-actions">
+            <label class="btn-text t-label">${icon("plus", true)} <span data-pick-label>${r.image_url ? "Change photo" : "Add photo"}</span><input type="file" accept="image/*" data-file hidden></label>
+            <button type="button" class="btn-text grey t-label" data-act="rm-photo" ${r.image_url ? "" : "hidden"}>Remove photo</button>
+            <span class="hint t-label" data-photo-status></span>
+          </div>
+        </div>
+        <input class="t-item" name="image_url" value="${esc(r.image_url?.startsWith("data:") ? "" : r.image_url ?? "")}" placeholder="or paste an image link" aria-label="Photo link">
+      </div>
 
       <div class="field">
         <span class="t-label">Tags</span>
@@ -73,14 +84,29 @@ export async function editView(id, app) {
     F.newtag.value = "";
   });
 
+  // Photo: upload right away so Save stays quick; the link field always holds the current photo.
+  let photo = r.image_url || "", uploading = false;
+  const preview = $(".photo-preview", app), status = $("[data-photo-status]", app), rm = $('[data-act="rm-photo"]', app);
+  const showPhoto = () => { if (photo) preview.style.backgroundImage = `url("${photo.replace(/["\\]/g, encodeURIComponent)}")`; else preview.setAttribute("style", photoStyle({ id: id || "new", title: F.title.value })); rm.hidden = !photo; $("[data-pick-label]", app).textContent = photo ? "Change photo" : "Add photo"; };
+  $("[data-file]", app).onchange = async e => {
+    const file = e.target.files[0]; e.target.value = ""; if (!file) return;
+    uploading = true; status.textContent = "Uploading…"; status.classList.remove("clay");
+    try { photo = await data.uploadPhoto(file); F.image_url.value = photo.startsWith("data:") ? "" : photo; status.textContent = ""; showPhoto(); }
+    catch (ex) { console.error(ex); status.textContent = ex.message || "Couldn’t upload — try again."; status.classList.add("clay"); }
+    uploading = false;
+  };
+  rm.onclick = () => { photo = ""; F.image_url.value = ""; showPhoto(); };
+  F.image_url.oninput = () => { photo = F.image_url.value.trim(); showPhoto(); };
+
   form.addEventListener("submit", async e => {
     e.preventDefault();
     const err = $(".error", app); err.textContent = "";
     const servings = Number(F.servings.value);
     if (!F.title.value.trim()) { err.textContent = "Add a title."; F.title.focus(); return; }
     if (!servings || servings < 1) { err.textContent = "Serves is required — how many people does it feed?"; F.servings.focus(); return; }
+    if (uploading) { err.textContent = "The photo is still uploading — one moment."; return; }
     const recipe = {
-      id, title: F.title.value, servings, total_minutes: F.total_minutes.value, image_url: F.image_url.value,
+      id, title: F.title.value, servings, total_minutes: F.total_minutes.value, image_url: photo,
       tags: [...selected],
       ingredients: $$(".ing-edit", ings).map(row => ({ amount: row.querySelector('[name="amount"]').value, unit: row.querySelector('[name="unit"]').value, name: row.querySelector('[name="name"]').value, prep: row.querySelector('[name="prep"]').value })),
       steps: F.steps.value.split("\n"), notes: F.notes.value, source_url: F.source_url.value, source_notes: F.source_notes.value,

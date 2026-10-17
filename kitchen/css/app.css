@@ -214,3 +214,49 @@ img { display: block; max-width: 100%; }
 .filters { margin: var(--s12) 0 var(--s8); }
 .cat-pick { display: flex; align-items: center; gap: var(--s12); height: var(--row); border-bottom: 1px solid var(--line); text-align: left; }
 .cat-pick.active { color: var(--chartreuse); }
+.srow .rm { width: 20px; height: var(--row); display: grid; place-items: center; flex: none; }
+
+/* ---------- Photo picker (edit form) ---------- */
+.photo-pick { display: grid; grid-template-columns: 106px 1fr; gap: var(--s16); align-items: center; }
+.photo-preview { aspect-ratio: 4 / 5; background-size: cover; background-position: center; }
+.photo-actions { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s12); }
+.photo-actions label { cursor: pointer; }
+
+/* ---------- Cooking view ---------- */
+.app:has(.cook) { padding-top: 0; padding-bottom: 96px; }
+.cook { max-width: 1120px; margin: 0 auto; }
+.cook-top { position: sticky; top: 0; z-index: 5; background: var(--white); display: flex; align-items: center; gap: var(--s16);
+  height: 56px; border-bottom: 1px solid var(--line); margin: 0 calc(var(--margin) * -1); padding: 0 var(--margin); }
+.cook-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+.timers { display: flex; gap: var(--s16); justify-content: flex-end; min-width: 64px; }
+.timer { display: inline-flex; align-items: center; gap: var(--s4); height: 44px; font-variant-numeric: tabular-nums; }
+.cook-body { display: flex; flex-direction: column; }
+.cook-main { display: contents; }
+.step-count { margin-top: var(--s24); }
+.cook-step { margin: var(--s12) 0 var(--s8); }
+.step-timers { display: flex; flex-wrap: wrap; gap: var(--s8) var(--s24); }
+.step-timers .btn-text { height: 44px; }
+.cook-ings { order: 1; }
+.cook-main > .section-head, .cook-steps { order: 2; }
+.cook-steps { list-style: none; margin: 0; padding: 0; }
+.cook-steps button { display: grid; grid-template-columns: 42px 1fr; width: 100%; text-align: left; padding: var(--s12) 0; color: var(--grey); position: relative; }
+.cook-steps li + li button { border-top: 1px solid var(--line); }
+.cook-steps .n { padding-top: var(--s4); }
+.cook-steps button.current { color: var(--ink); }
+.cook-steps button.current .n { color: var(--chartreuse); }
+.cook-steps button.current::before { content: ""; position: absolute; left: -12px; top: 12px; bottom: 12px; width: 1px; background: var(--chartreuse); }
+.cook-ing { display: grid; grid-template-columns: 20px 80px 1fr; gap: var(--s12); align-items: center; width: 100%; min-height: var(--row); text-align: left; border-bottom: 1px solid var(--line); }
+.cook-ing .qty { color: var(--grey); }
+.cook-ing .name { min-width: 0; }
+.cook-ing[aria-pressed="true"] .name, .cook-ing[aria-pressed="true"] .qty { color: var(--grey); text-decoration: line-through; text-decoration-thickness: 1px; }
+.cook-foot { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; height: 72px; padding: 0 var(--margin) env(safe-area-inset-bottom);
+  display: flex; justify-content: space-between; align-items: center; background: var(--white); border-top: 1px solid var(--line); }
+.cook-foot [disabled] { opacity: 0.4; cursor: default; }
+@media (min-width: 900px) {
+  .cook-body { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: var(--s48); align-items: start; }
+  .cook-main { display: block; }
+  .cook-ings { order: 0; position: sticky; top: 80px; margin-top: var(--s24); }
+  .cook-ings .section-head { margin-top: 0; }
+  .cook-foot { padding-left: max(var(--margin), calc((100vw - 1120px) / 2 + var(--margin))); padding-right: max(var(--margin), calc((100vw - 1120px) / 2 + var(--margin))); }
+}
+body:has(.cook) .demo-banner { display: none; }

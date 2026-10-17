@@ -49,6 +49,7 @@ export async function listView(app, tab = "buy") {
         ${box(x.in_cart, `data-extra="${esc(x.id)}"`)}
         ${icon(ingredientIcon(x.name, x.category), false, "ing")}
         <span class="name t-item">${esc(x.name)}</span><span class="spacer"></span>
+        <button class="rm grey" data-rm="${esc(x.id)}" aria-label="Remove ${esc(x.name)}">${icon("close", true)}</button>
       </div>`;
     const open = [...toBuy.filter(i => !i.in_cart).map(i => ({ ...i, row: rowIng })), ...d.extras.filter(x => !x.in_cart).map(x => ({ ...x, row: rowExtra }))];
     const cart = [...toBuy.filter(i => i.in_cart).map(i => ({ ...i, row: rowIng })), ...d.extras.filter(x => x.in_cart).map(x => ({ ...x, row: rowExtra }))];
@@ -93,6 +94,7 @@ export async function listView(app, tab = "buy") {
   const run = async (fn, msg = "Couldn’t update — try again.") => { try { await fn(); } catch (e) { console.error(e); toast(msg); } rerender(); };
   $$("[data-cart]", app).forEach(b => b.onclick = () => { b.classList.toggle("on"); run(() => data.setInCart(b.dataset.cart, b.getAttribute("aria-pressed") !== "true")); });
   $$("[data-extra]", app).forEach(b => b.onclick = () => { b.classList.toggle("on"); run(() => data.setExtraInCart(b.dataset.extra, b.getAttribute("aria-pressed") !== "true")); });
+  $$("[data-rm]", app).forEach(b => b.onclick = () => run(() => data.removeExtra(b.dataset.rm)));
   $$("[data-status]", app).forEach(b => b.onclick = () => run(() => data.setStock(b.dataset.status, NEXT[b.dataset.now] || "in_stock")));
   const finish = $("[data-finish]", app);
   if (finish) finish.onclick = () => run(async () => {

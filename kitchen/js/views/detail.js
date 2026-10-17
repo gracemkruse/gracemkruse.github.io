@@ -56,7 +56,7 @@ export async function detailView(id, app) {
     </article>`;
 
   $('[data-act="week"]', app).onclick = () => pickDay(r);
-  $('[data-act="cook"]', app).onclick = () => toast("Cooking view comes with the tablet build.");
+  $('[data-act="cook"]', app).onclick = () => { location.hash = `#/recipe/${encodeURIComponent(r.id)}/cook`; };
   $('[data-act="archive"]', app).onclick = async () => {
     if (!confirm(`Archive “${r.title}”? It will be hidden from your recipes.`)) return;
     await data.archiveRecipe(r.id); toast("Archived."); location.hash = "#/recipes";

@@ -169,6 +169,41 @@ export async function copyWeek(items, dayShift) {
   if (!shifted.length) return;
   const { error } = await sb.from("meal_plan").insert(shifted.map(s => ({ recipe_id: s.recipe_id, plan_date: s.date }))); if (error) throw error;
 }
+// Finished cooking: mark today's planned meal made, or log it on today if it wasn't planned.
+export async function markCooked(recipeId) {
+  const d = new Date(), today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  if (isDemo) {
+    const db = demo(), m = (db.meal_plan ||= []).find(x => x.recipe_id === recipeId && x.date === today && x.status !== "made");
+    if (m) m.status = "made"; else db.meal_plan.push({ id: uid(), recipe_id: recipeId, date: today, status: "made", created_at: new Date().toISOString() });
+    saveDemo(db); return;
+  }
+  const { data, error } = await sb.from("meal_plan").select("id").eq("recipe_id", recipeId).eq("plan_date", today).neq("status", "made").limit(1);
+  if (error) throw error;
+  const r = data.length ? await sb.from("meal_plan").update({ status: "made" }).eq("id", data[0].id)
+                        : await sb.from("meal_plan").insert({ recipe_id: recipeId, plan_date: today, status: "made" });
+  if (r.error) throw r.error;
+}
+
+// ---------------- Photos ----------------
+// Shrinks the photo in the browser first (phone photos are huge), then stores it.
+// Supabase: public "recipe-photos" bucket, one folder per account. Demo: a small data URL.
+export async function uploadPhoto(file) {
+  const blob = await shrink(file, isDemo ? 800 : 1600);
+  if (isDemo) return await new Promise((ok, no) => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.onerror = no; fr.readAsDataURL(blob); });
+  const { data: s } = await sb.auth.getSession(); const user = s.session?.user?.id; if (!user) throw new Error("Not signed in.");
+  const path = `${user}/${uid()}.jpg`;
+  const { error } = await sb.storage.from("recipe-photos").upload(path, blob, { contentType: "image/jpeg", cacheControl: "31536000" });
+  if (error) throw new Error(/bucket/i.test(error.message) ? "Photo storage isn’t set up yet (run migration 003)." : error.message);
+  return sb.storage.from("recipe-photos").getPublicUrl(path).data.publicUrl;
+}
+async function shrink(file, max) {
+  const img = await (window.createImageBitmap ? createImageBitmap(file, { imageOrientation: "from-image" }) : new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error("That file isn’t an image we can read.")); i.src = URL.createObjectURL(file); }));
+  const scale = Math.min(1, max / Math.max(img.width, img.height));
+  const c = document.createElement("canvas"); c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+  c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  return await new Promise((ok, no) => c.toBlob(b => (b ? ok(b) : no(new Error("Couldn’t read that photo."))), "image/jpeg", 0.85));
+}
+
 // ---------------- Shopping List ----------------
 // Category order matches the store walk: Produce → Protein → Dairy → Pantry → Herbs & Spices → Household.
 export const CATEGORIES = [
@@ -267,6 +302,10 @@ export async function addExtra(name) {
 export async function setExtraInCart(id, inCart) {
   if (isDemo) { const db = demo(); const x = (db.extras || []).find(e => e.id === id); if (x) x.in_cart = inCart; saveDemo(db); return; }
   const { error } = await sb.from("shopping_extras").update({ in_cart: inCart }).eq("id", id); if (error) throw error;
+}
+export async function removeExtra(id) {
+  if (isDemo) { const db = demo(); db.extras = (db.extras || []).filter(e => e.id !== id); saveDemo(db); return; }
+  const { error } = await sb.from("shopping_extras").delete().eq("id", id); if (error) throw error;
 }
 // Done shopping: everything in the cart is now in stock; checked extras are cleared.
 export async function finishShopping(ingredientIds) {
