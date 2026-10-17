@@ -11,7 +11,9 @@ export async function galleryView(app) {
 
   function paint() {
     const q = state.q.trim().toLowerCase();
-    const shown = recipes.filter(r => (state.tag === "All" || r.tags.includes(state.tag)) && (!q || r.title.toLowerCase().includes(q)));
+    // every word you type must appear somewhere: title, tag, ingredient or source ("lemons chicken" finds Lemon Chicken)
+    const terms = q.split(/\s+/).filter(Boolean).map(t => (t.length > 3 ? t.replace(/(es|s)$/, "") : t));
+    const shown = recipes.filter(r => (state.tag === "All" || r.tags.includes(state.tag)) && terms.every(t => (r.words || r.title.toLowerCase()).includes(t)));
     const title = state.tag === "All" ? "Recipes" : state.tag;
     app.innerHTML = `
       <div class="gallery">
