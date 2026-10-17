@@ -40,7 +40,7 @@ SECTION = re.compile(r"^[-*#\s]*\**\s*(ingredients?|instructions?|directions?|me
 def clean_md(s):
     s = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", s)                 # images
     s = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", s)            # links → text
-    s = s.replace("**", "").replace("__", "")
+    s = s.replace("**", "").replace("__", "").replace("~~", "")
     return re.sub(r"\s+", " ", s).strip()
 
 

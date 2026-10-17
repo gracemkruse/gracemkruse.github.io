@@ -2,6 +2,7 @@
 //   • Supabase (real, shared across devices) when config.js has a URL + key
 //   • Demo (sample recipes in localStorage) otherwise
 import { SUPABASE_URL, SUPABASE_ANON_KEY, HOUSEHOLD_EMAIL } from "./config.js";
+import { mergedPrep } from "./ingredients.js";
 
 export const isDemo = !(SUPABASE_URL && SUPABASE_ANON_KEY);
 let sb = null;
@@ -275,7 +276,7 @@ export async function shoppingData(start, end) {
     const { data, error } = await sb.from("recipe_ingredients").select("recipe_id,amount,unit,ingredients(id,name,stock_status,category_id,in_cart)").in("recipe_id", ids);
     if (error) throw error; lines = data;
   }
-  const { data: ingAll, error: e2 } = await sb.from("ingredients").select("id,name,stock_status,category_id,in_cart").order("name"); if (e2) throw e2;
+  const ingAll = await fetchAll(() => sb.from("ingredients").select("id,name,stock_status,category_id,in_cart").order("name").order("id"));
   // give uncategorized ingredients a best-guess category (once)
   const missing = ingAll.filter(i => !i.category_id);
   for (const i of missing) { i.category_id = catId[guessCategory(i.name)]; await sb.from("ingredients").update({ category_id: i.category_id }).eq("id", i.id); }
@@ -347,6 +348,94 @@ export async function finishShopping(ingredientIds) {
   if (ingredientIds.length) { const { error } = await sb.from("ingredients").update({ stock_status: "in_stock", in_cart: false }).in("id", ingredientIds); if (error) throw error; }
   const { error: e2 } = await sb.from("shopping_extras").delete().eq("in_cart", true); if (e2) throw e2;
 }
+// ---------------- Ingredient editing (Pantry) ----------------
+// Supabase returns at most 1000 rows per request; page through bigger tables.
+async function fetchAll(build) {
+  const out = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await build().range(from, from + 999); if (error) throw error;
+    out.push(...data); if (data.length < 1000) return out;
+  }
+}
+
+// How many recipe lines use each ingredient: { [ingredient_id]: n }
+export async function ingredientUses() {
+  if (isDemo) { const n = {}; for (const r of demo().recipes) for (const g of r.ingredients) n[norm(g.name)] = (n[norm(g.name)] || 0) + 1; return n; }
+  const rows = await fetchAll(() => sb.from("recipe_ingredients").select("ingredient_id").order("id"));
+  const n = {}; for (const r of rows) n[r.ingredient_id] = (n[r.ingredient_id] || 0) + 1; return n;
+}
+
+// { recipes: [{ id, title }] } — the recipes that use this ingredient
+export async function ingredientRecipes(id) {
+  if (isDemo) return demo().recipes.filter(r => !r.archived_at && r.ingredients.some(g => norm(g.name) === id)).map(r => ({ id: r.id, title: r.title })).sort(byTitle);
+  const { data, error } = await sb.from("recipe_ingredients").select("recipes(id,title,archived_at)").eq("ingredient_id", id); if (error) throw error;
+  const seen = new Map(); for (const x of data) if (x.recipes && !x.recipes.archived_at) seen.set(x.recipes.id, { id: x.recipes.id, title: x.recipes.title });
+  return [...seen.values()].sort(byTitle);
+}
+
+// Rename. If another ingredient already has that name, the two are merged. Returns the id that remains.
+export async function renameIngredient(id, newName) {
+  const name = String(newName || "").trim(); if (!name) throw new Error("Give it a name.");
+  if (isDemo) {
+    const db = demo(), p = demoPantry(db), k = norm(name);
+    if (k === id) { p[id].name = name; for (const r of db.recipes) for (const g of r.ingredients) if (norm(g.name) === id) g.name = name; saveDemo(db); return id; }
+    if (p[k]) { await mergeIngredients(k, [id], { keepPrep: true }); return k; }
+    p[k] = { ...p[id], name }; delete p[id];
+    for (const r of db.recipes) for (const g of r.ingredients) if (norm(g.name) === id) g.name = name;
+    saveDemo(db); return k;
+  }
+  const { data: other } = await sb.from("ingredients").select("id").eq("name_norm", norm(name)).neq("id", id).limit(1);
+  if (other?.length) { await mergeIngredients(other[0].id, [id], { keepPrep: true }); return other[0].id; }
+  const { error } = await sb.from("ingredients").update({ name }).eq("id", id); if (error) throw error;
+  return id;
+}
+
+// Merge sources into target: recipe lines move over (a word like "zest" goes onto the line's prep),
+// stock carries over if the target wasn't tracked, then the sources are removed.
+export async function mergeIngredients(targetId, sourceIds, { keepPrep = false } = {}) {
+  sourceIds = sourceIds.filter(x => x !== targetId); if (!sourceIds.length) return;
+  if (isDemo) {
+    const db = demo(), p = demoPantry(db), t = p[targetId];
+    for (const sid of sourceIds) {
+      const src = p[sid]; if (!src) continue;
+      for (const r of db.recipes) for (const g of r.ingredients) if (norm(g.name) === sid) { g.prep = keepPrep ? g.prep : mergedPrep(g.name, g.prep); g.name = t.name; }
+      if (t.stock_status === "not_tracked" && src.stock_status !== "not_tracked") t.stock_status = src.stock_status;
+      t.in_cart = t.in_cart || src.in_cart; delete p[sid];
+    }
+    saveDemo(db); return;
+  }
+  const { data: ings, error } = await sb.from("ingredients").select("id,name,stock_status,in_cart").in("id", [targetId, ...sourceIds]); if (error) throw error;
+  const t = ings.find(x => x.id === targetId); if (!t) throw new Error("That ingredient is gone.");
+  let stock = t.stock_status, cart = t.in_cart;
+  for (const src of ings.filter(x => x.id !== targetId)) {
+    const lines = await fetchAll(() => sb.from("recipe_ingredients").select("id,prep").eq("ingredient_id", src.id).order("id"));
+    const changed = keepPrep ? [] : lines.filter(l => mergedPrep(src.name, l.prep) !== (l.prep || null));
+    for (let i = 0; i < changed.length; i += 10)                       // a few at a time
+      await Promise.all(changed.slice(i, i + 10).map(l => sb.from("recipe_ingredients").update({ ingredient_id: targetId, prep: mergedPrep(src.name, l.prep) }).eq("id", l.id).then(r => { if (r.error) throw r.error; })));
+    const r1 = await sb.from("recipe_ingredients").update({ ingredient_id: targetId }).eq("ingredient_id", src.id); if (r1.error) throw r1.error;
+    if (stock === "not_tracked" && src.stock_status !== "not_tracked") stock = src.stock_status;
+    cart = cart || src.in_cart;
+    const r2 = await sb.from("ingredients").delete().eq("id", src.id); if (r2.error) throw r2.error;
+  }
+  const r3 = await sb.from("ingredients").update({ stock_status: stock, in_cart: cart }).eq("id", targetId); if (r3.error) throw r3.error;
+}
+
+// Merge one suggested group into a single ingredient called `name` (the closest existing one is kept and renamed).
+export async function mergeGroup(name, members, pantry) {
+  const want = norm(name);
+  let target = members.find(i => norm(i.name) === want) || pantry.find(i => norm(i.name) === want);
+  const sources = members.filter(i => i !== target).map(i => String(i.ingredient_id));
+  if (!target) { target = members[0]; sources.shift(); }
+  await mergeIngredients(String(target.ingredient_id), sources);
+  if (target.name !== name) await renameIngredient(String(target.ingredient_id), name);
+}
+
+// Remove an ingredient that no recipe uses.
+export async function deleteIngredient(id) {
+  if (isDemo) { const db = demo(); delete demoPantry(db)[id]; saveDemo(db); return; }
+  const { error } = await sb.from("ingredients").delete().eq("id", id); if (error) throw new Error("It’s still used in a recipe.");
+}
+
 // Demo: one pantry entry per unique ingredient name, built from the recipes.
 function demoPantry(db) {
   db.pantry ||= {};
