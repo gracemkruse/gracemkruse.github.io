@@ -295,3 +295,12 @@ body:has(.cook) .demo-banner { display: none; }
 .tidy-members .chip[aria-pressed="false"] { text-decoration: line-through; }
 .tidy-foot { position: sticky; bottom: calc(var(--s32) * -1); background: var(--white); padding: var(--s16) 0; display: flex; align-items: center; gap: var(--s16); flex-wrap: wrap; }
 .tidy-line .btn-text { white-space: nowrap; flex: none; }
+
+/* ---------- Import: photo review grid ---------- */
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: var(--s16) var(--s12); margin: var(--s16) 0; }
+.pg { display: flex; flex-direction: column; gap: var(--s4); text-align: left; min-width: 0; }
+.pg-img { display: block; aspect-ratio: 4 / 5; background-size: cover; background-position: center; }
+.pg-t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pg.off .pg-img { opacity: 0.25; }
+.pg.off .pg-t { color: var(--grey); text-decoration: line-through; }
+.tag-v { white-space: nowrap; }

@@ -15,6 +15,13 @@ export async function importView(app) {
         <span class="t-label grey" data-fname>notion-import.json</span>
       </div>
       <div data-out></div>
+      <div class="section-head"><span class="t-label">Photos</span><span class="t-label grey">after the recipes are in</span></div>
+      <p class="t-instr">Pick all the photos in <span class="t-item">kitchen-docs/notion-photos</span> (Cmd + A in the picker). Each one is matched to its recipe by name.</p>
+      <div class="toolbar">
+        <label class="btn-text t-label">${icon("plus", true)} Choose photos<input type="file" accept="image/*" multiple data-photos hidden></label>
+        <span class="t-label grey" data-pcount></span>
+      </div>
+      <div data-pout></div>
     </section>`;
   const out = $("[data-out]", app);
   $("[data-file]", app).onchange = async e => {
@@ -24,6 +31,53 @@ export async function importView(app) {
     try { payload = JSON.parse(await file.text()); if (payload.format !== "kitchen-import-v1" || !Array.isArray(payload.recipes)) throw new Error(); }
     catch { out.innerHTML = `<p class="t-label clay">That isn’t a Kitchen import file. Pick notion-import.json.</p>`; return; }
     preview(out, payload);
+  };
+  $("[data-photos]", app).onchange = e => { const files = [...e.target.files]; if (files.length) photoStep($("[data-pout]", app), files, $("[data-pcount]", app)); };
+}
+
+// ---------- Photos: match files to recipes by name, review, upload ----------
+export const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");   // same as tools/notion_photos.py
+
+async function photoStep(out, files, countEl) {
+  const recipes = await data.listRecipes();
+  const bySlug = new Map(recipes.map(r => [slug(r.title), r]));
+  const items = files.map(f => ({ f, r: bySlug.get(slug(f.name.replace(/\.[^.]+$/, ""))) }));
+  const matched = items.filter(x => x.r), unmatched = items.filter(x => !x.r);
+  for (const x of matched) x.on = !x.r.image_url;            // recipes that already have a photo are skipped
+  countEl.textContent = `${files.length} chosen`;
+  out.innerHTML = `
+    <p class="t-label grey">${matched.length} match a recipe${unmatched.length ? ` · ${unmatched.length} don’t` : ""} · tap a photo to skip it</p>
+    <div class="photo-grid">${matched.map((x, i) => `
+      <button class="pg${x.on ? "" : " off"}" data-p="${i}" aria-pressed="${x.on}">
+        <span class="pg-img" style="background-image:url('${URL.createObjectURL(x.f)}')"></span>
+        <span class="t-label pg-t">${esc(x.r.title)}</span>
+        ${x.r.image_url ? `<span class="t-label grey">has a photo</span>` : ""}
+      </button>`).join("")}</div>
+    ${unmatched.length ? `<p class="t-label grey">No recipe found for: ${unmatched.map(x => esc(x.f.name)).join(", ")}</p>` : ""}
+    <div class="import-go">
+      <button class="btn-primary t-label" data-up></button>
+      <div class="progress" hidden><div class="bar"></div></div>
+      <p class="t-label grey" data-pstatus></p>
+    </div>`;
+  const btn = $("[data-up]", out);
+  const label = () => { const n = matched.filter(x => x.on).length; btn.textContent = `Upload ${n} photo${n === 1 ? "" : "s"}`; btn.disabled = !n; };
+  $(".photo-grid", out).onclick = e => { const b = e.target.closest("[data-p]"); if (!b) return; const x = matched[+b.dataset.p]; x.on = !x.on; b.classList.toggle("off", !x.on); b.setAttribute("aria-pressed", x.on); label(); };
+  label();
+  btn.onclick = async () => {
+    const todo = matched.filter(x => x.on); btn.disabled = true;
+    const st = $("[data-pstatus]", out), prog = $(".progress", out), bar = $(".bar", out); prog.hidden = false;
+    const leave = ev => { ev.preventDefault(); ev.returnValue = ""; }; window.addEventListener("beforeunload", leave);
+    let done = 0; const failed = [];
+    const work = async x => {
+      try { await data.setRecipePhoto(x.r.id, await data.uploadPhoto(x.f)); x.on = false; }
+      catch (err) { console.error(x.r.title, err); failed.push(x.r.title); }
+      done++; st.textContent = `Uploading ${done} of ${todo.length}… keep this page open`; bar.style.width = `${Math.round((done / todo.length) * 100)}%`;
+    };
+    for (let i = 0; i < todo.length; i += 3) await Promise.all(todo.slice(i, i + 3).map(work));   // three at a time
+    window.removeEventListener("beforeunload", leave);
+    st.innerHTML = `Done: ${todo.length - failed.length} photos added.${failed.length ? `<br><span class="clay">Couldn’t add: ${failed.map(esc).join(", ")} — try those again.</span>` : ""}`;
+    btn.outerHTML = `<a class="btn-primary t-label" href="#/recipes">See your recipes</a>`;
+    toast("Photos added.");
   };
 }
 

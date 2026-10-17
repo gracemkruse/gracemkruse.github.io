@@ -220,6 +220,10 @@ export async function importAll(payload, progress = () => {}) {
 const firstByNormBy = (list, key) => { const m = new Map(); for (const x of list) if (!m.has(norm(key(x)))) m.set(norm(key(x)), x); return [...m.values()]; };
 
 // ---------------- Photos ----------------
+export async function setRecipePhoto(id, url) {
+  if (isDemo) { const db = demo(); const r = db.recipes.find(x => x.id === id); if (r) r.image_url = url; saveDemo(db); return; }
+  const { error } = await sb.from("recipes").update({ image_url: url }).eq("id", id); if (error) throw error;
+}
 // Shrinks the photo in the browser first (phone photos are huge), then stores it.
 // Supabase: public "recipe-photos" bucket, one folder per account. Demo: a small data URL.
 export async function uploadPhoto(file) {

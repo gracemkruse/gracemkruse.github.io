@@ -42,6 +42,9 @@ async function render() {
   window.scrollTo(0, 0);
 }
 
+// Always load the newest app files after an update (see sw.js).
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+
 (async function start() {
   $("#demo-banner").hidden = !data.isDemo;
   await data.init();
