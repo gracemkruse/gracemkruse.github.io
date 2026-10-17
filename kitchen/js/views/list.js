@@ -1,10 +1,10 @@
 import * as data from "../data.js";
 import { icon, ingredientIcon, catIcon } from "../icons.js";
-import { esc, $, $$, toast, sheet, amount, iso, addDays, weekStart, rangeLabel } from "../ui.js";
+import { esc, $, $$, toast, sheet, amount, iso, addDays, weekStart, monthDay } from "../ui.js";
 
 // Shopping List: To buy / Week / Pantry (mirrors the Notion Grocery views).
-//   To buy — this week's ingredients that aren't in stock, plus hand-added items. Check off → In the cart → Done shopping.
-//   Week   — every ingredient this week's meals need, with its stock status (tap to change).
+//   To buy — ingredients for upcoming meals that aren't in stock, plus hand-added items. Check off → In the cart → Done shopping.
+//   Week   — every ingredient the upcoming meals need, with its stock status (tap to change).
 //   Pantry — every ingredient you've ever used: status, search, filter, category.
 const TABS = [["buy", "To buy"], ["week", "Week"], ["pantry", "Pantry"]];
 const STATUS = { in_stock: ["In stock", "green"], low: ["Low", "grey"], out: ["Out", "clay"], not_tracked: ["Not tracked", "grey"] };
@@ -12,7 +12,8 @@ const NEXT = { in_stock: "low", low: "out", out: "not_tracked", not_tracked: "in
 let pantryQuery = "", pantryFilter = "all";
 
 export async function listView(app, tab = "buy") {
-  const start = weekStart(), end = addDays(start, 6);
+  // Upcoming meals: today through the end of next week (so weekend shopping covers next week's plan).
+  const start = new Date(), end = addDays(weekStart(), 13);
   const d = await data.shoppingData(iso(start), iso(end));
   const order = d.categories.map(c => c.name);
   const toBuy = d.week.filter(i => i.stock_status !== "in_stock" || i.in_cart);
@@ -64,7 +65,7 @@ export async function listView(app, tab = "buy") {
         <span class="name t-item" title="${esc(i.recipes.join(", "))}">${esc(i.name)}</span>
         <span class="qty t-label grey">${esc(qty(i))}</span><span class="spacer"></span>${statusBtn(i)}
       </div>`;
-    body = d.week.length ? groups(d.week, rowWeek) : `<p class="t-item grey list-empty">No meals left to cook this week. <a class="green" href="#/week">Plan some</a>.</p>`;
+    body = d.week.length ? groups(d.week, rowWeek) : `<p class="t-item grey list-empty">No meals planned between now and the end of next week. <a class="green" href="#/week">Plan some</a>.</p>`;
   } else {
     const q = pantryQuery.trim().toLowerCase();
     const shown = d.pantry.filter(i => (!q || i.name.toLowerCase().includes(q)) && (pantryFilter === "all" || i.stock_status === pantryFilter));
@@ -84,7 +85,7 @@ export async function listView(app, tab = "buy") {
   app.innerHTML = `
     <section class="list">
       <h1 class="t-page page-title">Shopping List</h1>
-      <div class="t-label grey">${tab === "buy" ? `${openCount} to buy · ` : ""}This week, ${esc(rangeLabel(start))}</div>
+      <div class="t-label grey">${tab === "buy" ? `${openCount} to buy · ` : ""}Meals ${esc(monthDay(start))} — ${esc(monthDay(end))}</div>
       <nav class="list-tabs">${TABS.map(([k, l]) => `<a class="t-label${k === tab ? " active" : ""}" href="#/list${k === "buy" ? "" : "?tab=" + k}">${l}</a>`).join("")}</nav>
       ${body}
     </section>`;
