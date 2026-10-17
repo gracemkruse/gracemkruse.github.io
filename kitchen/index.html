@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#FFFFFF">
+  <title>Kitchen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400&family=Spectral:wght@300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div id="demo-banner" class="demo-banner t-label" hidden>Demo data · saved in this browser only · connect Supabase to save for real</div>
+  <main id="app" class="app" aria-live="polite"></main>
+  <nav id="tabbar" class="tabbar" hidden aria-label="Main">
+    <a href="#/recipes" data-tab="recipes" class="t-label">Recipes</a>
+    <a href="#/week" data-tab="week" class="t-label">This Week</a>
+    <a href="#/list" data-tab="list" class="t-label">List</a>
+  </nav>
+  <div id="toast" class="toast t-label" role="status" hidden></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+/* Atelier design tokens — mirror of the Figma "04 Style Guide" variables and text styles. */
+:root {
+  /* Color: 7 total */
+  --white: #FFFFFF;             /* backgrounds; white on filled shapes */
+  --ink: #1B1A17;               /* anything you read */
+  --grey: #8A8780;              /* anything secondary */
+  --line: #DCD9D2;              /* 1px dividers, checkbox + ring outlines */
+  --chartreuse: #727D1D;        /* green words and 1px lines */
+  --chartreuse-bright: #8E9C2A; /* green filled shapes (white on top) */
+  --clay: #B5462B;              /* the word OUT only */
+
+  /* Type families */
+  --serif: "Spectral", Georgia, serif;
+  --sans: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Spacing (4-pt) */
+  --s4: 4px; --s8: 8px; --s12: 12px; --s16: 16px; --s20: 20px; --s24: 24px;
+  --s32: 32px; --s40: 40px; --s48: 48px; --s64: 64px;
+
+  /* Layout */
+  --margin: 24px;
+  --col-narrow: 106px;
+  --gutter: 12px;
+  --sidebar: 52px;
+  --row: 44px;
+  --row-week: 60px;
+  --tabbar: 72px;
+  --icon: 20px;
+  --icon-inline: 16px;
+}
+
+/* Text styles: 5 total */
+.t-page   { font: 300 48px/52px var(--serif); letter-spacing: 0; }
+.t-recipe { font: 300 20px/28px var(--serif); letter-spacing: 0; }
+.t-instr  { font: 400 16px/24px var(--sans); }
+.t-item   { font: 400 16px/24px var(--mono); }
+.t-label  { font: 400 12px/16px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; }
