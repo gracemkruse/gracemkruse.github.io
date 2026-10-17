@@ -42,12 +42,15 @@ export async function signOut() {
 //   tags: [names], ingredients: [{ amount, unit, name, prep, stock_status }] }
 
 export async function listRecipes() {
-  if (isDemo) return demo().recipes.filter(r => !r.archived_at).map(summary).sort(byTitle);
+  // `words` = everything search should find: title, tags, ingredients, source
+  const words = (r, ings) => [r.title, ...r.tags, ...ings, r.source_url, r.source_notes].filter(Boolean).join(" ").toLowerCase();
+  if (isDemo) return demo().recipes.filter(r => !r.archived_at).map(r => ({ ...summary(r), words: words(r, r.ingredients.map(g => g.name)) })).sort(byTitle);
   const { data, error } = await sb.from("recipes")
-    .select("id,title,image_url,servings,total_minutes,recipe_tags(tags(name))")
+    .select("id,title,image_url,servings,total_minutes,source_url,source_notes,recipe_tags(tags(name)),recipe_ingredients(ingredients(name))")
     .is("archived_at", null).order("title");
   if (error) throw error;
-  return data.map(r => ({ ...r, tags: (r.recipe_tags || []).map(x => x.tags?.name).filter(Boolean) }));
+  return data.map(({ recipe_tags, recipe_ingredients, ...r }) => { r.tags = (recipe_tags || []).map(x => x.tags?.name).filter(Boolean);
+    return { ...r, words: words(r, (recipe_ingredients || []).map(x => x.ingredients?.name).filter(Boolean)) }; });
 }
 
 export async function listTags() {
