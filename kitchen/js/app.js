@@ -7,6 +7,7 @@ import { galleryView } from "./views/gallery.js";
 import { detailView } from "./views/detail.js";
 import { editView } from "./views/edit.js";
 import { comingView } from "./views/coming.js";
+import { weekView, resetWeekEditing } from "./views/week.js";
 
 const routes = [
   { re: /^#\/login$/, view: (p, app) => loginView(app), public: true, tab: null },
@@ -14,7 +15,7 @@ const routes = [
   { re: /^#\/add$/, view: (p, app) => editView(null, app), tab: "recipes" },
   { re: /^#\/recipe\/([^/]+)\/edit$/, view: ([id], app) => editView(id, app), tab: "recipes" },
   { re: /^#\/recipe\/([^/]+)$/, view: ([id], app) => detailView(id, app), tab: "recipes" },
-  { re: /^#\/week$/, view: (p, app) => comingView(app, "This Week", "Plan the week, mark meals made, and step back through past weeks. This is the next build."), tab: "week" },
+  { re: /^#\/week(?:\?w=(\d{4}-\d{2}-\d{2}))?$/, view: ([w], app) => weekView(app, w), tab: "week" },
   { re: /^#\/list$/, view: (p, app) => comingView(app, "Shopping List", "To buy, Week and Pantry tabs, generated from This Week, with your hand-added items. Coming after This Week."), tab: "list" },
 ];
 
@@ -23,7 +24,8 @@ async function render() {
   const route = routes.find(r => r.re.test(hash));
   if (!route) { location.hash = "#/recipes"; return; }
   if (!route.public && !(await data.hasSession())) { location.hash = "#/login"; return; }
-  const params = hash.match(route.re).slice(1).map(decodeURIComponent);
+  const params = hash.match(route.re).slice(1).map(x => (x == null ? x : decodeURIComponent(x)));
+  if (route.tab !== "week") resetWeekEditing();
   const app = $("#app");
   $("#tabbar").hidden = !route.tab;
   $$("#tabbar a").forEach(a => a.classList.toggle("active", a.dataset.tab === route.tab));
