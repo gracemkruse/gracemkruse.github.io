@@ -116,6 +116,56 @@ export async function archiveRecipe(id) {
   if (error) throw error;
 }
 
+// ---------------- This Week (meal plan) ----------------
+// Item shape: { id, date: "YYYY-MM-DD", status: "planned"|"made"|"skipped", recipe: { id, title, total_minutes, tags } }
+
+export async function listWeek(start, end) {
+  if (isDemo) {
+    const db = demo(), byId = Object.fromEntries(db.recipes.map(r => [r.id, r]));
+    return (db.meal_plan || []).filter(m => m.date >= start && m.date <= end && byId[m.recipe_id])
+      .sort((a, b) => a.date.localeCompare(b.date) || a.created_at.localeCompare(b.created_at))
+      .map(m => ({ id: m.id, date: m.date, status: m.status, recipe: summary(byId[m.recipe_id]) }));
+  }
+  const { data, error } = await sb.from("meal_plan")
+    .select("id,plan_date,status,created_at,recipes(id,title,total_minutes,recipe_tags(tags(name)))")
+    .gte("plan_date", start).lte("plan_date", end).order("plan_date").order("created_at");
+  if (error) throw error;
+  return data.filter(m => m.recipes).map(m => ({ id: m.id, date: m.plan_date, status: m.status,
+    recipe: { id: m.recipes.id, title: m.recipes.title, total_minutes: m.recipes.total_minutes, tags: (m.recipes.recipe_tags || []).map(x => x.tags?.name).filter(Boolean) } }));
+}
+
+export async function addToWeek(recipeId, date) {
+  if (isDemo) { const db = demo(); (db.meal_plan ||= []).push({ id: uid(), recipe_id: recipeId, date, status: "planned", created_at: new Date().toISOString() }); saveDemo(db); return; }
+  const { error } = await sb.from("meal_plan").insert({ recipe_id: recipeId, plan_date: date }); if (error) throw error;
+}
+
+export async function setMealStatus(id, status) {
+  if (isDemo) { const db = demo(); const m = (db.meal_plan || []).find(x => x.id === id); if (m) m.status = status; saveDemo(db); return; }
+  const { error } = await sb.from("meal_plan").update({ status }).eq("id", id); if (error) throw error;
+}
+
+export async function removeFromWeek(id) {
+  if (isDemo) { const db = demo(); db.meal_plan = (db.meal_plan || []).filter(x => x.id !== id); saveDemo(db); return; }
+  const { error } = await sb.from("meal_plan").delete().eq("id", id); if (error) throw error;
+}
+
+// Times made = meals marked "made" (computed, never a separate counter that can drift).
+export async function timesMade(recipeId) {
+  if (isDemo) return (demo().meal_plan || []).filter(m => m.recipe_id === recipeId && m.status === "made").length;
+  const { count, error } = await sb.from("meal_plan").select("id", { count: "exact", head: true }).eq("recipe_id", recipeId).eq("status", "made");
+  if (error) throw error;
+  return count || 0;
+}
+
+// Copy a past week's meals into another week (same weekdays), as planned.
+export async function copyWeek(items, dayShift) {
+  const shifted = items.map(m => ({ recipe_id: m.recipe.id, date: shiftDate(m.date, dayShift) }));
+  if (isDemo) { const db = demo(); for (const s of shifted) (db.meal_plan ||= []).push({ id: uid(), recipe_id: s.recipe_id, date: s.date, status: "planned", created_at: new Date().toISOString() }); saveDemo(db); return; }
+  if (!shifted.length) return;
+  const { error } = await sb.from("meal_plan").insert(shifted.map(s => ({ recipe_id: s.recipe_id, plan_date: s.date }))); if (error) throw error;
+}
+function shiftDate(iso, days) { const d = new Date(iso + "T12:00:00"); d.setDate(d.getDate() + days); return d.toISOString().slice(0, 10); }
+
 // ---------------- helpers ----------------
 const norm = s => String(s || "").trim().toLowerCase();
 const byTitle = (a, b) => a.title.localeCompare(b.title);
@@ -151,10 +201,19 @@ function demo() {
   if (memoryDb) return memoryDb;
   const raw = safeGet(DEMO_KEY);
   memoryDb = raw ? JSON.parse(raw) : { recipes: SEED };
-  if (!raw) saveDemo(memoryDb);
+  if (!memoryDb.meal_plan) memoryDb.meal_plan = seedWeek();
+  if (!raw || !JSON.parse(raw).meal_plan) saveDemo(memoryDb);
   return memoryDb;
 }
 function saveDemo(db) { memoryDb = db; safeSet(DEMO_KEY, JSON.stringify(db)); }
+function seedWeek() {
+  const now = new Date(), mon = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
+  const day = n => { const d = new Date(mon); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+  const at = new Date().toISOString();
+  return [["lemon-chicken", 0, "made"], ["pasta-e-fagioli", 1, "planned"], ["miso-soup", 1, "planned"], ["shakshuka", 3, "planned"], ["focaccia", 5, "planned"], ["tomato-pie", 6, "planned"],
+          ["cacio-e-pepe", -7, "made"], ["minestrone", -6, "made"], ["lemon-chicken", -4, "planned"]]
+    .map(([recipe_id, n, status], i) => ({ id: "seed-" + i, recipe_id, date: day(n), status, created_at: at }));
+}
 
 const ing = (amount, unit, name, prep, stock_status = "not_tracked") => ({ amount, unit, name, prep, stock_status });
 const SEED = [

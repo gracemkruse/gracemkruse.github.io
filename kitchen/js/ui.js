@@ -34,6 +34,29 @@ export function photoStyle(r) {
   return `background-image:linear-gradient(160deg, ${a}, ${b})`;
 }
 
+// ---------- Dates (local, Monday-start weeks) ----------
+export function iso(d) { const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, "0"), day = String(d.getDate()).padStart(2, "0"); return `${y}-${m}-${day}`; }
+export function fromIso(s) { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); }
+export function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+export function weekStart(d = new Date()) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); const dow = (x.getDay() + 6) % 7; return addDays(x, -dow); }
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], DOW = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+export function dayLabel(d) { return `${DOW[(d.getDay() + 6) % 7]} ${d.getDate()}`; }
+export function rangeLabel(start) { const end = addDays(start, 6); return start.getMonth() === end.getMonth() ? `${MON[start.getMonth()]} ${start.getDate()} — ${end.getDate()}` : `${MON[start.getMonth()]} ${start.getDate()} — ${MON[end.getMonth()]} ${end.getDate()}`; }
+export function monthDay(d) { return `${MON[d.getMonth()]} ${d.getDate()}`; }
+
+// ---------- Bottom sheet ----------
+export function sheet(innerHtml, label) {
+  const wrap = document.createElement("div");
+  wrap.className = "sheet-wrap";
+  wrap.innerHTML = `<div class="sheet-scrim" data-close></div><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(label)}">${innerHtml}</div>`;
+  document.body.appendChild(wrap);
+  const close = () => { wrap.remove(); document.removeEventListener("keydown", onKey); };
+  const onKey = e => { if (e.key === "Escape") close(); };
+  document.addEventListener("keydown", onKey);
+  wrap.querySelectorAll("[data-close]").forEach(el => el.addEventListener("click", close));
+  return { el: wrap.querySelector(".sheet"), close };
+}
+
 export const pref = {
   get(k, d) { try { return localStorage.getItem("kitchen-pref-" + k) ?? d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem("kitchen-pref-" + k, v); } catch {} },

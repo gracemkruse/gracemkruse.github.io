@@ -1,15 +1,18 @@
 import * as data from "../data.js";
 import { icon } from "../icons.js";
 import { esc, $, toast, minutes, amount, photoStyle } from "../ui.js";
+import { pickDay } from "../pickers.js";
 
 export async function detailView(id, app) {
   const r = await data.getRecipe(id);
+  const made = r ? await data.timesMade(r.id) : 0;
   if (!r) { app.innerHTML = `<p class="t-item">That recipe isn’t here anymore.</p><p><a class="btn-text" href="#/recipes">Back to recipes</a></p>`; return; }
   const status = s => s === "out" ? `<span class="t-label clay">Out</span>` : s === "low" ? `<span class="t-label grey">Low</span>` : "";
   let host = ""; try { host = r.source_url ? new URL(r.source_url).hostname.replace(/^www\./, "") : ""; } catch {}
   const facts = [
     ["serves", "Serves", r.servings],
     r.total_minutes ? ["time", "Time", minutes(r.total_minutes).replace("′", " min")] : null,
+    ["made", "Made", made ? `${made}×` : "Not yet"],
     r.source_url ? ["source", "Source", `<a href="${esc(r.source_url)}" target="_blank" rel="noopener">${esc(host || "Link")}</a>`, true] : r.source_notes ? ["source", "Source", esc(r.source_notes), true] : null,
   ].filter(Boolean);
 
@@ -52,7 +55,7 @@ export async function detailView(id, app) {
         <p class="t-label grey" style="margin:8px 0 0">Archived recipes are hidden, never deleted.</p></div>
     </article>`;
 
-  $('[data-act="week"]', app).onclick = () => toast("This Week arrives in the next build.");
+  $('[data-act="week"]', app).onclick = () => pickDay(r);
   $('[data-act="cook"]', app).onclick = () => toast("Cooking view comes with the tablet build.");
   $('[data-act="archive"]', app).onclick = async () => {
     if (!confirm(`Archive “${r.title}”? It will be hidden from your recipes.`)) return;
