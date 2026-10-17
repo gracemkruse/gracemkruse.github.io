@@ -184,6 +184,40 @@ export async function markCooked(recipeId) {
   if (r.error) throw r.error;
 }
 
+// ---------------- Import (Notion → Kitchen) ----------------
+// payload = { format:"kitchen-import-v1", recipes:[recipe + archived], pantry:[{name, category, stock_status}] }
+// Safe to run twice: recipes whose title already exists are skipped; pantry items update in place.
+export async function importAll(payload, progress = () => {}) {
+  // every title, archived ones included, so a second run never duplicates
+  const titles = isDemo ? demo().recipes.map(r => r.title) : ((await sb.from("recipes").select("title")).data || []).map(r => r.title);
+  const existing = new Set(titles.map(norm));
+  const todo = payload.recipes.filter(r => !existing.has(norm(r.title)));
+  const pantry = payload.pantry || [];
+  progress({ phase: "pantry", done: 0, total: pantry.length });
+  if (isDemo) {
+    const db = demo(), p = demoPantry(db);
+    for (const g of pantry) p[norm(g.name)] = { name: g.name, category: g.category, stock_status: g.stock_status, in_cart: false };
+    saveDemo(db);
+  } else if (pantry.length) {
+    const cats = await ensureCategories(), catId = Object.fromEntries(cats.map(c => [c.name, c.id]));
+    for (let i = 0; i < pantry.length; i += 100) {
+      const rows = firstByNormBy(pantry.slice(i, i + 100), g => g.name).map(g => ({ name: g.name, category_id: catId[g.category] || null, stock_status: g.stock_status }));
+      const { error } = await sb.from("ingredients").upsert(rows, { onConflict: "owner_id,name_norm" }); if (error) throw error;
+      progress({ phase: "pantry", done: Math.min(i + 100, pantry.length), total: pantry.length });
+    }
+  }
+  let done = 0; const failed = [];
+  for (const r of todo) {
+    try {
+      const id = await saveRecipe({ ...r, id: null });
+      if (r.archived) await archiveRecipe(id);
+    } catch (e) { console.error(r.title, e); failed.push(r.title); }
+    progress({ phase: "recipes", done: ++done, total: todo.length });
+  }
+  return { added: todo.length - failed.length, skipped: payload.recipes.length - todo.length, failed, pantry: pantry.length };
+}
+const firstByNormBy = (list, key) => { const m = new Map(); for (const x of list) if (!m.has(norm(key(x)))) m.set(norm(key(x)), x); return [...m.values()]; };
+
 // ---------------- Photos ----------------
 // Shrinks the photo in the browser first (phone photos are huge), then stores it.
 // Supabase: public "recipe-photos" bucket, one folder per account. Demo: a small data URL.

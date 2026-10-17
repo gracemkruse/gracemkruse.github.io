@@ -260,3 +260,14 @@ img { display: block; max-width: 100%; }
   .cook-foot { padding-left: max(var(--margin), calc((100vw - 1120px) / 2 + var(--margin))); padding-right: max(var(--margin), calc((100vw - 1120px) / 2 + var(--margin))); }
 }
 body:has(.cook) .demo-banner { display: none; }
+
+/* ---------- Import ---------- */
+.import { max-width: 720px; margin: 0 auto; }
+.import-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s20) var(--s16); }
+@media (min-width: 640px) { .import-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.import-tags { margin: 0; }
+.import-list { max-height: 480px; overflow: auto; border-top: 1px solid var(--line); margin-bottom: var(--s16); }
+.import-go { margin: var(--s32) 0; display: flex; flex-direction: column; align-items: flex-start; gap: var(--s12); }
+.progress { width: 100%; height: 1px; background: var(--line); }
+.progress .bar { height: 1px; width: 0; background: var(--chartreuse); transition: width .2s; }
+.import-list .pick-row { width: 100%; }
