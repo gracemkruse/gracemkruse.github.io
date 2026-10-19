@@ -3,6 +3,7 @@
 //   • Demo (sample recipes in localStorage) otherwise
 import { SUPABASE_URL, SUPABASE_ANON_KEY, HOUSEHOLD_EMAIL } from "./config.js";
 import { mergedPrep } from "./ingredients.js";
+import { parseIngredient } from "./parse.js";
 
 export const isDemo = !(SUPABASE_URL && SUPABASE_ANON_KEY);
 let sb = null;
@@ -221,6 +222,23 @@ export async function importAll(payload, progress = () => {}) {
   return { added: todo.length - failed.length, skipped: payload.recipes.length - todo.length, failed, pantry: pantry.length };
 }
 const firstByNormBy = (list, key) => { const m = new Map(); for (const x of list) if (!m.has(norm(key(x)))) m.set(norm(key(x)), x); return [...m.values()]; };
+
+// ---------------- Link Import ----------------
+// Reads a recipe page through the "recipe-from-link" Edge Function → a draft for the New recipe form.
+// Returns { draft, message } — message is set when only part of the recipe could be read.
+export async function recipeFromLink(url) {
+  if (isDemo) throw new Error("Link import works once Supabase is connected.");
+  const { data, error } = await sb.functions.invoke("recipe-from-link", { body: { url } });
+  if (error) throw new Error(/not found|404/i.test(error.message || "") ? "Link import isn’t set up yet (the recipe-from-link function)." : "Couldn’t reach the link reader — try again.");
+  if (data.error && !data.title) throw new Error(data.error);
+  const ingredients = (data.ingredients || []).map(parseIngredient).filter(Boolean);
+  return {
+    message: data.error || "",
+    draft: { title: data.title || "", servings: data.servings || "", total_minutes: data.total_minutes || "", image_url: data.image_url || "",
+      tags: [], ingredients: ingredients.length ? ingredients : [{}, {}, {}], steps: data.steps || [], notes: data.notes || "",
+      source_url: data.source_url || url, source_notes: "" },
+  };
+}
 
 // ---------------- Photos ----------------
 export async function setRecipePhoto(id, url) {

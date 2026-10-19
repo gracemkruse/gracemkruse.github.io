@@ -2,17 +2,17 @@ import * as data from "../data.js";
 import { icon } from "../icons.js";
 import { esc, $, $$, toast, photoStyle } from "../ui.js";
 
-// Manual entry + edit. Required: title and servings.
-export async function editView(id, app) {
+// Manual entry + edit. Required: title and servings. A new recipe can start from a pasted link (draft).
+export async function editView(id, app, draft = null, note = "") {
   const existing = id ? await data.getRecipe(id) : null;
   if (id && !existing) { app.innerHTML = `<p class="t-item">That recipe isn’t here anymore.</p>`; return; }
   const allTags = await data.listTags();
-  const r = existing || { title: "", servings: "", total_minutes: "", image_url: "", tags: [], ingredients: [{}, {}, {}], steps: [], notes: "", source_url: "", source_notes: "" };
+  const r = existing || draft || { title: "", servings: "", total_minutes: "", image_url: "", tags: [], ingredients: [{}, {}, {}], steps: [], notes: "", source_url: "", source_notes: "" };
   const selected = new Set(r.tags);
 
   const ingRow = (g = {}) => `
     <div class="ing-edit">
-      <input class="t-item" name="amount" inputmode="decimal" placeholder="1" value="${esc(g.amount ?? "")}" aria-label="Amount">
+      <input class="t-item" name="amount" inputmode="decimal" placeholder="1" value="${esc(g.amount == null ? "" : Math.round(g.amount * 100) / 100)}" aria-label="Amount">
       <input class="t-item" name="unit" placeholder="cup" value="${esc(g.unit ?? "")}" aria-label="Unit">
       <input class="t-item" name="name" placeholder="ingredient" value="${esc(g.name ?? "")}" aria-label="Ingredient">
       <input class="t-item" name="prep" placeholder="prep" value="${esc(g.prep ?? "")}" aria-label="Prep note">
@@ -23,6 +23,11 @@ export async function editView(id, app) {
     <form class="form" novalidate>
       <div class="topline"><a class="btn-text grey t-label" href="${id ? `#/recipe/${encodeURIComponent(id)}` : "#/recipes"}">${icon("back", true)} ${id ? "Recipe" : "Recipes"}</a></div>
       <h1 class="t-page page-title">${id ? "Edit recipe" : "New recipe"}</h1>
+      ${id ? "" : `<div class="field link-fill">
+        <span class="t-label">Start from a link</span>
+        <div class="input-line">${icon("source", false, "grey")}<input class="t-item" type="url" name="link" inputmode="url" placeholder="Paste a recipe link" value="${esc(draft?.source_url || "")}"><button type="button" class="btn-text t-label" data-act="fill">Fill in</button></div>
+        <span class="hint t-label${note ? " clay" : ""}" data-link-status>${esc(note || "Works with most recipe sites. Check it over, then save.")}</span>
+      </div>`}
 
       <label class="field"><span class="t-label">Title</span><input class="t-item" name="title" required value="${esc(r.title)}" placeholder="Recipe name"></label>
       <div class="two">
@@ -97,6 +102,20 @@ export async function editView(id, app) {
   };
   rm.onclick = () => { photo = ""; F.image_url.value = ""; showPhoto(); };
   F.image_url.oninput = () => { photo = F.image_url.value.trim(); showPhoto(); };
+
+  // Start from a link: read the page, then redraw this form filled in
+  const fill = $('[data-act="fill"]', app);
+  if (fill) {
+    const go = async () => {
+      const url = F.link.value.trim(); const st = $("[data-link-status]", app);
+      if (!/^https?:\/\//i.test(url)) { st.textContent = "Paste the full link, starting with https://"; st.classList.add("clay"); return; }
+      fill.disabled = true; st.classList.remove("clay"); st.textContent = "Reading the recipe…";
+      try { const { draft: d, message } = await data.recipeFromLink(url); await editView(null, app, d, message || ""); if (!message) toast("Filled in — check it over, then save."); }
+      catch (err) { console.error(err); st.textContent = err.message || "Couldn’t read that link."; st.classList.add("clay"); fill.disabled = false; }
+    };
+    fill.onclick = go;
+    F.link.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); go(); } });
+  }
 
   form.addEventListener("submit", async e => {
     e.preventDefault();
