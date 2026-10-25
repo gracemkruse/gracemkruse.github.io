@@ -304,3 +304,4 @@ body:has(.cook) .demo-banner { display: none; }
 .pg.off .pg-img { opacity: 0.25; }
 .pg.off .pg-t { color: var(--grey); text-decoration: line-through; }
 .tag-v { white-space: nowrap; }
+.photo-fill { margin-top: var(--s12); cursor: pointer; align-self: flex-start; }

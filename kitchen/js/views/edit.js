@@ -24,9 +24,10 @@ export async function editView(id, app, draft = null, note = "") {
       <div class="topline"><a class="btn-text grey t-label" href="${id ? `#/recipe/${encodeURIComponent(id)}` : "#/recipes"}">${icon("back", true)} ${id ? "Recipe" : "Recipes"}</a></div>
       <h1 class="t-page page-title">${id ? "Edit recipe" : "New recipe"}</h1>
       ${id ? "" : `<div class="field link-fill">
-        <span class="t-label">Start from a link</span>
+        <span class="t-label">Start from a link or a photo</span>
         <div class="input-line">${icon("source", false, "grey")}<input class="t-item" type="url" name="link" inputmode="url" placeholder="Paste a recipe link" value="${esc(draft?.source_url || "")}"><button type="button" class="btn-text t-label" data-act="fill">Fill in</button></div>
-        <span class="hint t-label${note ? " clay" : ""}" data-link-status>${esc(note || "Works with most recipe sites. Check it over, then save.")}</span>
+        <label class="btn-text t-label photo-fill">${icon("plus", true)} Take or choose a photo of a recipe<input type="file" accept="image/*" multiple data-recipe-photos hidden></label>
+        <span class="hint t-label${note ? " clay" : ""}" data-link-status>${esc(note || "Links work with most recipe sites. Photos: a cookbook page, card or screenshot — up to 3 pages. Check it over, then save.")}</span>
       </div>`}
 
       <label class="field"><span class="t-label">Title</span><input class="t-item" name="title" required value="${esc(r.title)}" placeholder="Recipe name"></label>
@@ -114,6 +115,14 @@ export async function editView(id, app, draft = null, note = "") {
       catch (err) { console.error(err); st.textContent = err.message || "Couldn’t read that link."; st.classList.add("clay"); fill.disabled = false; }
     };
     fill.onclick = go;
+    $("[data-recipe-photos]", app).onchange = async e => {
+      const files = [...e.target.files]; e.target.value = ""; if (!files.length) return;
+      const st = $("[data-link-status]", app); st.classList.remove("clay");
+      st.textContent = `Reading ${files.length > 1 ? `${files.length} photos` : "the photo"}… this takes about half a minute`;
+      fill.disabled = true;
+      try { const { draft: d } = await data.recipeFromPhotos(files); await editView(null, app, d, ""); toast("Filled in from the photo — check it over, then save."); }
+      catch (err) { console.error(err); st.textContent = err.message || "Couldn’t read that photo."; st.classList.add("clay"); fill.disabled = false; }
+    };
     F.link.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); go(); } });
   }
 
