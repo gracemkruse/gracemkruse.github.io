@@ -231,13 +231,29 @@ export async function recipeFromLink(url) {
   const { data, error } = await sb.functions.invoke("recipe-from-link", { body: { url } });
   if (error) throw new Error(/not found|404/i.test(error.message || "") ? "Link import isn’t set up yet (the recipe-from-link function)." : "Couldn’t reach the link reader — try again.");
   if (data.error && !data.title) throw new Error(data.error);
+  return { message: data.error || "", draft: toDraft(data, url) };
+}
+
+// Quick Add: 1–3 photos of a recipe → Claude (recipe-from-photo Edge Function) → a draft for the form.
+export async function recipeFromPhotos(files) {
+  if (isDemo) throw new Error("Quick Add works once Supabase is connected.");
+  const images = [];
+  for (const f of [...files].slice(0, 3)) {
+    const blob = await shrink(f, 1568);                    // Claude reads up to ~1568px; smaller = faster + cheaper
+    const b64 = await new Promise((ok, no) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(",")[1]); fr.onerror = no; fr.readAsDataURL(blob); });
+    images.push({ data: b64, media_type: "image/jpeg" });
+  }
+  const { data, error } = await sb.functions.invoke("recipe-from-photo", { body: { images } });
+  if (error) throw new Error(/not found|404/i.test(error.message || "") ? "Quick Add isn’t set up yet (the recipe-from-photo function)." : "Couldn’t reach the photo reader — try again.");
+  if (data.error) throw new Error(data.error);
+  return { message: "", draft: toDraft(data, "") };
+}
+
+function toDraft(data, url) {
   const ingredients = (data.ingredients || []).map(parseIngredient).filter(Boolean);
-  return {
-    message: data.error || "",
-    draft: { title: data.title || "", servings: data.servings || "", total_minutes: data.total_minutes || "", image_url: data.image_url || "",
-      tags: [], ingredients: ingredients.length ? ingredients : [{}, {}, {}], steps: data.steps || [], notes: data.notes || "",
-      source_url: data.source_url || url, source_notes: "" },
-  };
+  return { title: data.title || "", servings: data.servings || "", total_minutes: data.total_minutes || "", image_url: data.image_url || "",
+    tags: [], ingredients: ingredients.length ? ingredients : [{}, {}, {}], steps: data.steps || [], notes: data.notes || "",
+    source_url: data.source_url || url || "", source_notes: data.source_notes || "" };
 }
 
 // ---------------- Photos ----------------
