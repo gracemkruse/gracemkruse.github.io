@@ -7,7 +7,6 @@ import { galleryView } from "./views/gallery.js";
 import { detailView } from "./views/detail.js";
 import { editView } from "./views/edit.js";
 import { listView } from "./views/list.js";
-import { cookView } from "./views/cook.js";
 import { importView } from "./views/import.js";
 import { fillView } from "./views/fill.js";
 import { weekView } from "./views/week.js";
@@ -18,7 +17,6 @@ const routes = [
   { re: /^#\/import$/, view: (p, app) => importView(app), tab: "recipes" },
   { re: /^#\/fill$/, view: (p, app) => fillView(app), tab: "recipes" },
   { re: /^#\/add$/, view: (p, app) => editView(null, app), tab: "recipes" },
-  { re: /^#\/recipe\/([^/]+)\/cook$/, view: ([id], app) => cookView(id, app), tab: null },
   { re: /^#\/recipe\/([^/]+)\/edit$/, view: ([id], app) => editView(id, app), tab: "recipes" },
   { re: /^#\/recipe\/([^/]+)$/, view: ([id], app) => detailView(id, app), tab: "recipes" },
   { re: /^#\/week(?:\?w=(\d{4}-\d{2}-\d{2}))?$/, view: ([w], app) => weekView(app, w), tab: "week" },
