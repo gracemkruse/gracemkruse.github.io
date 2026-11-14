@@ -258,12 +258,12 @@ export async function recipeFromPhotos(files) {
 // ---------------- Fill in missing recipes (B-48) ----------------
 // Recipes with no method or no ingredients, and what each could be filled from.
 export async function listIncomplete() {
-  if (isDemo) return demo().recipes.filter(r => !r.archived_at && (!realSteps(r.steps).length || !(r.ingredients || []).length))
-    .map(r => ({ id: r.id, title: r.title, source_url: r.source_url || null, source_notes: r.source_notes || null, hasSteps: !!realSteps(r.steps).length, hasIngredients: !!(r.ingredients || []).length })).sort(byTitle);
-  const { data, error } = await sb.from("recipes").select("id,title,source_url,source_notes,steps,recipe_ingredients(id)").is("archived_at", null).order("title");
+  if (isDemo) return demo().recipes.filter(r => !r.archived_at && (!realSteps(r.steps).length || !hasAmounts(r.ingredients)))
+    .map(r => ({ id: r.id, title: r.title, source_url: r.source_url || null, source_notes: r.source_notes || null, hasSteps: !!realSteps(r.steps).length, hasIngredients: !!(r.ingredients || []).length, hasAmounts: hasAmounts(r.ingredients) })).sort(byTitle);
+  const { data, error } = await sb.from("recipes").select("id,title,source_url,source_notes,steps,recipe_ingredients(amount,unit)").is("archived_at", null).order("title");
   if (error) throw error;
-  return data.map(r => ({ id: r.id, title: r.title, source_url: r.source_url, source_notes: r.source_notes, hasSteps: !!realSteps(r.steps).length, hasIngredients: !!(r.recipe_ingredients || []).length }))
-    .filter(r => !r.hasSteps || !r.hasIngredients);
+  return data.map(r => ({ id: r.id, title: r.title, source_url: r.source_url, source_notes: r.source_notes, hasSteps: !!realSteps(r.steps).length, hasIngredients: !!(r.recipe_ingredients || []).length, hasAmounts: hasAmounts(r.recipe_ingredients) }))
+    .filter(r => !r.hasSteps || !r.hasAmounts);
 }
 
 // Fill only what's empty: existing title, photo, tags, ingredients or steps are never replaced —
@@ -274,7 +274,8 @@ export async function fillRecipe(id, draft, { replaceSteps = false } = {}) {
   const ings = (draft.ingredients || []).filter(g => g && g.name);
   await saveRecipe({ ...r, id,
     steps: r.steps.length && !(replaceSteps && (draft.steps || []).length) ? r.steps : (draft.steps || []),
-    ingredients: r.ingredients.length ? r.ingredients : ings,
+    // keep your list unless it's empty or has no amounts at all and the photo/link found amounts
+    ingredients: r.ingredients.length && (hasAmounts(r.ingredients) || !hasAmounts(ings)) ? r.ingredients : ings,
     notes: [r.notes || draft.notes || "", replaceSteps && r.steps.length && (draft.steps || []).length ? `Earlier method text: ${r.steps.join(" ")}` : ""].filter(Boolean).join("\n\n"),
     total_minutes: r.total_minutes || draft.total_minutes || "",
     servings: r.servings || draft.servings || "",
@@ -523,6 +524,8 @@ function shiftDate(iso, days) { const d = new Date(iso + "T12:00:00"); d.setDate
 // ---------------- helpers ----------------
 const norm = s => String(s || "").trim().toLowerCase();
 // Notion templates left empty numbered lines ("1.") as a fake method; they don't count as steps.
+// An ingredient list with no amounts or units anywhere (Notion's grocery links) needs filling too.
+const hasAmounts = ings => (ings || []).some(g => g.amount != null || (g.unit && String(g.unit).trim()));
 const realSteps = steps => (steps || []).filter(s => !/^[\d.\s]*$/.test(String(s)));
 const byTitle = (a, b) => a.title.localeCompare(b.title);
 const firstByNorm = list => { const m = new Map(); for (const x of list) if (!m.has(norm(x))) m.set(norm(x), x); return [...m.values()]; };
