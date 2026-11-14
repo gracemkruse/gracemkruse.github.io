@@ -254,6 +254,31 @@ export async function recipeFromPhotos(files) {
   return { message: "", draft: toDraft(data, "") };
 }
 
+// ---------------- Fill in missing recipes (B-48) ----------------
+// Recipes with no method or no ingredients, and what each could be filled from.
+export async function listIncomplete() {
+  if (isDemo) return demo().recipes.filter(r => !r.archived_at && (!(r.steps || []).length || !(r.ingredients || []).length))
+    .map(r => ({ id: r.id, title: r.title, source_url: r.source_url || null, source_notes: r.source_notes || null, hasSteps: !!(r.steps || []).length, hasIngredients: !!(r.ingredients || []).length })).sort(byTitle);
+  const { data, error } = await sb.from("recipes").select("id,title,source_url,source_notes,steps,recipe_ingredients(id)").is("archived_at", null).order("title");
+  if (error) throw error;
+  return data.map(r => ({ id: r.id, title: r.title, source_url: r.source_url, source_notes: r.source_notes, hasSteps: !!(r.steps || []).length, hasIngredients: !!(r.recipe_ingredients || []).length }))
+    .filter(r => !r.hasSteps || !r.hasIngredients);
+}
+
+// Fill only what's empty: existing title, photo, tags, ingredients or steps are never replaced.
+export async function fillRecipe(id, draft) {
+  const r = await getRecipe(id); if (!r) throw new Error("That recipe is gone.");
+  const ings = (draft.ingredients || []).filter(g => g && g.name);
+  await saveRecipe({ ...r, id,
+    steps: r.steps.length ? r.steps : (draft.steps || []),
+    ingredients: r.ingredients.length ? r.ingredients : ings,
+    notes: r.notes || draft.notes || "",
+    total_minutes: r.total_minutes || draft.total_minutes || "",
+    servings: r.servings || draft.servings || "",
+    source_notes: r.source_notes || draft.source_notes || "",
+    image_url: r.image_url || draft.image_url || "" });
+}
+
 function toDraft(data, url) {
   const ingredients = (data.ingredients || []).map(parseIngredient).filter(Boolean);
   return { title: data.title || "", servings: data.servings || "", total_minutes: data.total_minutes || "", image_url: data.image_url || "",
