@@ -59,7 +59,7 @@ export function pickStatus(btn, current) {
     const row = btn.parentElement;
     const pick = document.createElement("span");
     pick.className = "status-pick"; pick.setAttribute("role", "group"); pick.setAttribute("aria-label", "Stock status");
-    pick.innerHTML = STOCK.map(([k, l]) => `<button class="t-label${k === "out" ? " clay" : ""}" data-s="${k}" aria-pressed="${k === current}">${l}</button>`).join("");
+    pick.innerHTML = STOCK.map(([k, l]) => `<button class="t-label${k === "out" ? " clay" : k === "in_stock" ? " green" : ""}" data-s="${k}" aria-pressed="${k === current}">${l}</button>`).join("");
     row.appendChild(pick);
     pick.querySelector('[aria-pressed="true"]')?.focus();
     const done = v => { pick.remove(); document.removeEventListener("pointerdown", away, true); document.removeEventListener("keydown", key); resolve(v); };
