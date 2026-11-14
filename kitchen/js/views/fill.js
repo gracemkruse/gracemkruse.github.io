@@ -13,13 +13,14 @@ export async function fillView(app) {
     : { ...r, source_notes: [r.source_url ? notionNote(r.source_url) : "", r.source_notes].filter(Boolean).join(", ") || null, source_url: null });
   const results = new Map();   // id → { draft, message } | { error }
   const photos = new Map();    // id → [File]
+  const extra = [];            // recipes that look complete but you picked a page photo for (their method gets replaced)
   const withLink = all.filter(r => r.source_url);
 
-  const missing = r => [!r.hasIngredients && "ingredients", !r.hasSteps && "method"].filter(Boolean).join(" and ");
+  const missing = r => r.replace ? "nothing, but a page photo was picked: its method replaces the current one (old text kept in Notes)" : [!r.hasIngredients && "ingredients", !r.hasSteps && "method"].filter(Boolean).join(" and ");
   const summary = d => { const n = d.ingredients.filter(g => g.name).length, s = d.steps.length; return `${n} ingredient${n === 1 ? "" : "s"} · ${s} step${s === 1 ? "" : "s"}`; };
   const row = r => {
     const res = results.get(r.id), pics = photos.get(r.id);
-    const status = !res ? `<span class="t-label grey">Missing ${missing(r)}</span>`
+    const status = !res ? `<span class="t-label grey">${r.replace ? "Has a method · the photo’s method will replace it" : `Missing ${missing(r)}`}</span>`
       : res.error ? `<span class="t-label clay">${esc(res.error)}</span>`
       : `<span class="t-label green">Found ${esc(summary(res.draft))}</span>${res.message ? `<span class="t-label grey"> · ${esc(res.message)}</span>` : ""}`;
     const ok = res && !res.error && (res.draft.steps.length || res.draft.ingredients.some(g => g.name));
@@ -86,13 +87,18 @@ export async function fillView(app) {
     if (link) link.onclick = () => readAll(withLink.filter(r => !photos.has(r.id)), r => readers.link(r.source_url), "Reading link");
     const pics = $('[data-read="photos"]', app);
     if (pics) pics.onclick = () => readAll(all.filter(r => photos.has(r.id)), r => readers.photos(photos.get(r.id)), "Reading");
-    $("[data-pages]", app).onchange = e => {
-      const bySlug = new Map(all.map(r => [slug(r.title), r]));
+    $("[data-pages]", app).onchange = async e => {
+      const files = [...e.target.files];
+      const known = new Set(all.map(r => r.id));
+      for (const r of await data.listRecipes()) if (!known.has(r.id)) extra.push({ id: r.id, title: r.title, source_url: null, source_notes: null, hasSteps: true, hasIngredients: true, replace: true });
+      const pool = [...all, ...extra];
+      const bySlug = new Map(pool.map(r => [slug(r.title), r]));
       const unmatched = [];
-      for (const f of [...e.target.files].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))) {
+      for (const f of files.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))) {
         const r = bySlug.get(slug(f.name.replace(/\.[^.]+$/, "").replace(/--\d+$/, "")));
         if (!r) { unmatched.push(f.name); continue; }
         photos.set(r.id, [...(photos.get(r.id) || []), f].slice(0, 3));
+        if (!all.includes(r)) all.push(r);
       }
       paint();
       if (unmatched.length) toast(`No recipe found for ${unmatched.length} photo${unmatched.length > 1 ? "s" : ""}.`);
@@ -114,7 +120,7 @@ export async function fillView(app) {
       save.disabled = true; let n = 0; const failed = [];
       for (const r of todo) {
         status(`Saving ${++n} of ${todo.length}…`);
-        try { await data.fillRecipe(r.id, results.get(r.id).draft); results.delete(r.id); }
+        try { await data.fillRecipe(r.id, results.get(r.id).draft, { replaceSteps: !!r.replace }); results.delete(r.id); }
         catch (e) { console.error(e); failed.push(r.title); }
       }
       toast(`Saved ${todo.length - failed.length} recipe${todo.length - failed.length === 1 ? "" : "s"}.`);
