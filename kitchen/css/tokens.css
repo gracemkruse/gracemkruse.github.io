@@ -40,3 +40,6 @@
 /* Cooking view only: the current step, readable from across the counter (Instructions, scaled up). */
 .t-cook   { font: 400 24px/32px var(--sans); }
 @media (min-width: 760px) { .t-cook { font-size: 28px; line-height: 36px; } }
+
+/* Recipe names are shown in lower case everywhere (stored with their capitals). */
+.recipe-name { text-transform: lowercase; }

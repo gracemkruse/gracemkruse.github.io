@@ -16,7 +16,7 @@ SKIP_TAGS = {"hide", "ingredients"}            # "hide" → archived instead of 
 STOCK = {"yes": "in_stock", "low": "low", "no": "out", "buy": "out"}   # anything else → not_tracked
 CATEGORY = {"veggie & fruit": "Produce", "protein": "Protein", "seafood": "Protein", "dairy": "Dairy",
             "herbs & spices": "Herbs & Spices", "supplies": "Household", "personal": "Household", "pharmacy": "Household"}
-DEFAULT_SERVINGS = 4
+DEFAULT_SERVINGS = None   # Notion has no servings field; leave it empty
 
 UNITS = {
     "tablespoons": "tbsp", "tablespoon": "tbsp", "tbsp": "tbsp", "tbs": "tbsp", "tbsps": "tbsp", "t": "tbsp",

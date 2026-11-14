@@ -1,7 +1,8 @@
 import * as data from "../data.js";
 import { icon, ingredientIcon, catIcon } from "../icons.js";
 import { suggestGroups, titleCase } from "../ingredients.js";
-import { esc, $, $$, toast, sheet, amount, iso, addDays, weekStart, monthDay } from "../ui.js";
+import { esc, $, $$, toast, sheet, amount, iso, addDays, weekStart, monthDay, fromIso, dayLabel } from "../ui.js";
+import { pickStatus } from "../pickers.js";
 
 // Shopping List: To buy / Week / Pantry (mirrors the Notion Grocery views).
 //   To buy — ingredients for upcoming meals that aren't in stock, plus hand-added items. Check off → In the cart → Done shopping.
@@ -9,7 +10,6 @@ import { esc, $, $$, toast, sheet, amount, iso, addDays, weekStart, monthDay } f
 //   Pantry — every ingredient you've ever used: status, search, filter, category.
 const TABS = [["buy", "To buy"], ["week", "Week"], ["pantry", "Pantry"]];
 const STATUS = { in_stock: ["In stock", "green"], low: ["Low", "grey"], out: ["Out", "clay"], not_tracked: ["Not tracked", "grey"] };
-const NEXT = { in_stock: "low", low: "out", out: "not_tracked", not_tracked: "in_stock" };
 let pantryQuery = "", pantryFilter = "all";
 
 export async function listView(app, tab = "buy") {
@@ -23,6 +23,7 @@ export async function listView(app, tab = "buy") {
 
   const qty = i => i.amounts.map(a => amount(a.amount, a.unit)).filter(Boolean).join(" + ");
   const flag = s => s === "out" ? `<span class="t-label clay">Out</span>` : s === "low" ? `<span class="t-label grey">Low</span>` : "";
+  const qtyBtn = i => i.lines?.length ? `<button class="qty t-label grey" data-qty="${esc(i.ingredient_id)}" aria-label="${esc(i.name)}: ${esc(qty(i))}. See amounts by recipe">${esc(qty(i) || `${i.lines.length} recipe${i.lines.length > 1 ? "s" : ""}`)}</button>` : "";
   const statusBtn = i => { const [label, cls] = STATUS[i.stock_status] || STATUS.not_tracked;
     return `<button class="status t-label ${cls}" data-status="${esc(i.ingredient_id)}" data-now="${esc(i.stock_status)}" aria-label="${esc(i.name)}: ${label}. Tap to change">${label}</button>`; };
   const box = (on, attr) => `<button class="box${on ? " on" : ""}" ${attr} aria-pressed="${on}" aria-label="${on ? "In the cart — tap to undo" : "Got it"}">${on ? icon("check", true) : ""}</button>`;
@@ -44,7 +45,7 @@ export async function listView(app, tab = "buy") {
         ${box(i.in_cart, `data-cart="${esc(i.ingredient_id)}"`)}
         ${icon(ingredientIcon(i.name, i.category), false, "ing")}
         <span class="name t-item">${esc(i.name)}</span>${i.in_cart ? "" : flag(i.stock_status)}
-        <span class="spacer"></span><span class="qty t-label grey">${esc(qty(i))}</span>
+        <span class="spacer"></span>${qtyBtn(i)}
       </div>`;
     const rowExtra = x => `<div class="srow${x.in_cart ? " done" : ""}">
         ${box(x.in_cart, `data-extra="${esc(x.id)}"`)}
@@ -65,7 +66,7 @@ export async function listView(app, tab = "buy") {
     const rowWeek = i => `<div class="srow">
         ${icon(ingredientIcon(i.name, i.category), false, "ing")}
         <span class="name t-item" title="${esc(i.recipes.join(", "))}">${esc(i.name)}</span>
-        <span class="qty t-label grey">${esc(qty(i))}</span><span class="spacer"></span>${statusBtn(i)}
+        ${qtyBtn(i)}<span class="spacer"></span>${statusBtn(i)}
       </div>`;
     body = d.week.length ? groups(d.week, rowWeek) : `<p class="t-item grey list-empty">No meals planned between now and the end of next week. <a class="green" href="#/week">Plan some</a>.</p>`;
   } else {
@@ -98,7 +99,20 @@ export async function listView(app, tab = "buy") {
   $$("[data-cart]", app).forEach(b => b.onclick = () => { b.classList.toggle("on"); run(() => data.setInCart(b.dataset.cart, b.getAttribute("aria-pressed") !== "true")); });
   $$("[data-extra]", app).forEach(b => b.onclick = () => { b.classList.toggle("on"); run(() => data.setExtraInCart(b.dataset.extra, b.getAttribute("aria-pressed") !== "true")); });
   $$("[data-rm]", app).forEach(b => b.onclick = () => run(() => data.removeExtra(b.dataset.rm)));
-  $$("[data-status]", app).forEach(b => b.onclick = () => run(() => data.setStock(b.dataset.status, NEXT[b.dataset.now] || "in_stock")));
+  // status: tap → pick one of the four in place
+  $$("[data-status]", app).forEach(b => b.onclick = async () => { const next = await pickStatus(b, b.dataset.now); if (next) run(() => data.setStock(b.dataset.status, next)); });
+  // quantity: tap → which recipes need it, and how much each
+  $$("[data-qty]", app).forEach(b => b.onclick = () => {
+    const it = d.week.find(i => String(i.ingredient_id) === b.dataset.qty); if (!it) return;
+    const lines = [...it.lines].sort((a, c) => String(a.date).localeCompare(String(c.date)));
+    sheet(`
+      <div class="sheet-head"><span class="t-label">${esc(it.name)}</span><button class="t-label grey" data-close>Close</button></div>
+      <div class="pick-list">${lines.map(l => `
+        <div class="qty-line"><span class="t-recipe recipe-name">${esc(l.recipe || "")}</span>
+          <span class="meta t-label grey">${l.date ? esc(dayLabel(fromIso(l.date))) : ""}</span>
+          <span class="t-item">${esc(amount(l.amount, l.unit) || "—")}</span></div>`).join("")}</div>
+      <div class="qty-total"><span class="t-label">Total</span><span class="t-item">${esc(qty(it) || "—")}</span></div>`, `${it.name}: amounts by recipe`);
+  });
   const finish = $("[data-finish]", app);
   if (finish) finish.onclick = () => run(async () => {
     const ids = toBuy.filter(i => i.in_cart).map(i => i.ingredient_id);

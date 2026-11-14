@@ -57,7 +57,7 @@ create table if not exists recipes (
   owner_id       uuid not null default auth.uid() references auth.users on delete cascade,
   title          text not null,
   image_url      text,
-  servings       int  not null check (servings > 0),
+  servings       int  check (servings is null or servings > 0),   -- optional
   total_minutes  int  check (total_minutes is null or total_minutes > 0),
   steps          text[] not null default '{}',
   notes          text,

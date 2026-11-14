@@ -48,8 +48,8 @@ export async function galleryView(app) {
     const meta = [r.tags[0], minutes(r.total_minutes)].filter(Boolean).join(" · ");
     return `<a class="card" href="#/recipe/${encodeURIComponent(r.id)}">
       <div class="photo" style="${photoStyle(r)}" role="img" aria-label="${esc(r.title)}"></div>
-      ${v === 4 ? `<span class="name t-label">${esc(r.title)}</span>`
-               : `<span class="name t-recipe">${esc(r.title)}</span>${meta ? `<span class="meta t-label">${ic ? icon(ic, true) : ""}${esc(meta)}</span>` : ""}`}
+      ${v === 4 ? `<span class="name t-label recipe-name">${esc(r.title)}</span>`
+               : `<span class="name t-recipe recipe-name">${esc(r.title)}</span>${meta ? `<span class="meta t-label">${ic ? icon(ic, true) : ""}${esc(meta)}</span>` : ""}`}
     </a>`;
   }
 

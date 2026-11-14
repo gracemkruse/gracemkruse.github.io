@@ -1,10 +1,10 @@
 import * as data from "../data.js";
 import { icon, tagIcon } from "../icons.js";
-import { pickRecipe } from "../pickers.js";
-import { esc, $, $$, toast, minutes, iso, fromIso, addDays, weekStart, dayLabel, rangeLabel, monthDay } from "../ui.js";
+import { pickRecipe, chooseDay } from "../pickers.js";
+import { esc, $, $$, toast, sheet, minutes, iso, fromIso, addDays, weekStart, dayLabel, rangeLabel, monthDay } from "../ui.js";
 
 // This Week. Optional ?w=YYYY-MM-DD (any Monday) to view another week.
-let editing = false;
+// Meals: swipe left to remove (with Undo), swipe right for options (phone/iPad); ⋯ menu on desktop.
 
 export async function weekView(app, startIso) {
   const thisMonday = weekStart();
@@ -24,13 +24,18 @@ export async function weekView(app, startIso) {
 
   const mealRow = m => {
     const ic = tagIcon(m.recipe.tags), done = m.status === "made";
-    return `<div class="meal${done ? " made" : ""}">
-      <a class="meal-title t-recipe" href="#/recipe/${encodeURIComponent(m.recipe.id)}">${esc(m.recipe.title)}</a>
-      ${ic ? icon(ic, true, "grey") : ""}${m.recipe.total_minutes ? `<span class="t-label grey">${esc(minutes(m.recipe.total_minutes))}</span>` : ""}
-      <span class="spacer"></span>
-      ${editing ? `<button class="t-label clay" data-remove="${esc(m.id)}">Remove</button>`
-                : `<button class="ring${done ? " on" : ""}" data-toggle="${esc(m.id)}" aria-pressed="${done}" aria-label="${done ? "Made — tap to undo" : "Mark made"}">${done ? icon("check", true) : ""}</button>
-                   <a class="chev grey" href="#/recipe/${encodeURIComponent(m.recipe.id)}" aria-label="Open recipe">${icon("open", true)}</a>`}
+    return `<div class="meal-swipe" data-meal="${esc(m.id)}">
+      <div class="meal-under" aria-hidden="true">
+        <span class="under-opts">${isPast ? "" : `<button class="t-label green" data-move="${esc(m.id)}" tabindex="-1">Move</button>`}<a class="t-label green" href="#/recipe/${encodeURIComponent(m.recipe.id)}" tabindex="-1">Open</a></span>
+        <span class="under-remove t-label">Remove</span>
+      </div>
+      <div class="meal${done ? " made" : ""}">
+        <a class="meal-title t-recipe recipe-name" href="#/recipe/${encodeURIComponent(m.recipe.id)}">${esc(m.recipe.title)}</a>
+        ${ic ? icon(ic, true, "grey") : ""}${m.recipe.total_minutes ? `<span class="t-label grey">${esc(minutes(m.recipe.total_minutes))}</span>` : ""}
+        <span class="spacer"></span>
+        <button class="ring${done ? " on" : ""}" data-toggle="${esc(m.id)}" aria-pressed="${done}" aria-label="${done ? "Made — tap to undo" : "Mark made"}">${done ? icon("check", true) : ""}</button>
+        <button class="meal-menu grey" data-menu="${esc(m.id)}" aria-label="More for ${esc(m.recipe.title)}">⋯</button>
+      </div>
     </div>`;
   };
 
@@ -43,7 +48,6 @@ export async function weekView(app, startIso) {
       </div>
       <div class="title-row">
         <h1 class="t-page page-title">${esc(title)}</h1>
-        ${items.length && !isPast ? `<button class="t-label grey" data-edit>${editing ? "Done" : "Edit"}</button>` : ""}
       </div>
       <div class="t-label grey">${esc(summary)}</div>
       <hr class="rule ink" style="margin-top:24px">
@@ -54,7 +58,7 @@ export async function weekView(app, startIso) {
             ${day.meals.map(mealRow).join("")}
             ${day.meals.length === 0
               ? `<div class="meal none"><span class="t-item grey">Nothing planned</span><span class="spacer"></span>${isPast ? "" : `<button class="t-label green" data-add="${day.v}" data-label="${esc(day.label)}">+ Add</button>`}</div>`
-              : isPast || editing ? "" : `<div class="add-more"><button class="t-label green" data-add="${day.v}" data-label="${esc(day.label)}">+ Add</button></div>`}
+              : isPast ? "" : `<div class="add-more"><button class="t-label green" data-add="${day.v}" data-label="${esc(day.label)}">+ Add</button></div>`}
           </div>
         </div>`).join("")}
       ${isPast && items.length ? `<div class="week-foot"><button class="btn-text t-label" data-copy>${icon("made", true)} Plan this week again</button></div>` : ""}
@@ -69,9 +73,66 @@ export async function weekView(app, startIso) {
     try { await data.setMealStatus(m.id, next); } catch (e) { console.error(e); toast("Couldn’t update — try again."); }
     rerender();
   });
-  $$("[data-remove]", app).forEach(b => b.onclick = async () => { await data.removeFromWeek(b.dataset.remove); rerender(); });
   $$("[data-add]", app).forEach(b => b.onclick = async () => { const added = await pickRecipe(b.dataset.add, b.dataset.label); if (added) rerender(); });
-  const edit = $("[data-edit]", app); if (edit) edit.onclick = () => { editing = !editing; rerender(); };
+
+  // ---- remove (with Undo), move, menu ----
+  const find = id => items.find(x => x.id === id);
+  const remove = async m => {
+    try { await data.removeFromWeek(m.id); } catch (e) { console.error(e); toast("Couldn’t remove — try again."); return rerender(); }
+    rerender();
+    toast(`Removed ${m.recipe.title}.`, { label: "Undo", run: async () => { await data.addToWeek(m.recipe.id, m.date); if (m.status === "made") { const back = (await data.listWeek(m.date, m.date)).filter(x => x.recipe.id === m.recipe.id).pop(); if (back) await data.setMealStatus(back.id, "made"); } rerender(); } });
+  };
+  const move = async m => {
+    const day = await chooseDay(`Move “<span class="recipe-name">${esc(m.recipe.title)}</span>” to…`, m.date); if (!day) return rerender();
+    try { await data.moveMeal(m.id, day.date); toast(`Moved to ${day.label}.`); } catch (e) { console.error(e); toast("Couldn’t move — try again."); }
+    rerender();
+  };
+  $$("[data-move]", app).forEach(b => b.onclick = () => move(find(b.dataset.move)));
+  $$("[data-menu]", app).forEach(b => b.onclick = () => {
+    const m = find(b.dataset.menu);
+    const { el, close } = sheet(`
+      <div class="sheet-head"><span class="t-label recipe-name">${esc(m.recipe.title)}</span><button class="t-label grey" data-close>Cancel</button></div>
+      <div class="pick-list">
+        <a class="menu-row t-item" href="#/recipe/${encodeURIComponent(m.recipe.id)}" data-close>Open recipe</a>
+        ${isPast ? "" : `<button class="menu-row t-item" data-act="move">Move to another day</button>`}
+        <button class="menu-row t-item clay" data-act="remove">Remove from plan</button>
+      </div>`, m.recipe.title);
+    el.addEventListener("click", e => { const a = e.target.closest("[data-act]"); if (!a) return; close(); a.dataset.act === "move" ? move(m) : remove(m); });
+  });
+
+  // ---- swipe (touch and pen): left past the line removes, right opens Move / Open ----
+  const OPEN = 132, LIMIT = 88;
+  $$(".meal-swipe", app).forEach(wrap => {
+    const row = $(".meal", wrap); let x0 = 0, y0 = 0, dx = 0, mode = null, base = 0;
+    const set = (x, animate) => { row.style.transition = animate ? "transform .2s ease" : "none"; row.style.transform = x ? `translateX(${x}px)` : ""; wrap.classList.toggle("swiping-left", x < 0); wrap.classList.toggle("swiping-right", x > 0); };
+    const closeOthers = () => $$(".meal-swipe.open", app).forEach(w => { if (w !== wrap) { w.classList.remove("open"); const r = $(".meal", w); r.style.transition = "transform .2s ease"; r.style.transform = ""; } });
+    row.addEventListener("pointerdown", e => {
+      if (e.pointerType === "mouse" || e.target.closest("button")) return;
+      x0 = e.clientX; y0 = e.clientY; dx = 0; mode = "maybe"; base = wrap.classList.contains("open") ? OPEN : 0;
+    });
+    row.addEventListener("pointermove", e => {
+      if (!mode) return;
+      const mx = e.clientX - x0, my = e.clientY - y0;
+      if (mode === "maybe") {
+        if (Math.abs(my) > 10 && Math.abs(my) > Math.abs(mx)) { mode = null; return; }   // a scroll, not a swipe
+        if (Math.abs(mx) < 10) return;
+        mode = "drag"; try { row.setPointerCapture(e.pointerId); } catch {} closeOthers();
+      }
+      dx = Math.max(-200, Math.min(OPEN + 24, base + mx)); set(dx, false);
+    });
+    const end = () => {
+      if (mode !== "drag") { mode = null; return; }
+      mode = null;
+      const m = find(wrap.dataset.meal);
+      if (dx <= -LIMIT) { set(-wrap.offsetWidth, true); setTimeout(() => remove(m), 180); }
+      else if (dx >= LIMIT / 2) { set(OPEN, true); wrap.classList.add("open"); $$(".under-opts [tabindex]", wrap).forEach(b => b.removeAttribute("tabindex")); }
+      else { set(0, true); wrap.classList.remove("open"); }
+    };
+    row.addEventListener("pointerup", end); row.addEventListener("pointercancel", end);
+    // a tap on an open row closes it instead of following the link
+    row.addEventListener("click", e => { if (wrap.classList.contains("open") && !e.target.closest("button")) { e.preventDefault(); set(0, true); wrap.classList.remove("open"); } }, true);
+  });
+
   const copy = $("[data-copy]", app);
   if (copy) copy.onclick = async () => {
     const shift = Math.round((thisMonday - start) / 86400000);
@@ -80,4 +141,3 @@ export async function weekView(app, startIso) {
   };
 }
 
-export function resetWeekEditing() { editing = false; }

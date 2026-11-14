@@ -20,7 +20,7 @@ export async function cookView(id, app) {
     <section class="cook">
       <header class="cook-top">
         <a class="btn-text grey t-label" href="#/recipe/${encodeURIComponent(r.id)}">${icon("close", true)} Exit</a>
-        <span class="t-recipe cook-title">${esc(r.title)}</span>
+        <span class="t-recipe cook-title recipe-name">${esc(r.title)}</span>
         <span class="timers"></span>
       </header>
       <div class="cook-body">
@@ -32,7 +32,7 @@ export async function cookView(id, app) {
           <ol class="cook-steps">${steps.map((s, n) => `<li><button data-step="${n}"><span class="n t-label">${String(n + 1).padStart(2, "0")}</span><span class="t-instr">${esc(s)}</span></button></li>`).join("")}</ol>
         </div>
         <aside class="cook-ings">
-          <div class="section-head"><span class="t-label">Ingredients</span><span class="t-label grey">for ${esc(r.servings)}</span></div>
+          <div class="section-head"><span class="t-label">Ingredients</span>${r.servings ? `<span class="t-label grey">for ${esc(r.servings)}</span>` : ""}</div>
           ${r.ingredients.length ? r.ingredients.map((g, n) => `
             <button class="cook-ing" data-ing="${n}" aria-pressed="false">
               <span class="box"></span>
