@@ -211,7 +211,9 @@ def convert(recipe_dir, grocery_csv):
         if p.get("Try?") == "Yes" and "To try" not in tags: tags.append("To try")
         archived = "hide" in (p.get("Tags") or "").lower()
         src = (p.get("From") or "").strip()
-        url = src if re.match(r"^https?://", src) else None
+        # Notion exports some plain-text "From" notes glued onto a fake link ("https://app.notion.comcook this book, 84")
+        if re.match(r"^https://app\.notion\.com[^/]", src): src = re.sub(r"\s+", " ", src[len("https://app.notion.com"):].replace("_", " ")).strip()
+        url = src if re.match(r"^https?://[^/\s]+\.[a-z]{2,}(/|$)", src, re.I) else None
         loc = ", ".join(x.strip() for x in (p.get("Location") or "").split(",") if x.strip())
         source_notes = ", ".join(x for x in [None if url else src, f"p. {loc}" if loc and re.fullmatch(r"[\d, ]+", loc) else loc] if x) or None
         try: minutes = int(float(p.get("Time (min)"))) if p.get("Time (min)") else None

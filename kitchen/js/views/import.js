@@ -9,6 +9,7 @@ export async function importView(app) {
     <section class="import">
       <div class="topline"><a class="btn-text grey t-label" href="#/recipes">${icon("back", true)} Recipes</a></div>
       <h1 class="t-page page-title">Import</h1>
+      <p class="t-label"><a class="btn-text t-label" href="#/fill">${icon("open", true)} Fill in missing recipes</a></p>
       <p class="t-instr">Bring your recipes and pantry over from Notion. Pick the import file, check the preview, then import. Nothing is saved until you press Import.</p>
       <div class="toolbar">
         <label class="btn-text t-label">${icon("plus", true)} Choose import file<input type="file" accept=".json,application/json" data-file hidden></label>

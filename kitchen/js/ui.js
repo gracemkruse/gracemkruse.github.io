@@ -24,6 +24,10 @@ const SOURCES = {
   "foodnetwork.com": "Food Network", "delish.com": "Delish", "tasty.co": "Tasty", "instagram.com": "Instagram", "youtube.com": "YouTube", "tiktok.com": "TikTok",
   "ottolenghi.co.uk": "Ottolenghi", "nigella.com": "Nigella", "jamieoliver.com": "Jamie Oliver", "101cookbooks.com": "101 Cookbooks",
 };
+// A real web address (not a cookbook note Notion's export disguised as "https://app.notion.comcook this book, 84").
+export const isWebLink = u => /^https?:\/\/[^\/\s]+\.[a-z]{2,}(\/|$)/i.test(String(u || "")) && !/^https:\/\/app\.notion\.com[^\/]/i.test(u);
+// The cookbook note hiding in such a fake link: "https://app.notion.comsalt_fat_acid_heat_340" → "salt fat acid heat 340"
+export const notionNote = u => String(u || "").replace(/^https:\/\/app\.notion\.com/i, "").replace(/_/g, " ").replace(/\s+/g, " ").trim();
 export function sourceName(url) {
   let host = "";
   try { host = new URL(url).hostname.toLowerCase().replace(/^(www|m)\./, ""); } catch { return ""; }

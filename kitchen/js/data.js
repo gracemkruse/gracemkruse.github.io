@@ -64,7 +64,7 @@ export async function listTags() {
 export async function getRecipe(id) {
   if (isDemo) {
     const db = demo(), r = db.recipes.find(x => x.id === id); if (!r) return null;
-    const out = structuredClone(r), p = demoPantry(db);
+    const out = structuredClone(r), p = demoPantry(db); out.steps = realSteps(out.steps);
     for (const g of out.ingredients) { g.ingredient_id = norm(g.name); g.stock_status = p[norm(g.name)]?.stock_status || g.stock_status; }
     return out;
   }
@@ -75,6 +75,7 @@ export async function getRecipe(id) {
   if (!data) return null;
   return {
     ...data,
+    steps: realSteps(data.steps),
     tags: (data.recipe_tags || []).map(x => x.tags?.name).filter(Boolean),
     ingredients: (data.recipe_ingredients || []).sort((a, b) => a.position - b.position)
       .map(x => ({ amount: x.amount, unit: x.unit, prep: x.prep, name: x.ingredients?.name || "", ingredient_id: x.ingredients?.id, stock_status: x.ingredients?.stock_status || "not_tracked" })),
@@ -252,6 +253,33 @@ export async function recipeFromPhotos(files) {
   if (error) throw new Error(/not found|404/i.test(error.message || "") ? "Quick Add isn’t set up yet (the recipe-from-photo function)." : "Couldn’t reach the photo reader — try again.");
   if (data.error) throw new Error(data.error);
   return { message: "", draft: toDraft(data, "") };
+}
+
+// ---------------- Fill in missing recipes (B-48) ----------------
+// Recipes with no method or no ingredients, and what each could be filled from.
+export async function listIncomplete() {
+  if (isDemo) return demo().recipes.filter(r => !r.archived_at && (!realSteps(r.steps).length || !(r.ingredients || []).length))
+    .map(r => ({ id: r.id, title: r.title, source_url: r.source_url || null, source_notes: r.source_notes || null, hasSteps: !!realSteps(r.steps).length, hasIngredients: !!(r.ingredients || []).length })).sort(byTitle);
+  const { data, error } = await sb.from("recipes").select("id,title,source_url,source_notes,steps,recipe_ingredients(id)").is("archived_at", null).order("title");
+  if (error) throw error;
+  return data.map(r => ({ id: r.id, title: r.title, source_url: r.source_url, source_notes: r.source_notes, hasSteps: !!realSteps(r.steps).length, hasIngredients: !!(r.recipe_ingredients || []).length }))
+    .filter(r => !r.hasSteps || !r.hasIngredients);
+}
+
+// Fill only what's empty: existing title, photo, tags, ingredients or steps are never replaced —
+// unless replaceSteps is set (you chose a page photo for a recipe whose "method" is wrong); then the
+// old method text is kept at the end of Notes.
+export async function fillRecipe(id, draft, { replaceSteps = false } = {}) {
+  const r = await getRecipe(id); if (!r) throw new Error("That recipe is gone.");
+  const ings = (draft.ingredients || []).filter(g => g && g.name);
+  await saveRecipe({ ...r, id,
+    steps: r.steps.length && !(replaceSteps && (draft.steps || []).length) ? r.steps : (draft.steps || []),
+    ingredients: r.ingredients.length ? r.ingredients : ings,
+    notes: [r.notes || draft.notes || "", replaceSteps && r.steps.length && (draft.steps || []).length ? `Earlier method text: ${r.steps.join(" ")}` : ""].filter(Boolean).join("\n\n"),
+    total_minutes: r.total_minutes || draft.total_minutes || "",
+    servings: r.servings || draft.servings || "",
+    source_notes: r.source_notes || draft.source_notes || "",
+    image_url: r.image_url || draft.image_url || "" });
 }
 
 function toDraft(data, url) {
@@ -494,6 +522,8 @@ function shiftDate(iso, days) { const d = new Date(iso + "T12:00:00"); d.setDate
 
 // ---------------- helpers ----------------
 const norm = s => String(s || "").trim().toLowerCase();
+// Notion templates left empty numbered lines ("1.") as a fake method; they don't count as steps.
+const realSteps = steps => (steps || []).filter(s => !/^[\d.\s]*$/.test(String(s)));
 const byTitle = (a, b) => a.title.localeCompare(b.title);
 const firstByNorm = list => { const m = new Map(); for (const x of list) if (!m.has(norm(x))) m.set(norm(x), x); return [...m.values()]; };
 // Snap names to the spelling that already exists ("soup" → "Soup").

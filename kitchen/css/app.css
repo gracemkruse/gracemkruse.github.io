@@ -343,3 +343,17 @@ button.qty { text-decoration: underline; text-decoration-color: var(--line); tex
 @media (hover: none) { .meal-menu { display: none; } }
 @media (hover: hover) { .meal-menu { opacity: 0; } .meal:hover .meal-menu, .meal-menu:focus-visible { opacity: 1; } }
 .menu-row { display: flex; align-items: center; min-height: var(--row); border-bottom: 1px solid var(--line); text-align: left; width: 100%; }
+
+/* ---------- Fill in missing recipes ---------- */
+.fill { max-width: 720px; margin: 0 auto; }
+.fill-list { display: flex; flex-direction: column; }
+.fill-row { display: flex; align-items: center; gap: var(--s12); padding: var(--s12) 0; border-bottom: 1px solid var(--line); }
+.fill-row .box { flex: none; }
+.fill-spacer { width: 20px; flex: none; }
+.fill-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--s4); }
+.fill-main .t-recipe { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fill-go { margin: var(--s16) 0 var(--s8); cursor: pointer; min-height: var(--row); }
+.fill-rest summary { cursor: pointer; color: var(--grey); padding: var(--s8) 0; }
+.fill-rest-row { display: block; line-height: 44px; border-bottom: 1px solid var(--line); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fill-foot { position: sticky; bottom: calc(var(--tabbar) + var(--s8)); background: var(--white); padding: var(--s16) 0; margin-top: var(--s24); display: flex; align-items: center; gap: var(--s16); flex-wrap: wrap; border-top: 1px solid var(--line); }
+@media (min-width: 900px) { .fill-foot { bottom: 0; } }

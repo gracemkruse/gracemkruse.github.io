@@ -1,6 +1,6 @@
 import * as data from "../data.js";
 import { icon } from "../icons.js";
-import { esc, $, $$, toast, minutes, amount, photoStyle, sourceName } from "../ui.js";
+import { esc, $, $$, toast, minutes, amount, photoStyle, sourceName, isWebLink, notionNote } from "../ui.js";
 import { pickDay, pickStatus } from "../pickers.js";
 
 export async function detailView(id, app) {
@@ -11,12 +11,14 @@ export async function detailView(id, app) {
   const STATUS = { out: ["Out", "clay"], low: ["Low", "grey"], in_stock: ["In stock", "grey"], not_tracked: ["—", "grey"] };
   const status = g => { const [l, c] = STATUS[g.stock_status] || STATUS.not_tracked;
     return g.ingredient_id ? `<button class="stock t-label ${c}" data-ing="${esc(g.ingredient_id)}" data-now="${esc(g.stock_status)}" aria-label="${esc(g.name)}: ${l === "—" ? "not tracked" : l}. Change">${l}</button>` : ""; };
-  const host = r.source_url ? sourceName(r.source_url) : "";
+  const link = isWebLink(r.source_url) ? r.source_url : null;
+  const host = link ? sourceName(link) : "";
+  const bookNote = [link || !r.source_url ? "" : notionNote(r.source_url), r.source_notes].filter(Boolean).join(", ");
   const facts = [
     r.servings ? ["serves", "Serves", r.servings] : null,
     r.total_minutes ? ["time", "Time", minutes(r.total_minutes).replace("′", " min")] : null,
     ["made", "Made", made ? `${made}×` : "Not yet"],
-    r.source_url ? ["source", "Source", `<a href="${esc(r.source_url)}" target="_blank" rel="noopener">${esc(host || "Link")}</a>`, true] : r.source_notes ? ["source", "Source", esc(r.source_notes), true] : null,
+    link ? ["source", "Source", `<a href="${esc(link)}" target="_blank" rel="noopener">${esc(host || "Link")}</a>`, true] : bookNote ? ["source", "Source", esc(bookNote), true] : null,
   ].filter(Boolean);
 
   app.innerHTML = `
