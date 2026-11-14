@@ -65,11 +65,11 @@ export async function getRecipe(id) {
   if (isDemo) {
     const db = demo(), r = db.recipes.find(x => x.id === id); if (!r) return null;
     const out = structuredClone(r), p = demoPantry(db);
-    for (const g of out.ingredients) g.stock_status = p[norm(g.name)]?.stock_status || g.stock_status;
+    for (const g of out.ingredients) { g.ingredient_id = norm(g.name); g.stock_status = p[norm(g.name)]?.stock_status || g.stock_status; }
     return out;
   }
   const { data, error } = await sb.from("recipes")
-    .select("*, recipe_tags(tags(name)), recipe_ingredients(amount,unit,prep,position, ingredients(name,stock_status))")
+    .select("*, recipe_tags(tags(name)), recipe_ingredients(amount,unit,prep,position, ingredients(id,name,stock_status))")
     .eq("id", id).maybeSingle();
   if (error) throw error;
   if (!data) return null;
@@ -77,7 +77,7 @@ export async function getRecipe(id) {
     ...data,
     tags: (data.recipe_tags || []).map(x => x.tags?.name).filter(Boolean),
     ingredients: (data.recipe_ingredients || []).sort((a, b) => a.position - b.position)
-      .map(x => ({ amount: x.amount, unit: x.unit, prep: x.prep, name: x.ingredients?.name || "", stock_status: x.ingredients?.stock_status || "not_tracked" })),
+      .map(x => ({ amount: x.amount, unit: x.unit, prep: x.prep, name: x.ingredients?.name || "", ingredient_id: x.ingredients?.id, stock_status: x.ingredients?.stock_status || "not_tracked" })),
   };
 }
 
@@ -152,6 +152,11 @@ export async function addToWeek(recipeId, date) {
 export async function setMealStatus(id, status) {
   if (isDemo) { const db = demo(); const m = (db.meal_plan || []).find(x => x.id === id); if (m) m.status = status; saveDemo(db); return; }
   const { error } = await sb.from("meal_plan").update({ status }).eq("id", id); if (error) throw error;
+}
+
+export async function moveMeal(id, date) {
+  if (isDemo) { const db = demo(); const m = (db.meal_plan || []).find(x => x.id === id); if (m) m.date = date; saveDemo(db); return; }
+  const { error } = await sb.from("meal_plan").update({ plan_date: date }).eq("id", id); if (error) throw error;
 }
 
 export async function removeFromWeek(id) {
@@ -304,7 +309,7 @@ export async function shoppingData(start, end) {
   const meals = (await listWeek(start, end)).filter(m => m.status !== "made");
   if (isDemo) {
     const db = demo(), p = demoPantry(db), byId = Object.fromEntries(db.recipes.map(r => [r.id, r]));
-    const week = collect(meals.flatMap(m => (byId[m.recipe.id]?.ingredients || []).map(g => ({ key: norm(g.name), name: p[norm(g.name)]?.name || g.name, amount: g.amount, unit: g.unit, recipe: m.recipe.title, ...pick(p[norm(g.name)]) }))));
+    const week = collect(meals.flatMap(m => (byId[m.recipe.id]?.ingredients || []).map(g => ({ key: norm(g.name), name: p[norm(g.name)]?.name || g.name, amount: g.amount, unit: g.unit, recipe: m.recipe.title, date: m.date, ...pick(p[norm(g.name)]) }))));
     const pantry = Object.entries(p).map(([key, v]) => ({ ingredient_id: key, ...v })).sort((a, b) => a.name.localeCompare(b.name));
     return { categories: CATEGORIES.map(c => ({ ...c, id: c.name })), week, extras: (db.extras || []).map(x => ({ ...x })), pantry };
   }
@@ -323,8 +328,8 @@ export async function shoppingData(start, end) {
   for (const i of missing) { i.category_id = catId[guessCategory(i.name)]; await sb.from("ingredients").update({ category_id: i.category_id }).eq("id", i.id); }
   const ingById = Object.fromEntries(ingAll.map(i => [i.id, i]));
   const titleById = Object.fromEntries(meals.map(m => [m.recipe.id, m.recipe.title]));
-  const mealCount = id => meals.filter(m => m.recipe.id === id).length; // a recipe planned twice needs twice the ingredients
-  const rows = lines.flatMap(l => { const i = ingById[l.ingredients?.id]; if (!i) return []; return Array.from({ length: mealCount(l.recipe_id) }, () => ({ key: i.id, name: i.name, amount: l.amount, unit: l.unit, recipe: titleById[l.recipe_id], stock_status: i.stock_status, in_cart: i.in_cart, category: catName[i.category_id] || "Pantry" })); });
+  // one row per planned meal, so a recipe planned twice counts twice and each line knows its day
+  const rows = lines.flatMap(l => { const i = ingById[l.ingredients?.id]; if (!i) return []; return meals.filter(m => m.recipe.id === l.recipe_id).map(m => ({ key: i.id, name: i.name, amount: l.amount, unit: l.unit, recipe: titleById[l.recipe_id], date: m.date, stock_status: i.stock_status, in_cart: i.in_cart, category: catName[i.category_id] || "Pantry" })); });
   const { data: extras, error: e3 } = await sb.from("shopping_extras").select("id,name,category_id,in_cart").order("created_at"); if (e3) throw e3;
   return {
     categories,
@@ -337,7 +342,8 @@ export async function shoppingData(start, end) {
 function collect(rows) {
   const by = new Map();
   for (const r of rows) {
-    const it = by.get(r.key) || { ingredient_id: r.key, name: r.name, category: r.category, stock_status: r.stock_status, in_cart: !!r.in_cart, amounts: [], recipes: [] };
+    const it = by.get(r.key) || { ingredient_id: r.key, name: r.name, category: r.category, stock_status: r.stock_status, in_cart: !!r.in_cart, amounts: [], recipes: [], lines: [] };
+    it.lines.push({ recipe: r.recipe, date: r.date, amount: r.amount ?? null, unit: r.unit || null });   // for the per-recipe breakdown
     const u = (r.unit || "").trim().toLowerCase(); const a = it.amounts.find(x => (x.unit || "").toLowerCase() === u);
     if (a) a.amount = a.amount == null || r.amount == null ? null : a.amount + r.amount; else it.amounts.push({ amount: r.amount ?? null, unit: r.unit || null });
     if (r.recipe && !it.recipes.includes(r.recipe)) it.recipes.push(r.recipe);
@@ -501,7 +507,7 @@ function clean(r) {
     id: r.id || null,
     title: String(r.title || "").trim(),
     image_url: str(r.image_url),
-    servings: Math.max(1, Math.round(num(r.servings) || 0)),
+    servings: num(r.servings) ? Math.max(1, Math.round(num(r.servings))) : null,   // optional
     total_minutes: num(r.total_minutes) ? Math.round(num(r.total_minutes)) : null,
     steps: (r.steps || []).map(s => String(s).trim()).filter(Boolean),
     notes: str(r.notes), source_url: str(r.source_url), source_notes: str(r.source_notes),

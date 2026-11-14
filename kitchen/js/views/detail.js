@@ -1,16 +1,19 @@
 import * as data from "../data.js";
 import { icon } from "../icons.js";
-import { esc, $, toast, minutes, amount, photoStyle } from "../ui.js";
-import { pickDay } from "../pickers.js";
+import { esc, $, $$, toast, minutes, amount, photoStyle, sourceName } from "../ui.js";
+import { pickDay, pickStatus } from "../pickers.js";
 
 export async function detailView(id, app) {
   const r = await data.getRecipe(id);
   const made = r ? await data.timesMade(r.id) : 0;
   if (!r) { app.innerHTML = `<p class="t-item">That recipe isn’t here anymore.</p><p><a class="btn-text" href="#/recipes">Back to recipes</a></p>`; return; }
-  const status = s => s === "out" ? `<span class="t-label clay">Out</span>` : s === "low" ? `<span class="t-label grey">Low</span>` : "";
-  let host = ""; try { host = r.source_url ? new URL(r.source_url).hostname.replace(/^www\./, "") : ""; } catch {}
+  // stock status is tappable: Out / Low / In stock, or a dash when not tracked
+  const STATUS = { out: ["Out", "clay"], low: ["Low", "grey"], in_stock: ["In stock", "grey"], not_tracked: ["—", "grey"] };
+  const status = g => { const [l, c] = STATUS[g.stock_status] || STATUS.not_tracked;
+    return g.ingredient_id ? `<button class="stock t-label ${c}" data-ing="${esc(g.ingredient_id)}" data-now="${esc(g.stock_status)}" aria-label="${esc(g.name)}: ${l === "—" ? "not tracked" : l}. Change">${l}</button>` : ""; };
+  const host = r.source_url ? sourceName(r.source_url) : "";
   const facts = [
-    ["serves", "Serves", r.servings],
+    r.servings ? ["serves", "Serves", r.servings] : null,
     r.total_minutes ? ["time", "Time", minutes(r.total_minutes).replace("′", " min")] : null,
     ["made", "Made", made ? `${made}×` : "Not yet"],
     r.source_url ? ["source", "Source", `<a href="${esc(r.source_url)}" target="_blank" rel="noopener">${esc(host || "Link")}</a>`, true] : r.source_notes ? ["source", "Source", esc(r.source_notes), true] : null,
@@ -23,7 +26,7 @@ export async function detailView(id, app) {
         <a class="btn-text grey t-label" href="#/recipe/${encodeURIComponent(r.id)}/edit">Edit</a>
       </div>
       ${r.tags.length ? `<div class="t-label grey">${r.tags.map(esc).join(" · ")}</div>` : ""}
-      <h1 class="t-page page-title">${esc(r.title)}</h1>
+      <h1 class="t-page page-title recipe-name">${esc(r.title)}</h1>
 
       <div class="toolbar">
         <button class="btn-text t-label" data-act="week">${icon("plus", true)} Add to this week</button>
@@ -34,15 +37,15 @@ export async function detailView(id, app) {
         <div class="facts">
           ${facts.map(([ic, k, v, html]) => `<div class="fact"><div class="k t-label">${icon(ic, true)} ${k}</div><div class="t-item">${html ? v : esc(v)}</div></div>`).join("")}
         </div>
-        <div class="photo" style="${photoStyle(r)}" role="img" aria-label="${esc(r.title)}"></div>
+        <button class="photo" style="${photoStyle(r)}" aria-label="${esc(r.title)}: enlarge photo" ${r.image_url ? "" : "disabled"}></button>
       </div>
 
-      <div class="section-head"><span class="t-label">Ingredients</span><span class="t-label grey">for ${esc(r.servings)}</span></div>
+      <div class="section-head"><span class="t-label">Ingredients</span>${r.servings ? `<span class="t-label grey">for ${esc(r.servings)}</span>` : ""}</div>
       ${r.ingredients.length ? r.ingredients.map(g => `
         <div class="ing-row">
           <span class="qty t-item">${esc(amount(g.amount, g.unit))}</span>
           <span class="name t-item">${esc(g.name.toLowerCase())}${g.prep ? `, ${esc(g.prep)}` : ""}</span>
-          ${status(g.stock_status)}
+          ${status(g)}
         </div>`).join("") : `<p class="t-item grey">No ingredients yet.</p>`}
 
       ${r.steps.length ? `
@@ -56,6 +59,23 @@ export async function detailView(id, app) {
     </article>`;
 
   $('[data-act="week"]', app).onclick = () => pickDay(r);
+  // tap a status → choose a new one in place
+  $$(".stock", app).forEach(b => b.onclick = async () => {
+    const next = await pickStatus(b, b.dataset.now); if (!next) return;
+    try { await data.setStock(b.dataset.ing, next); const [l, c] = STATUS[next]; b.textContent = l; b.className = `stock t-label ${c}`; b.dataset.now = next; }
+    catch (e) { console.error(e); toast("Couldn’t update — try again."); }
+  });
+  // tap the photo → full screen; pinch to zoom on phones
+  const photo = $(".split .photo", app);
+  if (photo && r.image_url) photo.onclick = () => {
+    const box = document.createElement("div");
+    box.className = "lightbox"; box.setAttribute("role", "dialog"); box.setAttribute("aria-label", r.title);
+    box.innerHTML = `<img src="${esc(r.image_url)}" alt="${esc(r.title)}"><button class="lightbox-close grey" aria-label="Close">${icon("close")}</button>`;
+    const close = () => { box.remove(); document.removeEventListener("keydown", onKey); };
+    const onKey = e => { if (e.key === "Escape") close(); };
+    box.onclick = e => { if (e.target === box || e.target.closest(".lightbox-close")) close(); };
+    document.addEventListener("keydown", onKey); document.body.appendChild(box);
+  };
   $('[data-act="cook"]', app).onclick = () => { location.hash = `#/recipe/${encodeURIComponent(r.id)}/cook`; };
   $('[data-act="archive"]', app).onclick = async () => {
     if (!confirm(`Archive “${r.title}”? It will be hidden from your recipes.`)) return;

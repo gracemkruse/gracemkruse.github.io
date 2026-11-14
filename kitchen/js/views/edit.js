@@ -32,7 +32,7 @@ export async function editView(id, app, draft = null, note = "") {
 
       <label class="field"><span class="t-label">Title</span><input class="t-item" name="title" required value="${esc(r.title)}" placeholder="Recipe name"></label>
       <div class="two">
-        <label class="field"><span class="t-label">Serves (required)</span><input class="t-item" name="servings" inputmode="numeric" required value="${esc(r.servings ?? "")}" placeholder="4"></label>
+        <label class="field"><span class="t-label">Serves</span><input class="t-item" name="servings" inputmode="numeric" required value="${esc(r.servings ?? "")}" placeholder="4"></label>
         <label class="field"><span class="t-label">Time in minutes</span><input class="t-item" name="total_minutes" inputmode="numeric" value="${esc(r.total_minutes ?? "")}" placeholder="45"></label>
       </div>
       <div class="field">
@@ -131,7 +131,6 @@ export async function editView(id, app, draft = null, note = "") {
     const err = $(".error", app); err.textContent = "";
     const servings = Number(F.servings.value);
     if (!F.title.value.trim()) { err.textContent = "Add a title."; F.title.focus(); return; }
-    if (!servings || servings < 1) { err.textContent = "Serves is required — how many people does it feed?"; F.servings.focus(); return; }
     if (uploading) { err.textContent = "The photo is still uploading — one moment."; return; }
     const recipe = {
       id, title: F.title.value, servings, total_minutes: F.total_minutes.value, image_url: photo,

@@ -9,7 +9,7 @@ import { editView } from "./views/edit.js";
 import { listView } from "./views/list.js";
 import { cookView } from "./views/cook.js";
 import { importView } from "./views/import.js";
-import { weekView, resetWeekEditing } from "./views/week.js";
+import { weekView } from "./views/week.js";
 
 const routes = [
   { re: /^#\/login$/, view: (p, app) => loginView(app), public: true, tab: null },
@@ -29,7 +29,6 @@ async function render() {
   if (!route) { location.hash = "#/recipes"; return; }
   if (!route.public && !(await data.hasSession())) { location.hash = "#/login"; return; }
   const params = hash.match(route.re).slice(1).map(x => (x == null ? x : decodeURIComponent(x)));
-  if (route.tab !== "week") resetWeekEditing();
   const app = $("#app");
   $("#tabbar").hidden = !route.tab;
   $$("#tabbar a").forEach(a => a.classList.toggle("active", a.dataset.tab === route.tab));

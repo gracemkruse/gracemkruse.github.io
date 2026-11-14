@@ -4,9 +4,34 @@ export const $ = (sel, root = document) => root.querySelector(sel);
 export const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
 let toastTimer;
-export function toast(msg) {
-  const t = $("#toast"); t.textContent = msg; t.hidden = false;
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.hidden = true), 2600);
+// toast("Removed.", { label: "Undo", run: () => … }) shows an action button for a few seconds.
+export function toast(msg, action = null) {
+  const t = $("#toast"); t.hidden = false;
+  t.innerHTML = esc(msg) + (action ? ` <button class="toast-act t-label">${esc(action.label)}</button>` : "");
+  if (action) t.querySelector(".toast-act").onclick = () => { t.hidden = true; clearTimeout(toastTimer); action.run(); };
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.hidden = true), action ? 5000 : 2600);
+}
+
+// "https://cooking.nytimes.com/recipes/…" → "NYT Cooking"; unknown sites → their name ("ottolenghi.co.uk" → "Ottolenghi").
+const SOURCES = {
+  "cooking.nytimes.com": "NYT Cooking", "nytimes.com": "New York Times", "bonappetit.com": "Bon Appétit", "seriouseats.com": "Serious Eats",
+  "smittenkitchen.com": "Smitten Kitchen", "mollybaz.com": "Molly Baz", "cookieandkate.com": "Cookie and Kate", "dishingouthealth.com": "Dishing Out Health",
+  "epicurious.com": "Epicurious", "food52.com": "Food52", "thekitchn.com": "The Kitchn", "halfbakedharvest.com": "Half Baked Harvest",
+  "budgetbytes.com": "Budget Bytes", "minimalistbaker.com": "Minimalist Baker", "alisoneroman.com": "Alison Roman", "alison-roman.com": "Alison Roman",
+  "foodandwine.com": "Food & Wine", "allrecipes.com": "Allrecipes", "bbcgoodfood.com": "BBC Good Food", "theguardian.com": "The Guardian",
+  "washingtonpost.com": "Washington Post", "eatingwell.com": "EatingWell", "simplyrecipes.com": "Simply Recipes", "loveandlemons.com": "Love and Lemons",
+  "pinchofyum.com": "Pinch of Yum", "skinnytaste.com": "Skinnytaste", "sallysbakingaddiction.com": "Sally’s Baking Addiction", "kingarthurbaking.com": "King Arthur Baking",
+  "foodnetwork.com": "Food Network", "delish.com": "Delish", "tasty.co": "Tasty", "instagram.com": "Instagram", "youtube.com": "YouTube", "tiktok.com": "TikTok",
+  "ottolenghi.co.uk": "Ottolenghi", "nigella.com": "Nigella", "jamieoliver.com": "Jamie Oliver", "101cookbooks.com": "101 Cookbooks",
+};
+export function sourceName(url) {
+  let host = "";
+  try { host = new URL(url).hostname.toLowerCase().replace(/^(www|m)\./, ""); } catch { return ""; }
+  if (SOURCES[host]) return SOURCES[host];
+  const parent = host.split(".").slice(-2).join(".");
+  if (SOURCES[parent]) return SOURCES[parent];
+  const word = host.replace(/\.(co\.uk|com\.au|com|org|net|co|uk|io|blog)$/, "").split(".").pop();
+  return word ? word.charAt(0).toUpperCase() + word.slice(1) : host;
 }
 
 export function minutes(m) {
