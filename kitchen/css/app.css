@@ -129,12 +129,13 @@ img { display: block; max-width: 100%; }
 /* iPad and desktop: roomier page, ingredients stay on the left */
 @media (min-width: 760px) {
   .detail { max-width: 1120px; }
-  .detail-body { grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); grid-template-areas: "ings hero" "ings method"; column-gap: var(--s48); align-items: start; }
-  .detail-ings { position: sticky; top: var(--s16); max-height: calc(100vh - var(--s32)); overflow-y: auto; overscroll-behavior: contain; }
-  .detail-ings .section-head { margin-top: 0; }
+  /* asymmetric: the photo sits alone on the right; Ingredients starts level with Method */
+  .detail-body { grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); grid-template-areas: ". hero" "ings method"; column-gap: var(--s48); align-items: start; }
+  /* same header spacing as Method so the two line up; once it reaches the top it stays (the 32px above the rule scrolls away) */
+  .detail-ings { position: sticky; top: calc(var(--s16) - var(--s32)); max-height: calc(100vh + var(--s16)); overflow-y: auto; overscroll-behavior: contain; }
   .detail-hero .photo { aspect-ratio: 16 / 9; max-height: 420px; }
 }
-@media (min-width: 900px) { .detail-ings { top: 80px; max-height: calc(100vh - 96px); } }
+@media (min-width: 900px) { .detail-ings { top: calc(80px - var(--s32)); max-height: calc(100vh - 48px); } }
 
 /* ---------- Edit form ---------- */
 .form { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--s24); }
