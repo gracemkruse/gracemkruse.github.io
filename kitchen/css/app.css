@@ -335,3 +335,32 @@ button.qty { text-decoration: underline; text-decoration-color: var(--line); tex
 .fill-rest-row { display: block; line-height: 44px; border-bottom: 1px solid var(--line); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .fill-foot { position: sticky; bottom: calc(var(--tabbar) + var(--s8)); background: var(--white); padding: var(--s16) 0; margin-top: var(--s24); display: flex; align-items: center; gap: var(--s16); flex-wrap: wrap; border-top: 1px solid var(--line); }
 @media (min-width: 900px) { .fill-foot { bottom: 0; } }
+
+/* ---------- Export (B-37): print-only Letter page — Figma "I · Book — Letter" ----------
+   Photo bleeds down the left (352 wide); one 368 column on the right holds the whole recipe.
+   48 margins. Spacing: 16 title→meta, 40 between sections, 12 label→content, 8 between steps.
+   Ingredients: two 176 columns, 16 gutter, each with a 48 amount column. */
+.topline-actions { display: flex; gap: var(--s16); }
+.export { display: none; }
+@media print {
+  @page { size: letter; margin: 0; }
+  html, body { background: var(--white) !important; margin: 0; }
+  body > :not(#app) { display: none !important; }
+  .app, .detail { max-width: none; margin: 0; padding: 0; min-height: 0; }
+  .detail > :not(.export) { display: none !important; }
+  .export { display: block; position: relative; width: 816px; min-height: 1056px; color: var(--ink);
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .ex-photo { position: absolute; left: 0; top: 0; width: 352px; height: 1056px; object-fit: cover; }
+  .ex-col { margin-left: 400px; width: 368px; padding: var(--s48) 0;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone; }   /* long recipes: keep the margins on page 2 */
+  .no-photo .ex-col { margin-left: var(--s48); }
+  .ex-title { margin: 0; font: 300 40px/44px var(--serif); letter-spacing: 0; }
+  .ex-label { margin: 0; font: 400 8px/12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--chartreuse); }
+  .ex-meta { margin-top: var(--s16); }
+  .ex-head { margin: var(--s40) 0 var(--s12); break-after: avoid; }
+  .ex-ings { display: grid; grid-template-columns: 176px 176px; column-gap: var(--s16); align-items: start; break-inside: avoid; }
+  .ex-ing, .ex-steps li { display: grid; grid-template-columns: 48px 1fr; align-items: baseline; font: 300 12px/16px var(--sans); }
+  .ex-steps { list-style: none; margin: 0; padding: 0; display: grid; row-gap: var(--s8); }
+  .ex-steps li { break-inside: avoid; }
+  .ex-n { font: 400 12px/16px var(--mono); color: var(--chartreuse); }
+}
