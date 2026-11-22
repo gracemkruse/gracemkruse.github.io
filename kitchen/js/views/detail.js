@@ -29,7 +29,10 @@ export async function detailView(id, app) {
     <article class="detail">
       <div class="topline">
         <a class="btn-text grey t-label" href="#/recipes">${icon("back", true)} Recipes</a>
-        <a class="btn-text grey t-label" href="#/recipe/${encodeURIComponent(r.id)}/edit">Edit</a>
+        <span class="topline-actions">
+          <button class="btn-text grey t-label" data-act="export">Export</button>
+          <a class="btn-text grey t-label" href="#/recipe/${encodeURIComponent(r.id)}/edit">Edit</a>
+        </span>
       </div>
       <h1 class="t-page page-title recipe-name">${esc(r.title)}</h1>
       <div class="toolbar">
@@ -63,6 +66,7 @@ export async function detailView(id, app) {
             <p class="t-label grey" style="margin:8px 0 0">Archived recipes are hidden, never deleted.</p></div>
         </section>
       </div>
+      ${exportPage(r, link ? host : bookNote)}
     </article>`;
 
   $('[data-act="week"]', app).onclick = () => pickDay(r);
@@ -89,10 +93,51 @@ export async function detailView(id, app) {
     box.onclick = e => { if (e.target === box || e.target.closest(".lightbox-close")) close(); };
     document.addEventListener("keydown", onKey); document.body.appendChild(box);
   };
+  // Export: the print-only page below becomes a Letter PDF ("Save as PDF" in the print dialog).
+  // The document title becomes the file name.
+  $('[data-act="export"]', app).onclick = async () => {
+    const img = $(".export img", app);
+    if (img) { try { await img.decode(); } catch {} }
+    // the light sans and the serif are only used here, so make sure they've arrived before printing
+    try { await Promise.all(["300 12px 'IBM Plex Sans'", "300 40px Spectral", "400 8px 'IBM Plex Mono'"].map(f => document.fonts.load(f))); } catch {}
+    const before = document.title; document.title = r.title;
+    addEventListener("afterprint", () => { document.title = before; }, { once: true });
+    print();
+  };
   $('[data-act="archive"]', app).onclick = async () => {
     if (!confirm(`Archive “${r.title}”? It will be hidden from your recipes.`)) return;
     await data.archiveRecipe(r.id); toast("Archived."); location.hash = "#/recipes";
   };
+}
+
+// The exported page (Figma: 03 Visual Directions → "I · Book — Letter"). Hidden on screen, the only thing printed.
+// Letter, photo bleeding down the left, one text column on the right that holds the whole recipe,
+// so zooming into that column on a phone shows ingredients and method together.
+// Title keeps its stored capitals. Meta line: source · serves · time; each part only if known.
+function exportPage(r, source) {
+  const meta = [source, r.servings ? `Serves ${r.servings}` : "", r.total_minutes ? `About ${duration(r.total_minutes)}` : ""].filter(Boolean);
+  const ings = r.ingredients.filter(g => g.name);
+  const half = Math.ceil(ings.length / 2);   // two columns, filled top to bottom; each column stacks on its own
+  const ingRow = g => `<div class="ex-ing"><span class="ex-label">${esc(amount(g.amount, g.unit))}</span><span>${esc(g.name.toLowerCase())}${g.prep ? `, ${esc(g.prep)}` : ""}</span></div>`;
+  return `
+    <section class="export${r.image_url ? "" : " no-photo"}" aria-hidden="true">
+      ${r.image_url ? `<img class="ex-photo" src="${esc(r.image_url)}" alt="">` : ""}
+      <div class="ex-col">
+        <h1 class="ex-title">${esc(r.title)}</h1>
+        ${meta.length ? `<p class="ex-label ex-meta">${meta.map(esc).join(" · ")}</p>` : ""}
+        ${ings.length ? `<h2 class="ex-label ex-head">Ingredients</h2>
+          <div class="ex-ings"><div>${ings.slice(0, half).map(ingRow).join("")}</div><div>${ings.slice(half).map(ingRow).join("")}</div></div>` : ""}
+        ${r.steps.length ? `<h2 class="ex-label ex-head">Method</h2>
+          <ol class="ex-steps">${r.steps.map((s, i) => `<li><span class="ex-n">${i + 1}.</span><span>${esc(s)}</span></li>`).join("")}</ol>` : ""}
+      </div>
+    </section>`;
+}
+function duration(m) {
+  if (m < 60) return `${m} minutes`;
+  const h = Math.floor(m / 60), r = m % 60;
+  if (!r) return `${h} hour${h > 1 ? "s" : ""}`;
+  if (r === 30) return `${h}½ hours`;
+  return `${h} hr ${r} min`;
 }
 
 // Checked-off steps per recipe, kept until the tab is closed.
