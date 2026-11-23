@@ -121,7 +121,9 @@ img { display: block; max-width: 100%; }
 /* ---------- Recipe Detail ---------- */
 .detail { max-width: 720px; margin: 0 auto; }
 .detail .page-title { margin-top: var(--s16); }
-.detail .toolbar { gap: var(--s16); justify-content: flex-start; }
+.detail .toolbar { gap: var(--s12) var(--s16); justify-content: space-between; flex-wrap: wrap; height: auto; min-height: 48px; padding: var(--s12) 0; }
+.toolbar-group { display: flex; align-items: center; gap: var(--s16); }
+.toolbar-end { margin-left: auto; }
 .detail .toolbar .btn-text { white-space: nowrap; flex: none; }
 .detail-body { display: grid; grid-template-areas: "hero" "ings" "method"; }
 .detail-hero { grid-area: hero; }
@@ -148,7 +150,7 @@ img { display: block; max-width: 100%; }
 .step .n { color: var(--chartreuse); padding-top: var(--s4); }
 .step.done { opacity: 0.35; }
 .step.done .n { color: var(--grey); }
-.danger-zone { margin-top: var(--s48); padding-top: var(--s16); border-top: 1px solid var(--line); display: flex; gap: var(--s24); }
+.danger-zone { margin-top: var(--s48); padding-top: var(--s16); border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: var(--s24); }
 /* iPad and desktop: roomier page, ingredients stay on the left */
 @media (min-width: 760px) {
   .detail { max-width: 1120px; }

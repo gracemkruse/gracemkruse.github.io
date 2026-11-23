@@ -34,6 +34,7 @@ const PATHS = {
   search: L(circ(9, 9, 5)) + L("M16.75 16.75L13 13"),
   plus: L("M9.83333 4V15.6667M4 9.83333H15.6667"),
   check: L("M5 10.1667L8.33333 13.5L15 6"),
+  ring: L(circ(10, 10, 5.5)),   // not done yet (Cooked today before it's tapped)
   back: L("M13 5L8 10L13 15"),
   open: L("M8 5L13 10L8 15"),
   down: L("M5 8L10 13L15 8"),

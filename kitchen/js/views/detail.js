@@ -31,15 +31,17 @@ export async function detailView(id, app) {
     <article class="detail">
       <div class="topline">
         <a class="btn-text grey t-label" href="#/recipes">${icon("back", true)} Recipes</a>
-        <span class="topline-actions">
-          <button class="btn-text grey t-label" data-act="share">Share</button>
-          <a class="btn-text grey t-label" href="#/recipe/${encodeURIComponent(r.id)}/edit">Edit</a>
-        </span>
       </div>
       <h1 class="t-page page-title recipe-name">${esc(niceTitle(r.title))}</h1>
       <div class="toolbar">
-        <button class="btn-text t-label" data-act="week">${icon("plus", true)} Add to this week</button>
-        <button class="btn-text t-label" data-act="cooked">${icon("check", true)} Cooked today</button>
+        <span class="toolbar-group">
+          <button class="btn-text t-label" data-act="week">${icon("plus", true)} Add to this week</button>
+          <button class="btn-text t-label" data-act="cooked" aria-pressed="false">${icon("ring", true)} Cooked today</button>
+        </span>
+        <span class="toolbar-group toolbar-end">
+          <button class="btn-text grey t-label" data-act="share">Share</button>
+          <a class="btn-text grey t-label" href="#/recipe/${encodeURIComponent(r.id)}/edit">Edit</a>
+        </span>
       </div>
 
       <div class="detail-body">
@@ -72,17 +74,25 @@ export async function detailView(id, app) {
   $('[data-act="week"]', app).onclick = () => pickDay(r);
   // the description folds away; the choice is remembered for every recipe
   const notes = $(".notes-box", app); if (notes) notes.addEventListener("toggle", () => pref.set("notes", notes.open ? "open" : "closed"));
-  // Cooked today: shows on This Week as made today and counts toward Made
-  $('[data-act="cooked"]', app).onclick = async () => {
-    const madeEl = $('[data-fact="made"] .t-item', app);
-    const show = n => { if (madeEl) madeEl.textContent = n ? `${n}×` : "Not yet"; };
-    try {
-      const res = await data.markCooked(r.id, iso(new Date()));
-      show(await data.timesMade(r.id));
-      toast("Marked as cooked today.", { label: "Undo", run: async () => {
-        try { res.added ? await data.removeFromWeek(res.id) : await data.setMealStatus(res.id, "planned"); show(await data.timesMade(r.id)); }
-        catch (e) { console.error(e); toast("Couldn’t undo. Try again."); } } });
-    } catch (e) { console.error(e); toast("Couldn’t mark it. Try again."); }
+  // Cooked today: an empty circle until it's tapped, then a check once it's on This Week as made today.
+  // Tapping again (or Undo) takes it back off. Counts toward Made.
+  const cookedBtn = $('[data-act="cooked"]', app), today = iso(new Date());
+  const madeEl = $('[data-fact="made"] .t-item', app);
+  let cooked = null;   // { id, added } for today's made meal
+  const paintCooked = () => { cookedBtn.innerHTML = `${icon(cooked ? "check" : "ring", true)} Cooked today`; cookedBtn.setAttribute("aria-pressed", !!cooked); };
+  const showMade = async () => { const n = await data.timesMade(r.id); if (madeEl) madeEl.textContent = n ? `${n}×` : "Not yet"; };
+  data.listWeek(today, today).then(ms => { const m = ms.find(x => x.recipe.id === r.id && x.status === "made"); if (m) { cooked = { id: m.id, added: false }; paintCooked(); } }).catch(() => {});
+  const uncook = async () => {
+    const c = cooked; if (!c) return;
+    try { c.added ? await data.removeFromWeek(c.id) : await data.setMealStatus(c.id, "planned"); cooked = null; paintCooked(); await showMade(); }
+    catch (e) { console.error(e); toast("Couldn’t undo. Try again."); }
+  };
+  cookedBtn.onclick = async () => {
+    if (cooked) return uncook();
+    cookedBtn.disabled = true;
+    try { cooked = await data.markCooked(r.id, today); paintCooked(); await showMade(); toast("Marked as cooked today.", { label: "Undo", run: uncook }); }
+    catch (e) { console.error(e); toast("Couldn’t mark it. Try again."); }
+    cookedBtn.disabled = false;
   };
   // tap a step to check it off (it dims); remembered until the tab is closed
   $$("[data-step]", app).forEach(b => b.onclick = () => {
