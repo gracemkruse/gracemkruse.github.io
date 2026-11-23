@@ -1,5 +1,5 @@
 import * as data from "../data.js";
-import { icon } from "../icons.js";
+import { icon, tagIcon } from "../icons.js";
 import { esc, $, $$, toast, minutes, amount, photoStyle, sourceName, isWebLink, notionNote, niceTitle, iso, pref } from "../ui.js";
 import { pickDay, pickStatus } from "../pickers.js";
 import { directShare } from "./share.js";
@@ -23,6 +23,7 @@ export async function detailView(id, app) {
     r.total_minutes ? ["time", "Time", minutes(r.total_minutes).replace("′", " min")] : null,
     ["made", "Made", made ? `${made}×` : "Not yet"],
     link ? ["source", "Source", `<a href="${esc(link)}" target="_blank" rel="noopener">${esc(host || "Link")}</a>`, true] : bookNote ? ["source", "Source", esc(bookNote), true] : null,
+    r.tags.length ? [tagIcon(r.tags) || "", "Tags", r.tags.map(esc).join(" · "), true, "tags"] : null,
   ].filter(Boolean);
   const done = doneSteps(r.id);
 
@@ -39,14 +40,13 @@ export async function detailView(id, app) {
       <div class="toolbar">
         <button class="btn-text t-label" data-act="week">${icon("plus", true)} Add to this week</button>
         <button class="btn-text t-label" data-act="cooked">${icon("check", true)} Cooked today</button>
-        ${r.tags.length ? `<span class="detail-tags t-label grey">${r.tags.map(esc).join(" · ")}</span>` : ""}
       </div>
 
       <div class="detail-body">
         <div class="detail-hero">
           <button class="photo" style="${photoStyle(r)}" aria-label="${esc(r.title)}: enlarge photo" ${r.image_url ? "" : "disabled"}></button>
           <div class="facts">
-            ${facts.map(([ic, k, v, html]) => `<div class="fact${ic === "source" ? " wide" : ""}" data-fact="${ic}"><div class="k t-label">${icon(ic, true)} ${k}</div><div class="t-item">${html ? v : esc(v)}</div></div>`).join("")}
+            ${facts.map(([ic, k, v, html, key = ic]) => `<div class="fact${key === "source" || key === "tags" ? " wide" : ""}" data-fact="${key}"><div class="k t-label">${ic ? icon(ic, true) : ""} ${k}</div><div class="t-item">${html ? v : esc(v)}</div></div>`).join("")}
           </div>
         </div>
 

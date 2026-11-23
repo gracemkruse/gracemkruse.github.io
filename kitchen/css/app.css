@@ -121,9 +121,8 @@ img { display: block; max-width: 100%; }
 /* ---------- Recipe Detail ---------- */
 .detail { max-width: 720px; margin: 0 auto; }
 .detail .page-title { margin-top: var(--s16); }
-.detail .toolbar { gap: var(--s16); }
+.detail .toolbar { gap: var(--s16); justify-content: flex-start; }
 .detail .toolbar .btn-text { white-space: nowrap; flex: none; }
-.detail-tags { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
 .detail-body { display: grid; grid-template-areas: "hero" "ings" "method"; }
 .detail-hero { grid-area: hero; }
 .detail-ings { grid-area: ings; min-width: 0; }
