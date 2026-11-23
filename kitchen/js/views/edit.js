@@ -1,13 +1,16 @@
 import * as data from "../data.js";
 import { icon } from "../icons.js";
-import { esc, $, $$, toast, photoStyle } from "../ui.js";
+import { esc, $, $$, toast, photoStyle, niceTitle, isWebLink } from "../ui.js";
 
 // Manual entry + edit. Required: title and servings. A new recipe can start from a pasted link (draft).
 export async function editView(id, app, draft = null, note = "") {
   const existing = id ? await data.getRecipe(id) : null;
   if (id && !existing) { app.innerHTML = `<p class="t-item">That recipe isn’t here anymore.</p>`; return; }
   const allTags = await data.listTags();
-  const r = existing || draft || { title: "", servings: "", total_minutes: "", image_url: "", tags: [], ingredients: [{}, {}, {}], steps: [], notes: "", source_url: "", source_notes: "" };
+  // Editing and filling from a link or photo: what was found replaces those parts; tags and anything not found stay.
+  const found = (k, v) => k !== "tags" && k !== "id" && (Array.isArray(v) ? (k === "ingredients" ? v.some(g => g && g.name) : v.length > 0) : v !== "" && v != null);
+  const r = existing && draft ? { ...existing, ...Object.fromEntries(Object.entries(draft).filter(([k, v]) => found(k, v))) }
+    : existing || draft || { title: "", servings: "", total_minutes: "", image_url: "", tags: [], ingredients: [{}, {}, {}], steps: [], notes: "", source_url: "", source_notes: "" };
   const selected = new Set(r.tags);
 
   const ingRow = (g = {}) => `
@@ -22,15 +25,13 @@ export async function editView(id, app, draft = null, note = "") {
   app.innerHTML = `
     <form class="form" novalidate>
       <div class="topline"><a class="btn-text grey t-label" href="${id ? `#/recipe/${encodeURIComponent(id)}` : "#/recipes"}">${icon("back", true)} ${id ? "Recipe" : "Recipes"}</a></div>
-      <h1 class="t-page page-title">${id ? "Edit recipe" : "New recipe"}</h1>
-      ${id ? "" : `<div class="field link-fill">
-        <span class="t-label">Start from a link or a photo</span>
-        <div class="input-line">${icon("source", false, "grey")}<input class="t-item" type="url" name="link" inputmode="url" placeholder="Paste a recipe link" value="${esc(draft?.source_url || "")}"><button type="button" class="btn-text t-label" data-act="fill">Fill in</button></div>
+      <textarea class="t-page title-input" name="title" rows="1" required placeholder="Recipe name" aria-label="Recipe name">${esc(niceTitle(r.title))}</textarea>
+      <div class="field link-fill">
+        <span class="t-label">${id ? "Fill in from a link or a photo" : "Start from a link or a photo"}</span>
+        <div class="input-line">${icon("source", false, "grey")}<input class="t-item" type="url" name="link" inputmode="url" placeholder="Paste a recipe link" value="${esc(draft?.source_url || (id && isWebLink(r.source_url) ? r.source_url : ""))}"><button type="button" class="btn-text t-label" data-act="fill">Fill in</button></div>
         <label class="btn-text t-label photo-fill">${icon("plus", true)} Take or choose a photo of a recipe<input type="file" accept="image/*" multiple data-recipe-photos hidden></label>
-        <span class="hint t-label${note ? " clay" : ""}" data-link-status>${esc(note || "Links work with most recipe sites. Photos: a cookbook page, card or screenshot — up to 3 pages. Check it over, then save.")}</span>
-      </div>`}
-
-      <label class="field"><span class="t-label">Title</span><input class="t-item" name="title" required value="${esc(r.title)}" placeholder="Recipe name"></label>
+        <span class="hint t-label${note ? " clay" : ""}" data-link-status>${esc(note || (id ? "Replaces what the link or photo finds; your tags and anything it doesn’t find stay. Check it over, then save." : "Links work with most recipe sites. Photos: a cookbook page, card or screenshot, up to 3 pages. Check it over, then save."))}</span>
+      </div>
       <div class="two">
         <label class="field"><span class="t-label">Serves</span><input class="t-item" name="servings" inputmode="numeric" required value="${esc(r.servings ?? "")}" placeholder="4"></label>
         <label class="field"><span class="t-label">Time in minutes</span><input class="t-item" name="total_minutes" inputmode="numeric" value="${esc(r.total_minutes ?? "")}" placeholder="45"></label>
@@ -76,6 +77,11 @@ export async function editView(id, app, draft = null, note = "") {
     </form>`;
 
   const form = $(".form", app), F = form.elements, ings = $(".ings", app), chips = $(".chips", app);
+  // the name wraps and grows like a heading; Enter doesn't add a line
+  const grow = () => { F.title.style.height = "auto"; F.title.style.height = F.title.scrollHeight + "px"; };
+  F.title.addEventListener("input", () => { F.title.value = F.title.value.replace(/\n/g, " "); grow(); });
+  F.title.addEventListener("keydown", e => { if (e.key === "Enter") e.preventDefault(); });
+  grow(); requestAnimationFrame(grow); document.fonts.ready.then(grow);
   const wireRemove = () => $$(".remove", ings).forEach(b => b.onclick = () => { b.closest(".ing-edit").remove(); if (!ings.children.length) ings.insertAdjacentHTML("beforeend", ingRow()); wireRemove(); });
   wireRemove();
   $('[data-act="add-ing"]', app).onclick = () => { ings.insertAdjacentHTML("beforeend", ingRow()); wireRemove(); $$(".ing-edit", ings).at(-1).querySelector('[name="amount"]').focus(); };
@@ -111,7 +117,7 @@ export async function editView(id, app, draft = null, note = "") {
       const url = F.link.value.trim(); const st = $("[data-link-status]", app);
       if (!/^https?:\/\//i.test(url)) { st.textContent = "Paste the full link, starting with https://"; st.classList.add("clay"); return; }
       fill.disabled = true; st.classList.remove("clay"); st.textContent = "Reading the recipe…";
-      try { const { draft: d, message } = await data.recipeFromLink(url); await editView(null, app, d, message || ""); if (!message) toast("Filled in — check it over, then save."); }
+      try { const { draft: d, message } = await data.recipeFromLink(url); await editView(id, app, d, message || ""); if (!message) toast("Filled in — check it over, then save."); }
       catch (err) { console.error(err); st.textContent = err.message || "Couldn’t read that link."; st.classList.add("clay"); fill.disabled = false; }
     };
     fill.onclick = go;
@@ -120,7 +126,7 @@ export async function editView(id, app, draft = null, note = "") {
       const st = $("[data-link-status]", app); st.classList.remove("clay");
       st.textContent = `Reading ${files.length > 1 ? `${files.length} photos` : "the photo"}… this takes about half a minute`;
       fill.disabled = true;
-      try { const { draft: d } = await data.recipeFromPhotos(files); await editView(null, app, d, ""); toast("Filled in from the photo — check it over, then save."); }
+      try { const { draft: d } = await data.recipeFromPhotos(files); await editView(id, app, d, ""); toast("Filled in from the photo — check it over, then save."); }
       catch (err) { console.error(err); st.textContent = err.message || "Couldn’t read that photo."; st.classList.add("clay"); fill.disabled = false; }
     };
     F.link.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); go(); } });

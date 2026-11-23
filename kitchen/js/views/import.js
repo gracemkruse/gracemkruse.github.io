@@ -1,6 +1,6 @@
 import * as data from "../data.js";
 import { icon } from "../icons.js";
-import { esc, $, toast, sheet, amount, sourceName } from "../ui.js";
+import { esc, $, toast, sheet, amount, sourceName, niceTitle } from "../ui.js";
 
 // One-time import of the Notion export (made by tools/notion_to_kitchen.py).
 // The file is picked from this device and never uploaded anywhere except your own database.
@@ -118,7 +118,7 @@ async function preview(out, payload) {
   const list = $(".import-list", out);
   const paint = () => {
     const shown = filter === "noing" ? noIng : filter === "nosteps" ? noSteps : R;
-    list.innerHTML = shown.map((r, i) => `<button class="pick-row" data-i="${R.indexOf(r)}"><span class="t-recipe recipe-name">${esc(r.title)}</span><span class="meta t-label grey">${esc(meta(r))}${have.has(r.title.trim().toLowerCase()) ? " · already here" : ""}</span></button>`).join("") || `<p class="t-item grey">None.</p>`;
+    list.innerHTML = shown.map((r, i) => `<button class="pick-row" data-i="${R.indexOf(r)}"><span class="t-recipe recipe-name">${esc(niceTitle(r.title))}</span><span class="meta t-label grey">${esc(meta(r))}${have.has(r.title.trim().toLowerCase()) ? " · already here" : ""}</span></button>`).join("") || `<p class="t-item grey">None.</p>`;
   };
   paint();
   out.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { filter = b.dataset.f; out.querySelectorAll("[data-f]").forEach(x => x.setAttribute("aria-pressed", x === b)); paint(); });
@@ -126,7 +126,7 @@ async function preview(out, payload) {
     const b = e.target.closest("[data-i]"); if (!b) return; const r = R[+b.dataset.i];
     sheet(`
       <div class="sheet-head"><span class="t-label">${esc(r.tags.join(" · ") || "No tags")}</span><button class="t-label grey" data-close>Close</button></div>
-      <h2 class="t-recipe recipe-name" style="margin:8px 0 0">${esc(r.title)}</h2>
+      <h2 class="t-recipe recipe-name" style="margin:8px 0 0">${esc(niceTitle(r.title))}</h2>
       <p class="t-label grey">${esc([r.total_minutes ? `${r.total_minutes} min` : "", (r.source_url ? sourceName(r.source_url) : "") || r.source_notes || ""].filter(Boolean).join(" · "))}</p>
       <div class="section-head"><span class="t-label">Ingredients</span></div>
       ${r.ingredients.map(g => `<div class="ing-row"><span class="qty t-item">${esc(amount(g.amount, g.unit))}</span><span class="name t-item">${esc(g.name.toLowerCase())}${g.prep ? `, ${esc(g.prep)}` : ""}</span><span></span></div>`).join("") || `<p class="t-item grey">None.</p>`}

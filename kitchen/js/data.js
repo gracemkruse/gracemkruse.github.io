@@ -129,6 +129,16 @@ export async function archiveRecipe(id) {
   if (error) throw error;
 }
 
+// Delete for good: the recipe, its ingredient lines and tags, its days on This Week, and its photo if it's in your storage.
+export async function deleteRecipe(id) {
+  if (isDemo) { const db = demo(); db.recipes = db.recipes.filter(x => x.id !== id); db.meal_plan = (db.meal_plan || []).filter(m => m.recipe_id !== id); saveDemo(db); return; }
+  const { data: r } = await sb.from("recipes").select("image_url").eq("id", id).maybeSingle();
+  let { error } = await sb.from("meal_plan").delete().eq("recipe_id", id); if (error) throw error;
+  ({ error } = await sb.from("recipes").delete().eq("id", id)); if (error) throw error;
+  const path = r?.image_url?.split("/storage/v1/object/public/recipe-photos/")[1];
+  if (path && ownPhoto(r.image_url)) await sb.storage.from("recipe-photos").remove([decodeURIComponent(path)]).catch(() => {});
+}
+
 // ---------------- This Week (meal plan) ----------------
 // Item shape: { id, date: "YYYY-MM-DD", status: "planned"|"made"|"skipped", recipe: { id, title, total_minutes, tags } }
 

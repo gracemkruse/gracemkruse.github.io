@@ -1,7 +1,7 @@
 // Bottom-sheet pickers used by This Week and Recipe Detail.
 import * as data from "./data.js";
 import { icon, tagIcon } from "./icons.js";
-import { esc, sheet, iso, addDays, weekStart, dayLabel, toast, minutes } from "./ui.js";
+import { esc, sheet, iso, addDays, weekStart, dayLabel, toast, minutes, niceTitle } from "./ui.js";
 
 // Day grid (this week + next week, past days disabled). Resolves "YYYY-MM-DD", or null if cancelled.
 export function chooseDay(heading, current = null) {
@@ -21,7 +21,7 @@ export function chooseDay(heading, current = null) {
 
 // Pick a day for a recipe and add it. Resolves after it's added.
 export async function pickDay(recipe) {
-  const day = await chooseDay(`Add “<span class="recipe-name">${esc(recipe.title)}</span>” to…`);
+  const day = await chooseDay(`Add “<span class="recipe-name">${esc(niceTitle(recipe.title))}</span>” to…`);
   if (!day) return null;
   try { await data.addToWeek(recipe.id, day.date); toast(`Added to ${day.label}.`); return day.date; }
   catch (err) { console.error(err); toast("Couldn’t add — try again."); return null; }
@@ -40,7 +40,7 @@ export async function pickRecipe(date, label) {
       const q = input.value.trim().toLowerCase();
       const shown = recipes.filter(r => !q || r.title.toLowerCase().includes(q));
       list.innerHTML = shown.length ? shown.map(r => { const ic = tagIcon(r.tags); const meta = [r.tags[0], minutes(r.total_minutes)].filter(Boolean).join(" · ");
-        return `<button class="pick-row" data-id="${esc(r.id)}"><span class="t-recipe recipe-name">${esc(r.title)}</span><span class="meta t-label grey">${ic ? icon(ic, true) : ""}${esc(meta)}</span></button>`; }).join("")
+        return `<button class="pick-row" data-id="${esc(r.id)}"><span class="t-recipe recipe-name">${esc(niceTitle(r.title))}</span><span class="meta t-label grey">${ic ? icon(ic, true) : ""}${esc(meta)}</span></button>`; }).join("")
         : `<p class="t-item grey">${recipes.length ? "No match." : "No recipes yet — add one first."}</p>`;
     };
     paint(); input.oninput = paint; input.focus();

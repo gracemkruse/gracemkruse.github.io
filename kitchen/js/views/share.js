@@ -1,6 +1,6 @@
 import * as data from "../data.js";
 import { icon } from "../icons.js";
-import { esc, $, toast, amount, sourceName, isWebLink, notionNote } from "../ui.js";
+import { esc, $, toast, amount, sourceName, isWebLink, notionNote, niceTitle } from "../ui.js";
 
 // Share a recipe (B-37). The recipe is drawn as one editorial page (Figma: 03 Visual Directions →
 // "I · Book — Letter"), shown here, then sent as an image through the share sheet or printed.
@@ -8,7 +8,8 @@ import { esc, $, toast, amount, sourceName, isWebLink, notionNote } from "../ui.
 // the left (landscape photos turned on their side to fill it; no photo = left side stays empty).
 // One 368 column at x 400 holds the whole recipe, so zooming in on a phone shows ingredients and method.
 const W = 816, MIN_H = 1056, M = 48, X = 400, CW = 368, PW = 352, IDX = 48, COL = 176, GUT = 16;
-const FONT = { title: "300 40px Spectral", label: "400 8px 'IBM Plex Mono'", body: "300 12px 'IBM Plex Sans'", num: "400 12px 'IBM Plex Mono'" };
+// Same families and weights as the recipe page in the app (Spectral Light, IBM Plex Mono, IBM Plex Sans), at 12 and smaller.
+const FONT = { title: "300 40px Spectral", label: "400 8px 'IBM Plex Mono'", ing: "400 12px 'IBM Plex Mono'", body: "400 12px 'IBM Plex Sans'", num: "400 12px 'IBM Plex Mono'" };
 
 export async function shareView(id, app) {
   const r = await data.getRecipe(id);
@@ -59,7 +60,7 @@ export async function shareView(id, app) {
 
 const NO_PHOTO = "Shared without the photo. That site doesn’t allow it.";
 // The page as a file named after the recipe.
-const pageFile = (r, page) => new File([page.blob], `${r.title.replace(/[\\/:*?"<>|]/g, "").trim() || "Recipe"}.png`, { type: "image/png" });
+const pageFile = (r, page) => new File([page.blob], `${niceTitle(r.title).replace(/[\\/:*?"<>|]/g, "").trim() || "Recipe"}.png`, { type: "image/png" });
 
 // Share straight from the recipe page: the page is drawn in the background as soon as the recipe opens,
 // so a tap on Share can open the share sheet right away (phones only allow it straight after a tap).
@@ -116,7 +117,7 @@ function layout(ctx, r, paint) {
   const ings = r.ingredients.filter(g => g.name);
   let y = M;
 
-  const title = wrap(ctx, r.title, FONT.title, CW);
+  const title = wrap(ctx, niceTitle(r.title), FONT.title, CW);
   if (paint) title.forEach((l, i) => text(ctx, l, X, base(y + i * 44, 44, 40), FONT.title, ink));
   y += title.length * 44;
 
@@ -129,10 +130,10 @@ function layout(ctx, r, paint) {
     const ends = [ings.slice(0, half), ings.slice(half)].map((list, col) => {
       const x = X + col * (COL + GUT); let cy = y;
       for (const g of list) {
-        const lines = wrap(ctx, g.name.toLowerCase() + (g.prep ? `, ${g.prep}` : ""), FONT.body, COL - IDX);
+        const lines = wrap(ctx, g.name.toLowerCase() + (g.prep ? `, ${g.prep}` : ""), FONT.ing, COL - IDX);
         if (paint) {
           label(ctx, amount(g.amount, g.unit), x, base(cy, 16, 12), green);
-          lines.forEach((l, i) => text(ctx, l, x + IDX, base(cy + i * 16, 16, 12), FONT.body, ink));
+          lines.forEach((l, i) => text(ctx, l, x + IDX, base(cy + i * 16, 16, 12), FONT.ing, ink));
         }
         cy += lines.length * 16;
       }

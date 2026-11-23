@@ -1,6 +1,6 @@
 import * as data from "../data.js";
 import { icon } from "../icons.js";
-import { esc, $, $$, toast, sheet, amount, sourceName, isWebLink, notionNote } from "../ui.js";
+import { esc, $, $$, toast, sheet, amount, sourceName, isWebLink, notionNote, niceTitle } from "../ui.js";
 import { slug } from "./import.js";
 
 // Fill in missing recipes (B-48): recipes with no method or no ingredients are read from their
@@ -27,7 +27,7 @@ export async function fillView(app) {
     return `<div class="fill-row" data-id="${esc(r.id)}">
       ${ok ? `<button class="box${res.keep !== false ? " on" : ""}" data-keep="${esc(r.id)}" aria-pressed="${res.keep !== false}" aria-label="Save ${esc(r.title)}">${res.keep !== false ? icon("check", true) : ""}</button>` : `<span class="fill-spacer"></span>`}
       <div class="fill-main">
-        <span class="t-recipe recipe-name">${esc(r.title)}</span>
+        <span class="t-recipe recipe-name">${esc(niceTitle(r.title))}</span>
         <span class="fill-meta">${status}</span>
         <span class="t-label grey">${r.source_url ? esc(sourceName(r.source_url)) : ""}${pics ? `${r.source_url ? " · " : ""}${pics.length} page photo${pics.length > 1 ? "s" : ""}` : ""}${!r.source_url && !pics && r.source_notes ? esc(r.source_notes) : ""}</span>
       </div>
@@ -59,7 +59,7 @@ export async function fillView(app) {
 
         <div class="section-head"><span class="t-label">Nothing to read</span><span class="t-label grey">${rest.length}</span></div>
         <p class="t-label grey">No link or page photo. Open one and use Edit, or take a photo of the page with New recipe → Take or choose a photo.</p>
-        <details class="fill-rest"><summary class="t-label">Show ${rest.length}</summary>${rest.map(r => `<a class="fill-rest-row t-item recipe-name" href="#/recipe/${encodeURIComponent(r.id)}">${esc(r.title)}</a>`).join("")}</details>
+        <details class="fill-rest"><summary class="t-label">Show ${rest.length}</summary>${rest.map(r => `<a class="fill-rest-row t-item recipe-name" href="#/recipe/${encodeURIComponent(r.id)}">${esc(niceTitle(r.title))}</a>`).join("")}</details>
 
         <div class="fill-foot">
           <button class="btn-primary t-label" data-save ${pending ? "" : "disabled"}>Save ${pending} recipe${pending === 1 ? "" : "s"}</button>
@@ -110,7 +110,7 @@ export async function fillView(app) {
       const r = all.find(x => x.id === b.dataset.preview), d = results.get(r.id).draft;
       sheet(`
         <div class="sheet-head"><span class="t-label">What was found</span><button class="t-label grey" data-close>Close</button></div>
-        <h2 class="t-recipe recipe-name" style="margin:8px 0 0">${esc(r.title)}</h2>
+        <h2 class="t-recipe recipe-name" style="margin:8px 0 0">${esc(niceTitle(r.title))}</h2>
         <p class="t-label grey">Only the parts this recipe is missing will be saved (${esc(missing(r))}).</p>
         <div class="section-head"><span class="t-label">Ingredients</span></div>
         ${d.ingredients.filter(g => g.name).map(g => `<div class="ing-row"><span class="qty t-item">${esc(amount(g.amount, g.unit))}</span><span class="name t-item">${esc(g.name.toLowerCase())}${g.prep ? `, ${esc(g.prep)}` : ""}</span><span></span></div>`).join("") || `<p class="t-item grey">None found.</p>`}
