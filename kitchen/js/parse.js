@@ -10,8 +10,13 @@ const UNITS = {
   packages: "package", package: "package", pkg: "package", bunches: "bunch", bunch: "bunch",
   sprigs: "sprig", sprig: "sprig", pinch: "pinch", pinches: "pinch", slices: "slice", slice: "slice",
   stalks: "stalk", stalk: "stalk", heads: "head", head: "head", sticks: "stick", stick: "stick",
-  quarts: "quart", quart: "quart", pints: "pint", pint: "pint", handful: "handful", dash: "dash",
+  quarts: "quart", quart: "quart", pints: "pint", pint: "pint", handful: "handful", handfuls: "handful", dash: "dash", dashes: "dash",
+  containers: "container", container: "container", pieces: "piece", piece: "piece", bottles: "bottle", bottle: "bottle",
+  bags: "bag", bag: "bag", boxes: "box", box: "box", tins: "tin", tin: "tin", cartons: "carton", carton: "carton",
 };
+// Prep written in front of the ingredient ("packed basil", "finely chopped dill", "thinly sliced onion") moves to prep.
+// Words that are part of what you buy stay in the name: ground cumin, toasted sesame oil, crushed tomatoes, dried oregano.
+const PREP_FRONT = /^((?:(?:tightly|loosely|lightly|firmly|well|finely|roughly|coarsely|thinly|freshly|very)\s+)?(?:packed|chopped|minced|diced|sliced|grated|shredded|crumbled|squeezed|torn|softened|melted|peeled|halved|quartered|cubed|julienned)(?:\s+(?:and|or)\s+(?:chopped|minced|diced|sliced|grated|shredded|crumbled|torn|peeled|halved|quartered|cubed))?),?\s+/i;
 const FRAC = { "½": .5, "⅓": 1 / 3, "⅔": 2 / 3, "¼": .25, "¾": .75, "⅛": .125, "⅜": .375, "⅝": .625, "⅞": .875, "⅕": .2 };
 const WORDNUM = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, a: 1, an: 1, half: .5 };
 const F = "½⅓⅔¼¾⅛⅜⅝⅞⅕";
@@ -36,11 +41,19 @@ export function parseIngredient(line) {
   let s = String(line || "").replace(/<[^>]+>/g, "").replace(/\*\*|~~/g, "").replace(/^\s*(?:[-*•▢□☐]\s*|\[[ xX]?\]\s*)/, "").replace(/\s+/g, " ").trim();
   if (!s) return null;
   let [amount, rest] = parseAmount(s), unit = null, size = null;
-  const sm = rest.match(/^(large|medium|small|big|heaping|generous|scant)\s+/i);
-  if (sm && amount != null) { size = sm[1].toLowerCase(); rest = rest.slice(sm[0].length); }
+  const front = [];                                                                       // prep found in front of the name
+  const sizeWord = () => { const sm = rest.match(/^(large|medium|small|big|heaping|generous|scant|medium-sized|large-sized|small-sized)\s+/i);
+    if (sm) { size = sm[1].toLowerCase(); rest = rest.slice(sm[0].length); } };
+  if (amount != null) sizeWord();
+  if (amount != null && rest.startsWith("(")) rest = rest.replace(/^\([^)]*\)\s*/, "");   // "1 (15-oz) can beans": the can size doesn't matter here
+  const pf = rest.match(/^(packed|heaping|level|loosely packed|tightly packed)\s+(?=[A-Za-z]+\.?\s)/i);   // "½ packed cup dill"
+  if (pf && amount != null && UNITS[rest.slice(pf[0].length).match(/^([A-Za-z]+)/)?.[1].toLowerCase()]) { front.push(pf[1].toLowerCase()); rest = rest.slice(pf[0].length); }
   const m = rest.match(/^([A-Za-z]+)\.?\s+(?:of\s+)?/);
   if (m && UNITS[m[1].toLowerCase()] && (amount != null || /^(pinch|dash|handful)$/i.test(m[1]))) { unit = UNITS[m[1].toLowerCase()]; rest = rest.slice(m[0].length); }
   if (amount != null && rest.startsWith("(")) rest = rest.replace(/^\([^)]*\)\s*/, "");   // "2 (14-oz) cans" → keep it simple
+  if (!size) sizeWord();
+  const fp = rest.match(PREP_FRONT);
+  if (fp && rest.slice(fp[0].length).trim()) { front.push(fp[1].toLowerCase()); rest = rest.slice(fp[0].length); }
   let extra = null;                                                                       // "1½ cups plus 1 Tbsp. (200 g) flour"
   const plus = rest.match(/^plus\s+[\d½⅓⅔¼¾⅛/ .]+\s*[A-Za-z]+\.?\s*(?:\([^)]*\)\s*)?/i);
   if (plus) { extra = plus[0].trim(); rest = rest.slice(plus[0].length); }
@@ -50,6 +63,7 @@ export function parseIngredient(line) {
   if (comma > 0) { name = rest.slice(0, comma); prep = rest.slice(comma + 1).trim(); }
   if (extra) prep = [extra, prep].filter(Boolean).join(", ");
   const pm = name.match(/\s*\(([^)]*)\)\s*$/); if (pm) { name = name.slice(0, pm.index); prep = [pm[1], prep].filter(Boolean).join(", "); }
+  if (front.length) prep = [front.join(", "), prep].filter(Boolean).join(", ");
   if (size) prep = [size, prep].filter(Boolean).join(", ");
   name = name.replace(/^[\s.;:-]+|[\s.;:-]+$/g, "");
   if (!name) return null;
