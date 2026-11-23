@@ -170,6 +170,7 @@ img { display: block; max-width: 100%; }
 .field > span { color: var(--grey); }
 .field input, .field textarea { border: 0; border-bottom: 1px solid var(--line); background: transparent; padding: var(--s8) 0; outline: 0; border-radius: 0; }
 .field textarea { border: 1px solid var(--line); padding: var(--s12); resize: vertical; min-height: 160px; }
+.field textarea.t-instr { font-size: 16px; line-height: 24px; }   /* typing boxes stay 16: smaller makes iPhone zoom in */
 .field input:focus, .field textarea:focus { border-color: var(--ink); }
 .field .input-line input { border: 0; padding: 0; }
 .field .hint { color: var(--grey); }
