@@ -47,7 +47,8 @@ img { display: block; max-width: 100%; }
 .toolbar { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line);
   height: 48px; margin: var(--s24) 0; }
 .toolbar button, .toolbar a { display: inline-flex; align-items: center; gap: var(--s8); }
-.btn-text { display: inline-flex; align-items: center; gap: var(--s8); color: var(--chartreuse); }
+.btn-text { display: inline-flex; align-items: center; gap: var(--s8); color: var(--chartreuse);
+  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }   /* Action: anything tappable that isn't the main button */
 .btn-text.ink { color: var(--ink); }
 .btn-text.grey { color: var(--grey); }
 
@@ -162,16 +163,29 @@ img { display: block; max-width: 100%; }
 .field .input-line input { border: 0; padding: 0; }
 .field .hint { color: var(--grey); }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s16); }
-.ing-edit { display: grid; grid-template-columns: 64px 72px 1fr 1fr 20px; gap: var(--s8); align-items: end; }
-.ing-edit input { border: 0; border-bottom: 1px solid var(--line); padding: var(--s8) 0; outline: 0; background: transparent; min-width: 0; width: 100%; }
-.ing-edit input:focus { border-color: var(--ink); }
-.ing-edit .remove { color: var(--grey); height: 40px; }
-.ing-head { display: grid; grid-template-columns: 64px 72px 1fr 1fr 20px; gap: var(--s8); color: var(--grey); }
-@media (max-width: 480px) { .ing-edit, .ing-head { grid-template-columns: 48px 56px 1fr 72px 20px; } }
+.two > *, .field input { min-width: 0; width: 100%; }
 .chips { display: flex; flex-wrap: wrap; gap: var(--s8) var(--s16); }
 .chip { color: var(--grey); padding: var(--s4) 0; border-bottom: 1px solid transparent; }
 .chip[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--chartreuse); }
-.form-actions { display: flex; gap: var(--s24); align-items: center; padding-bottom: var(--s32); }
+/* Save stays on screen (B-81) */
+.form-actions { position: sticky; bottom: var(--tabbar); z-index: 5; display: flex; gap: var(--s24); align-items: center; flex-wrap: wrap;
+  background: var(--white); border-top: 1px solid var(--line); padding: var(--s16) 0; margin-bottom: calc(var(--s32) * -1); }
+@media (min-width: 900px) { .form-actions { bottom: 0; } }
+/* Fill the form from a link / pasted text, or from a photo of a recipe: side by side (B-75) */
+.fill-from { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s12); }
+.fill-box { display: flex; flex-direction: column; gap: var(--s8); padding: var(--s16); border: 1px solid var(--line); cursor: pointer; min-width: 0; }
+.fill-box .t-label { display: flex; align-items: center; gap: var(--s8); color: var(--chartreuse); }
+.fill-box input { border: 0; border-bottom: 1px solid var(--line); background: transparent; padding: var(--s4) 0; outline: 0; border-radius: 0; min-width: 0; width: 100%; }
+.fill-box input:focus { border-color: var(--ink); }
+.fill-box:focus-within { border-color: var(--ink); }
+/* Reading a recipe (B-42): the screen dims and a whisk stirs */
+.busy { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; }
+.busy::before { content: ""; position: absolute; inset: 0; background: var(--ink); opacity: 0.2; }
+.busy-panel { position: relative; background: var(--white); padding: var(--s32) var(--s40); display: flex; flex-direction: column; align-items: center; gap: var(--s16); max-width: 280px; text-align: center; }
+.whisk-icon { width: 64px; height: 64px; color: var(--ink); }
+.whisk-icon .whisk { transform-box: view-box; transform-origin: 12.5px 7px; animation: whisk 0.9s ease-in-out infinite alternate; }
+@keyframes whisk { from { transform: rotate(-16deg); } to { transform: rotate(16deg); } }
+@media (prefers-reduced-motion: reduce) { .whisk-icon .whisk { animation: none; } }
 
 /* ---------- Coming next ---------- */
 .coming { max-width: 520px; }
@@ -301,7 +315,6 @@ img { display: block; max-width: 100%; }
 .pg.off .pg-img { opacity: 0.25; }
 .pg.off .pg-t { color: var(--grey); text-decoration: line-through; }
 .tag-v { white-space: nowrap; }
-.photo-fill { margin-top: var(--s12); cursor: pointer; align-self: flex-start; }
 
 /* ---------- Up next batch ---------- */
 /* search icon stays at the top of the scrolling tag sidebar */

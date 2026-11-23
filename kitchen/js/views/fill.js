@@ -49,13 +49,13 @@ export async function fillView(app) {
 
         <div class="section-head"><span class="t-label">From links</span><span class="t-label grey">${linkRows.length} · free</span></div>
         <div class="fill-list">${linkRows.map(row).join("") || `<p class="t-item grey">None.</p>`}</div>
-        ${linkRows.length ? `<button class="btn-text t-label fill-go" data-read="links">${icon("source", true)} Read ${linkRows.length} links</button>` : ""}
+        ${linkRows.length ? `<button class="btn-text t-label fill-go" data-read="links">${icon("link", true)} Read ${linkRows.length} links</button>` : ""}
 
         <div class="section-head"><span class="t-label">From page photos</span><span class="t-label grey">about 6¢ a photo</span></div>
         <p class="t-label grey">Pick the photos in <span class="t-item">kitchen-docs/notion-recipe-pages</span> (Cmd + A). They're matched to recipes by name.</p>
         <label class="btn-text t-label fill-go">${icon("plus", true)} Choose page photos<input type="file" accept="image/*" multiple data-pages hidden></label>
         <div class="fill-list">${photoRows.map(row).join("")}</div>
-        ${toRead.length ? `<button class="btn-text t-label fill-go" data-read="photos">${icon("source", true)} Read ${toRead.length} recipes from ${toRead.reduce((n, r) => n + photos.get(r.id).length, 0)} photos</button>` : ""}
+        ${toRead.length ? `<button class="btn-text t-label fill-go" data-read="photos">${icon("link", true)} Read ${toRead.length} recipes from ${toRead.reduce((n, r) => n + photos.get(r.id).length, 0)} photos</button>` : ""}
 
         <div class="section-head"><span class="t-label">Nothing to read</span><span class="t-label grey">${rest.length}</span></div>
         <p class="t-label grey">No link or page photo. Open one and use Edit, or take a photo of the page with New recipe → Take or choose a photo.</p>
