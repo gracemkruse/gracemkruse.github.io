@@ -2,6 +2,7 @@ import * as data from "../data.js";
 import { icon } from "../icons.js";
 import { esc, $, $$, toast, minutes, amount, photoStyle, sourceName, isWebLink, notionNote } from "../ui.js";
 import { pickDay, pickStatus } from "../pickers.js";
+import { directShare } from "./share.js";
 
 // Recipe page. Phone: one column (photo + facts, ingredients, method).
 // iPad and desktop: ingredients stay on the left while the method scrolls on the right.
@@ -30,7 +31,7 @@ export async function detailView(id, app) {
       <div class="topline">
         <a class="btn-text grey t-label" href="#/recipes">${icon("back", true)} Recipes</a>
         <span class="topline-actions">
-          <a class="btn-text grey t-label" href="#/recipe/${encodeURIComponent(r.id)}/share">Share</a>
+          <button class="btn-text grey t-label" data-act="share">Share</button>
           <a class="btn-text grey t-label" href="#/recipe/${encodeURIComponent(r.id)}/edit">Edit</a>
         </span>
       </div>
@@ -92,6 +93,7 @@ export async function detailView(id, app) {
     box.onclick = e => { if (e.target === box || e.target.closest(".lightbox-close")) close(); };
     document.addEventListener("keydown", onKey); document.body.appendChild(box);
   };
+  directShare(r, $('[data-act="share"]', app));
   $('[data-act="archive"]', app).onclick = async () => {
     if (!confirm(`Archive “${r.title}”? It will be hidden from your recipes.`)) return;
     await data.archiveRecipe(r.id); toast("Archived."); location.hash = "#/recipes";
