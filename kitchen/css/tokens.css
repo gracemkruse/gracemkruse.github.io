@@ -33,7 +33,7 @@
 /* Text styles: 5 total */
 .t-page   { font: 300 48px/52px var(--serif); letter-spacing: 0; }
 .t-recipe { font: 300 20px/28px var(--serif); letter-spacing: 0; }
-.t-instr  { font: 400 16px/24px var(--sans); }
+.t-instr  { font: 400 12px/20px var(--sans); }   /* Instructions: 12/20 (was 16/24) */
 .t-item   { font: 400 16px/24px var(--mono); }
 /* Ingredient lines on the recipe page: Item, one size down (Figma: "Ingredient"). */
 .t-ing    { font: 400 12px/16px var(--mono); }   /* Ingredient: 12/16 (was 14/20) */
