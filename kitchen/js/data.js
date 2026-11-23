@@ -190,6 +190,21 @@ export async function moveMeal(id, date) {
   const { error } = await sb.from("meal_plan").update({ plan_date: date }).eq("id", id); if (error) throw error;
 }
 
+// Cooked (made) on a day: marks that day's planned meal for this recipe as made, or adds it to that day as made.
+// Returns { id, added } so it can be undone.
+export async function markCooked(recipeId, date) {
+  if (isDemo) {
+    const db = demo(); db.meal_plan ||= [];
+    const m = db.meal_plan.find(x => x.recipe_id === recipeId && x.date === date && x.status !== "made");
+    if (m) { m.status = "made"; saveDemo(db); return { id: m.id, added: false }; }
+    const n = { id: uid(), recipe_id: recipeId, date, status: "made", created_at: new Date().toISOString() }; db.meal_plan.push(n); saveDemo(db); return { id: n.id, added: true };
+  }
+  const { data: rows, error } = await sb.from("meal_plan").select("id").eq("recipe_id", recipeId).eq("plan_date", date).neq("status", "made").limit(1); if (error) throw error;
+  if (rows.length) { await setMealStatus(rows[0].id, "made"); return { id: rows[0].id, added: false }; }
+  const { data: row, error: e2 } = await sb.from("meal_plan").insert({ recipe_id: recipeId, plan_date: date, status: "made" }).select("id").single(); if (e2) throw e2;
+  return { id: row.id, added: true };
+}
+
 export async function removeFromWeek(id) {
   if (isDemo) { const db = demo(); db.meal_plan = (db.meal_plan || []).filter(x => x.id !== id); saveDemo(db); return; }
   const { error } = await sb.from("meal_plan").delete().eq("id", id); if (error) throw error;
@@ -209,20 +224,6 @@ export async function copyWeek(items, dayShift) {
   if (isDemo) { const db = demo(); for (const s of shifted) (db.meal_plan ||= []).push({ id: uid(), recipe_id: s.recipe_id, date: s.date, status: "planned", created_at: new Date().toISOString() }); saveDemo(db); return; }
   if (!shifted.length) return;
   const { error } = await sb.from("meal_plan").insert(shifted.map(s => ({ recipe_id: s.recipe_id, plan_date: s.date }))); if (error) throw error;
-}
-// Finished cooking: mark today's planned meal made, or log it on today if it wasn't planned.
-export async function markCooked(recipeId) {
-  const d = new Date(), today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  if (isDemo) {
-    const db = demo(), m = (db.meal_plan ||= []).find(x => x.recipe_id === recipeId && x.date === today && x.status !== "made");
-    if (m) m.status = "made"; else db.meal_plan.push({ id: uid(), recipe_id: recipeId, date: today, status: "made", created_at: new Date().toISOString() });
-    saveDemo(db); return;
-  }
-  const { data, error } = await sb.from("meal_plan").select("id").eq("recipe_id", recipeId).eq("plan_date", today).neq("status", "made").limit(1);
-  if (error) throw error;
-  const r = data.length ? await sb.from("meal_plan").update({ status: "made" }).eq("id", data[0].id)
-                        : await sb.from("meal_plan").insert({ recipe_id: recipeId, plan_date: today, status: "made" });
-  if (r.error) throw r.error;
 }
 
 // ---------------- Import (Notion → Kitchen) ----------------

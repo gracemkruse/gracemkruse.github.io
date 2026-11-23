@@ -67,7 +67,7 @@ export async function editView(id, app, draft = null) {
 
       <label class="field"><span class="t-label">Ingredients · one per line</span><textarea class="t-item" name="ingredients" placeholder="2 tsp cumin&#10;1 lb chicken thighs, boneless">${esc(ingText)}</textarea></label>
       <label class="field"><span class="t-label">Method · one step per line</span><textarea class="t-instr" name="steps" placeholder="Warm the oil in a heavy pot…">${esc((r.steps || []).join("\n"))}</textarea></label>
-      <label class="field"><span class="t-label">Notes</span><textarea class="t-instr" name="notes" style="min-height:96px" placeholder="Double the garlic.">${esc(r.notes ?? "")}</textarea></label>
+      <label class="field"><span class="t-label">Description</span><textarea class="t-instr" name="notes" style="min-height:96px" placeholder="Double the garlic.">${esc(r.notes ?? "")}</textarea></label>
 
       <div class="field">
         <span class="tags-head"><span class="t-label">Tags</span><button type="button" class="btn-text grey t-label" data-act="edit-tags" aria-pressed="false">Edit tags</button></span>
@@ -76,9 +76,9 @@ export async function editView(id, app, draft = null) {
       </div>
 
       <div class="form-actions">
-        <button class="btn-primary t-label" type="submit">Save recipe</button>
-        <a class="btn-text grey t-label" href="${back}" data-act="cancel">Cancel</a>
         <span class="error t-label clay" aria-live="assertive"></span>
+        <a class="btn-text grey t-label" href="${back}" data-act="cancel">Cancel</a>
+        <button class="btn-primary t-label" type="submit">Save recipe</button>
       </div>
     </form>`;
 
