@@ -42,7 +42,8 @@ function parseAmount(s) {
 }
 
 export function parseIngredient(line) {
-  let s = String(line || "").replace(/<[^>]+>/g, "").replace(/\*\*|~~/g, "").replace(/^\s*(?:[-*•▢□☐]\s*|\[[ xX]?\]\s*)/, "").replace(/\s+/g, " ").trim();
+  let s = String(line || "").replace(/&frac12;/g, "½").replace(/&frac14;/g, "¼").replace(/&frac34;/g, "¾").replace(/&frac13;/g, "⅓").replace(/&frac23;/g, "⅔")
+    .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/<[^>]+>/g, "").replace(/\*\*|~~/g, "").replace(/^\s*(?:[-*•▢□☐]\s*|\[[ xX]?\]\s*)/, "").replace(/\s+/g, " ").trim();
   if (!s) return null;
   let [amount, rest] = parseAmount(s), unit = null, size = null;
   const front = [];                                                                       // prep found in front of the name
@@ -53,6 +54,9 @@ export function parseIngredient(line) {
   if (amount != null && rest.startsWith("(")) { const pm0 = rest.match(/^\(([^)]*)\)\s*/); paren = pm0[1].trim(); rest = rest.slice(pm0[0].length); }
   const pf = rest.match(/^(packed|heaping|level|loosely packed|tightly packed)\s+(?=[A-Za-z]+\.?\s)/i);   // "½ packed cup dill"
   if (pf && amount != null && UNITS[rest.slice(pf[0].length).match(/^([A-Za-z]+)/)?.[1].toLowerCase()]) { front.push(pf[1].toLowerCase()); rest = rest.slice(pf[0].length); }
+  // "½ cup/115 grams butter" (NYT style): the cup is the unit, the weight goes to prep
+  const metric = rest.match(/^([A-Za-z]+)\.?\s*\/\s*([\d.½¼¾⅓⅔]+\s*(?:grams?|g|kilograms?|kg|ounces?|oz|ml|milliliters?|pounds?|lbs?))\.?\s+/i);
+  if (metric && UNITS[metric[1].toLowerCase()] && amount != null) { rest = `${metric[1]} ${rest.slice(metric[0].length)}`; front.push(metric[2].replace(/\bounces?\b/i, "oz").replace(/\bgrams?\b/i, "grams")); }
   const m = rest.match(/^([A-Za-z]+)\.?\s+(?:of\s+)?/);
   if (m && UNITS[m[1].toLowerCase()] && (amount != null || /^(pinch|dash|handful)$/i.test(m[1]))) { unit = UNITS[m[1].toLowerCase()]; rest = rest.slice(m[0].length); }
   if (amount != null && unit && rest.startsWith("(")) { const pm1 = rest.match(/^\(([^)]*)\)\s*/); paren = paren || pm1[1].trim(); rest = rest.slice(pm1[0].length); }   // "1 can (15 oz) beans"
