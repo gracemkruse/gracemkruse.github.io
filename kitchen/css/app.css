@@ -107,6 +107,8 @@ img { display: block; max-width: 100%; }
   .tile-more { opacity: 0; }
   .tile:hover .tile-name, .tile:hover .tile-more, .tile:focus-within .tile-name, .tile:focus-within .tile-more { opacity: 1; }
 }
+.tile-time { display: flex; align-items: center; gap: var(--s8); margin: var(--s12) 0 0; }
+.tile-time + .t-label { margin-top: var(--s4); }
 .tile-actions { display: flex; justify-content: space-between; align-items: center; gap: var(--s16); margin-top: var(--s16); }
 .card .meta { display: flex; align-items: center; gap: var(--s4); color: var(--grey); }
 .card .name { overflow: hidden; text-overflow: ellipsis; }
@@ -202,6 +204,10 @@ img { display: block; max-width: 100%; }
 .sheet-scrim { position: absolute; inset: 0; background: var(--ink); opacity: 0.2; }
 .sheet { position: relative; width: 100%; max-width: 560px; max-height: 80vh; overflow: auto; background: var(--white); border-top: 1px solid var(--ink);
   padding: var(--s20) var(--margin) calc(var(--s32) + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: var(--s12); }
+@media (min-width: 900px) {
+  .sheet-wrap { align-items: center; }
+  .sheet { border: 1px solid var(--ink); }
+}
 .sheet-head { display: flex; justify-content: space-between; align-items: center; gap: var(--s16); }
 .sheet-sub { margin-top: var(--s12); }
 .day-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }

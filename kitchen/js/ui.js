@@ -47,6 +47,15 @@ export function niceTitle(t) {
   return words.map((w, i) => (i && i < words.length - 1 && SMALL.has(w)) ? w : w.replace(/(^|[-(“"])(\p{Ll})/gu, (m, p, c) => p + c.toUpperCase())).join(" ");
 }
 
+// Cook time written out: "45 minutes", "2 hours", "1½ hours", "1 hr 15 min".
+export function duration(m) {
+  if (m < 60) return `${m} minutes`;
+  const h = Math.floor(m / 60), r = m % 60;
+  if (!r) return `${h} hour${h > 1 ? "s" : ""}`;
+  if (r === 30) return `${h}½ hours`;
+  return `${h} hr ${r} min`;
+}
+
 export function minutes(m) {
   if (!m) return "";
   if (m < 60) return `${m}′`;

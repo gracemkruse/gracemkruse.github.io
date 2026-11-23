@@ -1,6 +1,6 @@
 import * as data from "../data.js";
 import { icon } from "../icons.js";
-import { esc, $, toast, amount, sourceName, isWebLink, notionNote, niceTitle } from "../ui.js";
+import { esc, $, toast, amount, sourceName, isWebLink, notionNote, niceTitle, duration } from "../ui.js";
 
 // Share a recipe (B-37). The recipe is drawn as one editorial page (Figma: 03 Visual Directions →
 // "I · Book — Letter"), shown here, then sent as an image through the share sheet or printed.
@@ -166,13 +166,6 @@ function metaLine(r) {
   const link = isWebLink(r.source_url) ? r.source_url : null;
   const source = link ? sourceName(link) : [r.source_url ? notionNote(r.source_url) : "", r.source_notes].filter(Boolean).join(", ");
   return [source, r.servings ? `Serves ${r.servings}` : "", r.total_minutes ? `About ${duration(r.total_minutes)}` : ""].filter(Boolean).join(" · ");
-}
-function duration(m) {
-  if (m < 60) return `${m} minutes`;
-  const h = Math.floor(m / 60), r = m % 60;
-  if (!r) return `${h} hour${h > 1 ? "s" : ""}`;
-  if (r === 30) return `${h}½ hours`;
-  return `${h} hr ${r} min`;
 }
 
 // Photo fills 352 × 1056, cropped from the centre. Landscape photos are turned a quarter clockwise first.
