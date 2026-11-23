@@ -56,10 +56,6 @@ img { display: block; max-width: 100%; }
   background: var(--ink); color: var(--white); }
 .btn-primary[disabled] { opacity: 0.4; cursor: default; }
 
-/* The round + : gallery only */
-.fab { position: fixed; right: var(--margin); bottom: calc(var(--tabbar) + var(--s20)); width: 48px; height: 48px; border-radius: 50%;
-  background: var(--ink); color: var(--white); display: grid; place-items: center; z-index: 9; }
-@media (min-width: 900px) { .fab { bottom: var(--s48); right: max(var(--margin), calc((100vw - 1120px) / 2 + var(--margin))); } }
 
 /* Input line: boxless, underlined */
 .input-line { display: flex; align-items: center; gap: var(--s12); height: var(--row); border-bottom: 1px solid var(--line); }
@@ -78,6 +74,11 @@ img { display: block; max-width: 100%; }
 .tag-v.active { color: var(--ink); }
 .tag-v.active::after { content: ""; position: absolute; top: -4px; bottom: -4px; left: -17px; width: 2px; background: var(--chartreuse-bright); }
 .gallery-main { padding: 0 var(--margin) 0 var(--s16); min-width: 0; }
+/* Title row with Add recipe: stays at the top while the recipes scroll */
+.gallery-title { position: sticky; top: 0; z-index: 5; background: var(--white); display: flex; justify-content: space-between; align-items: baseline; gap: var(--s16); padding: var(--s12) 0 var(--s16); }
+.gallery-title .page-title { margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gallery-title .btn-text { flex: none; }
+@media (min-width: 900px) { .gallery-title { top: 64px; } }
 .gallery-head { display: flex; justify-content: space-between; align-items: center; gap: var(--s16); min-height: 20px; }
 .view-switch { display: inline-flex; gap: var(--s12); }
 .view-switch button { color: var(--grey); width: 20px; height: 20px; display: grid; place-items: center; }
@@ -103,7 +104,7 @@ img { display: block; max-width: 100%; }
 .tile-name { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: var(--s4); padding: var(--s8) 32px var(--s8) var(--s8); background: var(--white); color: var(--ink); opacity: 0; pointer-events: none; }
 .tile-more { position: absolute; right: var(--s4); bottom: var(--s4); width: 24px; height: 24px; display: grid; place-items: center; background: var(--white); color: var(--ink); }
 @media (hover: hover) {
-  .tile-more { opacity: 0; }
+  .tile-more { opacity: 0; background: var(--chartreuse-bright); color: var(--white); }   /* green button with a mouse */
   .tile:hover .tile-name, .tile:hover .tile-more, .tile:focus-within .tile-name, .tile:focus-within .tile-more { opacity: 1; }
 }
 .tile-time { display: flex; align-items: center; gap: var(--s8); margin: var(--s12) 0 0; }

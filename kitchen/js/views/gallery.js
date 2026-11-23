@@ -29,13 +29,12 @@ export async function galleryView(app) {
               ${[1, 2, 4].map(n => `<button data-view="${n}" aria-pressed="${n === view}" aria-label="${n} per row">${densityGlyph(n, n === view)}</button>`).join("")}
             </div>
           </div>
-          <h1 class="t-page page-title" style="margin-top:12px">${esc(title)}</h1>
+          <div class="gallery-title"><h1 class="t-page page-title">${esc(title)}</h1><a class="btn-text t-label" href="#/add">${icon("plus", true)} Add recipe</a></div>
           ${state.searching ? `<label class="input-line search-line">${icon("search", false, "grey")}<input class="t-item" type="search" placeholder="Search ${recipes.length} recipes" value="${esc(state.q)}"></label>` : ""}
           ${shown.length ? `<div class="cards v${view}">${shown.map(r => card(r, view)).join("")}</div>`
                          : `<p class="empty t-item">${recipes.length ? "Nothing matches — try another tag or search." : "No recipes yet. Add your first with the + button."}</p>`}
         </section>
-      </div>
-      <a class="fab" href="#/add" aria-label="Add a recipe">${icon("plus")}</a>`;
+      </div>`;
 
     $$(".tag-v", app).forEach(b => b.onclick = () => { state.tag = b.dataset.tag; paint(); });
     $$(".tile-more", app).forEach(b => b.onclick = () => more(recipes.find(x => x.id === b.dataset.id)));
