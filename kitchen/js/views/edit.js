@@ -1,6 +1,6 @@
 import * as data from "../data.js";
 import { icon, whiskIcon } from "../icons.js";
-import { esc, $, $$, toast, photoStyle, niceTitle, isWebLink, amount } from "../ui.js";
+import { esc, $, $$, toast, photoStyle, niceTitle, isWebLink, amount, sheet } from "../ui.js";
 import { parseIngredient, parseRecipeText } from "../parse.js";
 
 // Add and edit a recipe. Only the name is required.
@@ -29,17 +29,19 @@ export async function editView(id, app, draft = null) {
       <textarea class="t-page title-input" name="title" rows="1" required placeholder="Recipe name" aria-label="Recipe name">${esc(niceTitle(r.title))}</textarea>
 
       <div class="fill-from">
-        <label class="fill-box">
-          <span class="t-label">${icon("link", true)} Paste a link or text</span>
-          <input class="t-item" type="text" name="link" inputmode="url" autocomplete="off" placeholder="https://… or the whole recipe" value="${esc(draft?.source_url && isWebLink(draft.source_url) ? draft.source_url : (id && isWebLink(r.source_url) ? r.source_url : ""))}">
+        <label class="fill-part">
+          <span class="t-label">${icon("link", true)} Paste a link</span>
+          <input class="t-item" type="url" name="link" inputmode="url" autocomplete="off" placeholder="https://…" value="${esc(draft?.source_url && isWebLink(draft.source_url) ? draft.source_url : (id && isWebLink(r.source_url) ? r.source_url : ""))}">
         </label>
-        <label class="fill-box">
+        <label class="fill-part">
           <span class="t-label">${icon("plus", true)} Recipe photo</span>
           <span class="t-item grey">Up to 3 pages</span>
           <input type="file" accept="image/*" multiple data-recipe-photos hidden>
         </label>
       </div>
       <p class="t-label clay" data-fill-status hidden></p>
+
+      <div class="section-head own-head"><span class="t-label">${id ? "Recipe" : "Or write your own"}</span></div>
 
       <div class="field">
         <span class="t-label">Photo</span>
@@ -68,7 +70,7 @@ export async function editView(id, app, draft = null) {
       <label class="field"><span class="t-label">Notes</span><textarea class="t-instr" name="notes" style="min-height:96px" placeholder="Double the garlic.">${esc(r.notes ?? "")}</textarea></label>
 
       <div class="field">
-        <span class="t-label">Tags</span>
+        <span class="tags-head"><span class="t-label">Tags</span><button type="button" class="btn-text grey t-label" data-act="edit-tags" aria-pressed="false">Edit tags</button></span>
         <div class="chips">${[...new Set([...allTags, ...selected])].map(t => `<button type="button" class="chip t-label" data-tag="${esc(t)}" aria-pressed="${selected.has(t)}">${esc(t)}</button>`).join("")}</div>
         <label class="input-line">${icon("plus", false, "green")}<input class="t-item" name="newtag" placeholder="New tag, then Enter"></label>
       </div>
@@ -91,7 +93,41 @@ export async function editView(id, app, draft = null) {
   grow(F.title); requestAnimationFrame(() => grow(F.title)); document.fonts.ready.then(() => grow(F.title));
 
   // tags
-  const wireChip = c => c.onclick = () => { const t = c.dataset.tag; selected.has(t) ? selected.delete(t) : selected.add(t); c.setAttribute("aria-pressed", selected.has(t)); keep(); };
+  let editingTags = false;
+  const wireChip = c => c.onclick = () => {
+    if (editingTags) return editTag(c);
+    const t = c.dataset.tag; selected.has(t) ? selected.delete(t) : selected.add(t); c.setAttribute("aria-pressed", selected.has(t)); keep();
+  };
+  const tagBtn = $('[data-act="edit-tags"]', app);
+  tagBtn.onclick = () => { editingTags = !editingTags; chips.classList.toggle("editing", editingTags); tagBtn.textContent = editingTags ? "Done" : "Edit tags"; tagBtn.setAttribute("aria-pressed", editingTags); };
+  // rename or delete a tag on every recipe (saved right away, not with the recipe)
+  function editTag(c) {
+    const name = c.dataset.tag;
+    const { el, close } = sheet(`
+      <div class="sheet-head"><span class="t-label">Edit tag</span><button type="button" class="t-label grey" data-close>Cancel</button></div>
+      <label class="input-line"><input class="t-item" name="tagname" value="${esc(name)}" aria-label="Tag name"></label>
+      <p class="t-label grey">Changes this tag on every recipe.</p>
+      <div class="tile-actions"><button type="button" class="btn-text t-label" data-act="rename">Rename</button><button type="button" class="btn-text grey t-label" data-act="delete">Delete tag</button></div>`, "Edit tag");
+    const input = el.querySelector("input"); input.focus(); input.select();
+    const rename = async () => {
+      const to = input.value.trim(); if (!to || to === name) { close(); return; }
+      try {
+        await data.renameTag(name, to); close();
+        const twin = [...$$(".chip", chips)].find(x => x !== c && x.dataset.tag.toLowerCase() === to.toLowerCase());
+        const on = selected.has(name) || (twin && selected.has(twin.dataset.tag)); selected.delete(name);
+        if (twin) { c.remove(); if (on) { selected.add(twin.dataset.tag); twin.setAttribute("aria-pressed", "true"); } }
+        else { c.dataset.tag = to; c.textContent = to; if (on) selected.add(to); }
+        keep(); toast(`Renamed to “${to}”.`);
+      } catch (e) { console.error(e); toast("Couldn’t rename. Try again."); }
+    };
+    el.querySelector('[data-act="rename"]').onclick = rename;
+    input.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); rename(); } });
+    el.querySelector('[data-act="delete"]').onclick = async () => {
+      if (!confirm(`Delete the tag “${name}”? It comes off every recipe; the recipes stay.`)) return;
+      try { await data.deleteTag(name); close(); selected.delete(name); c.remove(); keep(); toast("Tag deleted."); }
+      catch (e) { console.error(e); toast("Couldn’t delete. Try again."); }
+    };
+  }
   $$(".chip", chips).forEach(wireChip);
   F.newtag.addEventListener("keydown", e => {
     if (e.key !== "Enter") return; e.preventDefault();
@@ -129,18 +165,22 @@ export async function editView(id, app, draft = null) {
     try { const { draft: d, message } = await data.recipeFromLink(url); done(); await refill(d); if (message) toast(message); }
     catch (err) { done(); console.error(err); say(fillStatus, err.message || "Couldn’t read that link."); }
   };
-  const readText = text => {
-    const t = parseRecipeText(text);
-    if (!t.ingredients.length && !t.steps.length) { say(fillStatus, "Couldn’t find a recipe in that text."); return; }
-    refill({ title: t.title, ingredients: t.ingredients.map(parseIngredient).filter(Boolean), steps: t.steps });
-  };
-  // pasting is enough: a link is read right away, and so is a whole recipe (B-83)
+  // pasting a link is enough: it's read right away (B-83)
   F.link.addEventListener("paste", e => {
+    const text = (e.clipboardData?.getData("text") || "").trim();
+    if (!/^https?:\/\/\S+$/i.test(text)) return;
+    e.preventDefault(); F.link.value = text; readLink(text);
+  });
+  // a whole recipe pasted into Ingredients or Method is split into both (and the name, if it's empty) (B-38)
+  for (const box of [F.ingredients, F.steps]) box.addEventListener("paste", e => {
     const text = e.clipboardData?.getData("text") || "";
-    if (!text.trim() || [...(e.clipboardData?.files || [])].length) return;
+    const t = parseRecipeText(text);
+    if (!(t.ingredients.length && t.steps.length) || text.split("\n").length < 4) return;
     e.preventDefault();
-    if (/^https?:\/\/\S+$/i.test(text.trim())) { F.link.value = text.trim(); readLink(F.link.value); }
-    else readText(text);
+    if (!F.title.value.trim() && t.title) { F.title.value = t.title; grow(F.title); }
+    F.ingredients.value = t.ingredients.map(parseIngredient).filter(Boolean).map(g => [amount(g.amount, g.unit), g.name.toLowerCase() + (g.prep ? `, ${g.prep}` : "")].filter(Boolean).join(" ")).join("\n");
+    F.steps.value = t.steps.join("\n");
+    keep(); toast("Split into ingredients and method. Check it over, then save.");
   });
   F.link.addEventListener("keydown", e => {
     if (e.key !== "Enter") return; e.preventDefault();

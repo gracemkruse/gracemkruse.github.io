@@ -56,6 +56,8 @@ img { display: block; max-width: 100%; }
 .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: var(--s8); height: 48px; padding: 0 var(--s24);
   background: var(--ink); color: var(--white); }
 .btn-primary[disabled] { opacity: 0.4; cursor: default; }
+.btn-primary.btn-small { height: 40px; padding: 0 var(--s16); }
+@media (max-width: 480px) { .wide-only { display: none; } .btn-primary.btn-small { padding: 0 var(--s12); } }
 
 
 /* Input line: boxless, underlined */
@@ -78,7 +80,7 @@ img { display: block; max-width: 100%; }
 /* Title row with Add recipe: stays at the top while the recipes scroll */
 .gallery-title { position: sticky; top: 0; z-index: 5; background: var(--white); display: flex; justify-content: space-between; align-items: baseline; gap: var(--s16); padding: var(--s12) 0 var(--s16); }
 .gallery-title .page-title { margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gallery-title .btn-text { flex: none; }
+.gallery-title .btn-primary { flex: none; align-self: center; }
 @media (min-width: 900px) { .gallery-title { top: 64px; } }
 .gallery-head { display: flex; justify-content: space-between; align-items: center; gap: var(--s16); min-height: 20px; }
 .view-switch { display: inline-flex; gap: var(--s12); }
@@ -171,13 +173,17 @@ img { display: block; max-width: 100%; }
 .form-actions { position: sticky; bottom: var(--tabbar); z-index: 5; display: flex; gap: var(--s24); align-items: center; flex-wrap: wrap;
   background: var(--white); border-top: 1px solid var(--line); padding: var(--s16) 0; margin-bottom: calc(var(--s32) * -1); }
 @media (min-width: 900px) { .form-actions { bottom: 0; } }
-/* Fill the form from a link / pasted text, or from a photo of a recipe: side by side (B-75) */
-.fill-from { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s12); }
-.fill-box { display: flex; flex-direction: column; gap: var(--s8); padding: var(--s16); border: 1px solid var(--line); cursor: pointer; min-width: 0; }
-.fill-box .t-label { display: flex; align-items: center; gap: var(--s8); color: var(--chartreuse); }
-.fill-box input { border: 0; border-bottom: 1px solid var(--line); background: transparent; padding: var(--s4) 0; outline: 0; border-radius: 0; min-width: 0; width: 100%; }
-.fill-box input:focus { border-color: var(--ink); }
-.fill-box:focus-within { border-color: var(--ink); }
+/* Fill the form from a link or a photo of a recipe: two halves split by a line (B-75) */
+.fill-from { display: grid; grid-template-columns: 1fr 1fr; }
+.fill-part { display: flex; flex-direction: column; gap: var(--s8); min-width: 0; cursor: pointer; padding: var(--s4) var(--s16) var(--s4) 0; }
+.fill-part + .fill-part { border-left: 1px solid var(--line); padding: var(--s4) 0 var(--s4) var(--s16); }
+.fill-part .t-label { display: flex; align-items: center; gap: var(--s8); color: var(--chartreuse); }
+.fill-part input { border: 0; border-bottom: 1px solid var(--line); background: transparent; padding: var(--s4) 0; outline: 0; border-radius: 0; min-width: 0; width: 100%; }
+.fill-part input:focus { border-color: var(--ink); }
+.own-head { margin-top: var(--s8); }
+.tags-head { display: flex; justify-content: space-between; align-items: center; }
+.tags-head > .t-label { color: var(--grey); }
+.chips.editing .chip { border-bottom: 1px dashed var(--grey); }
 /* Reading a recipe (B-42): the screen dims and a whisk stirs */
 .busy { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; }
 .busy::before { content: ""; position: absolute; inset: 0; background: var(--ink); opacity: 0.2; }

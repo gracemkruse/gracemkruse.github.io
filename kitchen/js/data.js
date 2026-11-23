@@ -61,6 +61,24 @@ export async function listTags() {
   return data.map(t => t.name);
 }
 
+// Rename a tag on every recipe. Renaming to a tag that already exists merges the two.
+export async function renameTag(from, to) {
+  to = String(to || "").trim(); if (!to || norm(to) === norm(from) && to === from) return;
+  if (isDemo) { const db = demo(); for (const r of db.recipes) r.tags = [...new Set(r.tags.map(t => (norm(t) === norm(from) ? to : t)))]; saveDemo(db); return; }
+  const { data: rows, error } = await sb.from("tags").select("id,name_norm").in("name_norm", [norm(from), norm(to)]); if (error) throw error;
+  const old = rows.find(t => t.name_norm === norm(from)), target = rows.find(t => t.name_norm === norm(to));
+  if (!old) return;
+  if (!target || target.id === old.id) { const { error: e } = await sb.from("tags").update({ name: to }).eq("id", old.id); if (e) throw e; return; }
+  const { data: links, error: e1 } = await sb.from("recipe_tags").select("recipe_id").eq("tag_id", old.id); if (e1) throw e1;
+  if (links.length) { const { error: e2 } = await sb.from("recipe_tags").upsert(links.map(l => ({ recipe_id: l.recipe_id, tag_id: target.id })), { onConflict: "recipe_id,tag_id", ignoreDuplicates: true }); if (e2) throw e2; }
+  const { error: e3 } = await sb.from("tags").delete().eq("id", old.id); if (e3) throw e3;
+}
+// Delete a tag: it comes off every recipe; the recipes stay.
+export async function deleteTag(name) {
+  if (isDemo) { const db = demo(); for (const r of db.recipes) r.tags = r.tags.filter(t => norm(t) !== norm(name)); saveDemo(db); return; }
+  const { error } = await sb.from("tags").delete().eq("name_norm", norm(name)); if (error) throw error;
+}
+
 export async function getRecipe(id) {
   if (isDemo) {
     const db = demo(), r = db.recipes.find(x => x.id === id); if (!r) return null;
