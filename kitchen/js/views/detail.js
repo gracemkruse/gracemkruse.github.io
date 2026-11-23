@@ -1,6 +1,6 @@
 import * as data from "../data.js";
 import { icon } from "../icons.js";
-import { esc, $, $$, toast, minutes, amount, photoStyle, sourceName, isWebLink, notionNote } from "../ui.js";
+import { esc, $, $$, toast, minutes, amount, photoStyle, sourceName, isWebLink, notionNote, niceTitle } from "../ui.js";
 import { pickDay, pickStatus } from "../pickers.js";
 import { directShare } from "./share.js";
 
@@ -35,7 +35,7 @@ export async function detailView(id, app) {
           <a class="btn-text grey t-label" href="#/recipe/${encodeURIComponent(r.id)}/edit">Edit</a>
         </span>
       </div>
-      <h1 class="t-page page-title recipe-name">${esc(r.title)}</h1>
+      <h1 class="t-page page-title recipe-name">${esc(niceTitle(r.title))}</h1>
       <div class="toolbar">
         <button class="btn-text t-label" data-act="week">${icon("plus", true)} Add to this week</button>
         ${r.tags.length ? `<span class="detail-tags t-label grey">${r.tags.map(esc).join(" · ")}</span>` : ""}
@@ -63,8 +63,7 @@ export async function detailView(id, app) {
           ${r.steps.length || r.notes ? `<div class="section-head"><span class="t-label">Method</span>${r.steps.length ? `<span class="t-label grey" data-progress>${progress(done, r.steps.length)}</span>` : ""}</div>` : ""}
           ${r.notes ? `<p class="notes t-instr">${esc(r.notes)}</p>` : ""}
           ${r.steps.length ? `<ol class="steps">${r.steps.map((s, i) => `<li><button class="step${done.has(i) ? " done" : ""}" data-step="${i}" aria-pressed="${done.has(i)}"><span class="n t-label">${String(i + 1).padStart(2, "0")}</span><span class="t-instr">${esc(s)}</span></button></li>`).join("")}</ol>` : ""}
-          <div class="danger-zone"><button class="btn-text grey t-label" data-act="archive">Archive this recipe</button>
-            <p class="t-label grey" style="margin:8px 0 0">Archived recipes are hidden, never deleted.</p></div>
+          <div class="danger-zone"><button class="btn-text grey t-label" data-act="archive">Archive</button><button class="btn-text grey t-label" data-act="delete">Delete</button></div>
         </section>
       </div>
     </article>`;
@@ -95,8 +94,13 @@ export async function detailView(id, app) {
   };
   directShare(r, $('[data-act="share"]', app));
   $('[data-act="archive"]', app).onclick = async () => {
-    if (!confirm(`Archive “${r.title}”? It will be hidden from your recipes.`)) return;
+    if (!confirm(`Archive “${niceTitle(r.title)}”? It will be hidden from your recipes.`)) return;
     await data.archiveRecipe(r.id); toast("Archived."); location.hash = "#/recipes";
+  };
+  $('[data-act="delete"]', app).onclick = async () => {
+    if (!confirm(`Delete “${niceTitle(r.title)}” for good? This can’t be undone.`)) return;
+    try { await data.deleteRecipe(r.id); toast("Deleted."); location.hash = "#/recipes"; }
+    catch (e) { console.error(e); toast("Couldn’t delete. Try again."); }
   };
 }
 

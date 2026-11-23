@@ -87,7 +87,7 @@ img { display: block; max-width: 100%; }
 .cards { display: grid; gap: var(--s32) var(--s12); }
 .cards.v1 { grid-template-columns: 1fr; }
 .cards.v2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.cards.v4 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s12) 3px; }
+.cards.v4 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; }
 @media (min-width: 900px) {
   .cards.v1 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s48) var(--s24); }
   .cards.v2 { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s40) var(--s16); }
@@ -97,6 +97,17 @@ img { display: block; max-width: 100%; }
 .card .photo { aspect-ratio: 4 / 5; width: 100%; background-size: cover; background-position: center; }
 .cards.v1 .card .photo { aspect-ratio: 1 / 1; }
 .cards.v4 .card { gap: var(--s4); }
+/* Smallest view: photos only (see tile() in gallery.js) */
+.tile { position: relative; }
+.tile .photo { display: block; position: relative; }
+.tile-name { position: absolute; left: 0; right: 0; bottom: 0; padding: var(--s4) 32px var(--s4) var(--s4); background: var(--white); color: var(--ink);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0; pointer-events: none; }
+.tile-more { position: absolute; right: var(--s4); bottom: var(--s4); width: 24px; height: 24px; display: grid; place-items: center; background: var(--white); color: var(--ink); }
+@media (hover: hover) {
+  .tile-more { opacity: 0; }
+  .tile:hover .tile-name, .tile:hover .tile-more, .tile:focus-within .tile-name, .tile:focus-within .tile-more { opacity: 1; }
+}
+.tile-actions { display: flex; justify-content: space-between; align-items: center; gap: var(--s16); margin-top: var(--s16); }
 .card .meta { display: flex; align-items: center; gap: var(--s4); color: var(--grey); }
 .card .name { overflow: hidden; text-overflow: ellipsis; }
 .empty { color: var(--grey); padding: var(--s48) 0; }
@@ -125,7 +136,7 @@ img { display: block; max-width: 100%; }
 .step .n { color: var(--chartreuse); padding-top: var(--s4); }
 .step.done { opacity: 0.35; }
 .step.done .n { color: var(--grey); }
-.danger-zone { margin-top: var(--s48); padding-top: var(--s16); border-top: 1px solid var(--line); }
+.danger-zone { margin-top: var(--s48); padding-top: var(--s16); border-top: 1px solid var(--line); display: flex; gap: var(--s24); }
 /* iPad and desktop: roomier page, ingredients stay on the left */
 @media (min-width: 760px) {
   .detail { max-width: 1120px; }
@@ -139,6 +150,9 @@ img { display: block; max-width: 100%; }
 /* ---------- Edit form ---------- */
 .form { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--s24); }
 .field { display: flex; flex-direction: column; gap: var(--s8); }
+.title-input { display: block; width: 100%; resize: none; overflow: hidden; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); padding: 0 0 var(--s8); outline: 0; border-radius: 0; }
+.title-input:focus { border-color: var(--ink); }
+.title-input::placeholder { color: var(--grey); }
 .field > span { color: var(--grey); }
 .field input, .field textarea { border: 0; border-bottom: 1px solid var(--line); background: transparent; padding: var(--s8) 0; outline: 0; border-radius: 0; }
 .field textarea { border: 1px solid var(--line); padding: var(--s12); resize: vertical; min-height: 160px; }

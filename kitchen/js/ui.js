@@ -38,6 +38,15 @@ export function sourceName(url) {
   return word ? word.charAt(0).toUpperCase() + word.slice(1) : host;
 }
 
+// Recipe names show as typed. Names stored all in lower case (most of the Notion import) show in Title Case,
+// keeping short words like "and", "with", "of" small. Saving a recipe in Edit keeps whatever you type.
+const SMALL = new Set(["a", "an", "and", "as", "at", "but", "by", "for", "from", "in", "into", "of", "on", "or", "the", "to", "with", "&"]);
+export function niceTitle(t) {
+  t = String(t ?? ""); if (t !== t.toLowerCase()) return t;
+  const words = t.split(" ");
+  return words.map((w, i) => (i && i < words.length - 1 && SMALL.has(w)) ? w : w.replace(/(^|[-(“"])(\p{Ll})/gu, (m, p, c) => p + c.toUpperCase())).join(" ");
+}
+
 export function minutes(m) {
   if (!m) return "";
   if (m < 60) return `${m}′`;

@@ -1,7 +1,7 @@
 import * as data from "../data.js";
 import { icon, ingredientIcon, catIcon } from "../icons.js";
 import { suggestGroups, titleCase } from "../ingredients.js";
-import { esc, $, $$, toast, sheet, amount, iso, addDays, weekStart, monthDay, fromIso, dayLabel } from "../ui.js";
+import { esc, $, $$, toast, sheet, amount, iso, addDays, weekStart, monthDay, fromIso, dayLabel, niceTitle } from "../ui.js";
 import { pickStatus } from "../pickers.js";
 
 // Shopping List: To buy / Week / Pantry (mirrors the Notion Grocery views).
@@ -108,7 +108,7 @@ export async function listView(app, tab = "buy") {
     sheet(`
       <div class="sheet-head"><span class="t-label">${esc(it.name)}</span><button class="t-label grey" data-close>Close</button></div>
       <div class="pick-list">${lines.map(l => `
-        <div class="qty-line"><span class="t-recipe recipe-name">${esc(l.recipe || "")}</span>
+        <div class="qty-line"><span class="t-recipe recipe-name">${esc(niceTitle(l.recipe || ""))}</span>
           <span class="meta t-label grey">${l.date ? esc(dayLabel(fromIso(l.date))) : ""}</span>
           <span class="t-item">${esc(amount(l.amount, l.unit) || "—")}</span></div>`).join("")}</div>
       <div class="qty-total"><span class="t-label">Total</span><span class="t-item">${esc(qty(it) || "—")}</span></div>`, `${it.name}: amounts by recipe`);

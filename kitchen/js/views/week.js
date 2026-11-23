@@ -1,7 +1,7 @@
 import * as data from "../data.js";
 import { icon, tagIcon } from "../icons.js";
 import { pickRecipe, chooseDay } from "../pickers.js";
-import { esc, $, $$, toast, sheet, minutes, iso, fromIso, addDays, weekStart, dayLabel, rangeLabel, monthDay } from "../ui.js";
+import { esc, $, $$, toast, sheet, minutes, iso, fromIso, addDays, weekStart, dayLabel, rangeLabel, monthDay, niceTitle } from "../ui.js";
 
 // This Week. Optional ?w=YYYY-MM-DD (any Monday) to view another week.
 // Meals: swipe left to remove (with Undo), swipe right for options (phone/iPad); ⋯ menu on desktop.
@@ -30,7 +30,7 @@ export async function weekView(app, startIso) {
         <span class="under-remove t-label">Remove</span>
       </div>
       <div class="meal${done ? " made" : ""}">
-        <a class="meal-title t-recipe recipe-name" href="#/recipe/${encodeURIComponent(m.recipe.id)}">${esc(m.recipe.title)}</a>
+        <a class="meal-title t-recipe recipe-name" href="#/recipe/${encodeURIComponent(m.recipe.id)}">${esc(niceTitle(m.recipe.title))}</a>
         ${ic ? icon(ic, true, "grey") : ""}${m.recipe.total_minutes ? `<span class="t-label grey">${esc(minutes(m.recipe.total_minutes))}</span>` : ""}
         <span class="spacer"></span>
         <button class="ring${done ? " on" : ""}" data-toggle="${esc(m.id)}" aria-pressed="${done}" aria-label="${done ? "Made — tap to undo" : "Mark made"}">${done ? icon("check", true) : ""}</button>
@@ -83,7 +83,7 @@ export async function weekView(app, startIso) {
     toast(`Removed ${m.recipe.title}.`, { label: "Undo", run: async () => { await data.addToWeek(m.recipe.id, m.date); if (m.status === "made") { const back = (await data.listWeek(m.date, m.date)).filter(x => x.recipe.id === m.recipe.id).pop(); if (back) await data.setMealStatus(back.id, "made"); } rerender(); } });
   };
   const move = async m => {
-    const day = await chooseDay(`Move “<span class="recipe-name">${esc(m.recipe.title)}</span>” to…`, m.date); if (!day) return rerender();
+    const day = await chooseDay(`Move “<span class="recipe-name">${esc(niceTitle(m.recipe.title))}</span>” to…`, m.date); if (!day) return rerender();
     try { await data.moveMeal(m.id, day.date); toast(`Moved to ${day.label}.`); } catch (e) { console.error(e); toast("Couldn’t move — try again."); }
     rerender();
   };
@@ -91,7 +91,7 @@ export async function weekView(app, startIso) {
   $$("[data-menu]", app).forEach(b => b.onclick = () => {
     const m = find(b.dataset.menu);
     const { el, close } = sheet(`
-      <div class="sheet-head"><span class="t-label recipe-name">${esc(m.recipe.title)}</span><button class="t-label grey" data-close>Cancel</button></div>
+      <div class="sheet-head"><span class="t-label recipe-name">${esc(niceTitle(m.recipe.title))}</span><button class="t-label grey" data-close>Cancel</button></div>
       <div class="pick-list">
         <a class="menu-row t-item" href="#/recipe/${encodeURIComponent(m.recipe.id)}" data-close>Open recipe</a>
         ${isPast ? "" : `<button class="menu-row t-item" data-act="move">Move to another day</button>`}

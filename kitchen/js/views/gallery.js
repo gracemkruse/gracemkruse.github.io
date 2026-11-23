@@ -1,6 +1,7 @@
 import * as data from "../data.js";
 import { icon, tagIcon, densityGlyph } from "../icons.js";
-import { esc, $, $$, minutes, photoStyle, pref } from "../ui.js";
+import { esc, $, $$, minutes, photoStyle, pref, niceTitle, sheet } from "../ui.js";
+import { pickDay } from "../pickers.js";
 
 // Gallery state survives navigation within the session.
 const state = { tag: "All", q: "", searching: false };
@@ -37,19 +38,42 @@ export async function galleryView(app) {
       <a class="fab" href="#/add" aria-label="Add a recipe">${icon("plus")}</a>`;
 
     $$(".tag-v", app).forEach(b => b.onclick = () => { state.tag = b.dataset.tag; paint(); });
+    $$(".tile-more", app).forEach(b => b.onclick = () => more(recipes.find(x => x.id === b.dataset.id)));
     $$(".view-switch button", app).forEach(b => b.onclick = () => { view = Number(b.dataset.view); pref.set("view", String(view)); paint(); });
     $(".search-toggle", app).onclick = () => { state.searching = !state.searching; if (!state.searching) state.q = ""; paint(); if (state.searching) $(".search-line input", app)?.focus(); };
     const input = $(".search-line input", app);
     if (input) input.oninput = () => { state.q = input.value; const pos = input.selectionStart; paint(); const again = $(".search-line input", app); again.focus(); again.setSelectionRange(pos, pos); };
   }
 
+  // Smallest view: photos only. A + on each photo (always on touch screens, on hover with a mouse)
+  // opens the name with Add to this week; with a mouse the name also shows on hover.
+  function tile(r) {
+    const name = esc(niceTitle(r.title));
+    return `<div class="card tile">
+      <a class="photo" href="#/recipe/${encodeURIComponent(r.id)}" style="${photoStyle(r)}" aria-label="${name}"><span class="tile-name t-label recipe-name" aria-hidden="true">${name}</span></a>
+      <button class="tile-more" data-id="${esc(r.id)}" aria-label="${name}: add to this week or open">${icon("plus", true)}</button>
+    </div>`;
+  }
+  function more(r) {
+    const meta = [r.tags[0], minutes(r.total_minutes)].filter(Boolean).join(" · ");
+    const { el, close } = sheet(`
+      <div class="sheet-head"><span class="t-recipe recipe-name">${esc(niceTitle(r.title))}</span><button class="t-label grey" data-close>Close</button></div>
+      ${meta ? `<p class="t-label grey">${esc(meta)}</p>` : ""}
+      <div class="tile-actions">
+        <button class="btn-text t-label" data-act="week">${icon("plus", true)} Add to this week</button>
+        <a class="btn-text grey t-label" href="#/recipe/${encodeURIComponent(r.id)}">Open recipe ${icon("open", true)}</a>
+      </div>`, r.title);
+    el.querySelector('[data-act="week"]').onclick = () => { close(); pickDay(r); };
+    el.querySelector("a").onclick = () => close();
+  }
+
   function card(r, v) {
+    if (v === 4) return tile(r);
     const ic = tagIcon(r.tags);
     const meta = [r.tags[0], minutes(r.total_minutes)].filter(Boolean).join(" · ");
     return `<a class="card" href="#/recipe/${encodeURIComponent(r.id)}">
       <div class="photo" style="${photoStyle(r)}" role="img" aria-label="${esc(r.title)}"></div>
-      ${v === 4 ? `<span class="name t-label recipe-name">${esc(r.title)}</span>`
-               : `<span class="name t-recipe recipe-name">${esc(r.title)}</span>${meta ? `<span class="meta t-label">${ic ? icon(ic, true) : ""}${esc(meta)}</span>` : ""}`}
+      <span class="name t-recipe recipe-name">${esc(niceTitle(r.title))}</span>${meta ? `<span class="meta t-label">${ic ? icon(ic, true) : ""}${esc(meta)}</span>` : ""}
     </a>`;
   }
 
