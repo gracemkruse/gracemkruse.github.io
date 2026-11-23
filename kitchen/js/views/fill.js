@@ -1,6 +1,6 @@
 import * as data from "../data.js";
 import { icon } from "../icons.js";
-import { esc, $, $$, toast, sheet, amount, sourceName, isWebLink, notionNote, niceTitle } from "../ui.js";
+import { esc, $, $$, toast, sheet, amount, sourceName, isWebLink, notionNote, niceTitle, sentence } from "../ui.js";
 import { slug } from "./import.js";
 
 // Fill in missing recipes (B-48): recipes with no method or no ingredients are read from their
@@ -113,7 +113,7 @@ export async function fillView(app) {
         <h2 class="t-recipe recipe-name" style="margin:8px 0 0">${esc(niceTitle(r.title))}</h2>
         <p class="t-label grey">Only the parts this recipe is missing will be saved (${esc(missing(r))}).</p>
         <div class="section-head"><span class="t-label">Ingredients</span></div>
-        ${d.ingredients.filter(g => g.name).map(g => `<div class="ing-row"><span class="qty t-item">${esc(amount(g.amount, g.unit))}</span><span class="name t-item">${esc(g.name.toLowerCase())}${g.prep ? `, ${esc(g.prep)}` : ""}</span><span></span></div>`).join("") || `<p class="t-item grey">None found.</p>`}
+        ${d.ingredients.filter(g => g.name).map(g => `<div class="ing-row"><span class="qty t-item">${esc(amount(g.amount, g.unit))}</span><span class="name t-item">${esc(sentence(g.name))}${g.prep ? `, ${esc(g.prep)}` : ""}</span><span></span></div>`).join("") || `<p class="t-item grey">None found.</p>`}
         ${d.steps.length ? `<div class="section-head"><span class="t-label">Method</span></div><ol class="steps">${d.steps.map((s, n) => `<li><span class="n t-label">${String(n + 1).padStart(2, "0")}</span><span class="t-instr">${esc(s)}</span></li>`).join("")}</ol>` : ""}`, r.title);
     });
     const save = $("[data-save]", app);

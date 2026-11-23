@@ -1,6 +1,6 @@
 import * as data from "../data.js";
 import { icon } from "../icons.js";
-import { esc, $, toast, amount, sourceName, isWebLink, notionNote, niceTitle, duration } from "../ui.js";
+import { esc, $, toast, amount, sourceName, isWebLink, notionNote, niceTitle, duration, sentence } from "../ui.js";
 
 // Share a recipe (B-37). The recipe is drawn as one editorial page (Figma: 03 Visual Directions →
 // "I · Book — Letter"), shown here, then sent as an image through the share sheet or printed.
@@ -130,7 +130,7 @@ function layout(ctx, r, paint) {
     const ends = [ings.slice(0, half), ings.slice(half)].map((list, col) => {
       const x = X + col * (COL + GUT); let cy = y;
       for (const g of list) {
-        const lines = wrap(ctx, g.name.toLowerCase() + (g.prep ? `, ${g.prep}` : ""), FONT.ing, COL - IDX);
+        const lines = wrap(ctx, sentence(g.name) + (g.prep ? `, ${g.prep}` : ""), FONT.ing, COL - IDX);
         if (paint) {
           label(ctx, amount(g.amount, g.unit), x, base(cy, 16, 12), green);
           lines.forEach((l, i) => text(ctx, l, x + IDX, base(cy + i * 16, 16, 12), FONT.ing, ink));

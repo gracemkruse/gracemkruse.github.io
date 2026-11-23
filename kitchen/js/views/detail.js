@@ -1,6 +1,6 @@
 import * as data from "../data.js";
 import { icon, tagIcon } from "../icons.js";
-import { esc, $, $$, toast, minutes, amount, photoStyle, sourceName, isWebLink, notionNote, niceTitle, iso, pref } from "../ui.js";
+import { esc, $, $$, toast, minutes, amount, photoStyle, sourceName, isWebLink, notionNote, niceTitle, iso, pref, sentence } from "../ui.js";
 import { pickDay, pickStatus } from "../pickers.js";
 import { directShare } from "./share.js";
 
@@ -48,7 +48,7 @@ export async function detailView(id, app) {
         <div class="detail-hero">
           <button class="photo" style="${photoStyle(r)}" aria-label="${esc(r.title)}: enlarge photo" ${r.image_url ? "" : "disabled"}></button>
           <div class="facts">
-            ${facts.map(([ic, k, v, html, key = ic]) => `<div class="fact${key === "source" || key === "tags" ? " wide" : ""}" data-fact="${key}"><div class="k t-label">${ic ? icon(ic, true) : ""} ${k}</div><div class="t-item">${html ? v : esc(v)}</div></div>`).join("")}
+            ${facts.map(([ic, k, v, html, key = ic]) => `<div class="fact${key === "tags" ? " wide" : ""}" data-fact="${key}"><div class="k t-label">${ic ? icon(ic, true) : ""} ${k}</div><div class="t-item">${html ? v : esc(v)}</div></div>`).join("")}
           </div>
         </div>
 
@@ -57,7 +57,7 @@ export async function detailView(id, app) {
           ${r.ingredients.length ? r.ingredients.map(g => `
             <div class="ing-row">
               <span class="qty t-ing">${esc(amount(g.amount, g.unit))}</span>
-              <span class="name t-ing">${esc(g.name.toLowerCase())}${g.prep ? `, ${esc(g.prep)}` : ""}</span>
+              <span class="name t-ing">${esc(sentence(g.name))}${g.prep ? `, ${esc(g.prep)}` : ""}</span>
               ${status(g)}
             </div>`).join("") : `<p class="t-ing grey">No ingredients yet.</p>`}
         </aside>
