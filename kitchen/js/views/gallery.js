@@ -1,6 +1,6 @@
 import * as data from "../data.js";
 import { icon, tagIcon, densityGlyph } from "../icons.js";
-import { esc, $, $$, minutes, photoStyle, pref, niceTitle, sheet } from "../ui.js";
+import { esc, $, $$, minutes, photoStyle, pref, niceTitle, sheet, duration } from "../ui.js";
 import { pickDay } from "../pickers.js";
 
 // Gallery state survives navigation within the session.
@@ -55,10 +55,10 @@ export async function galleryView(app) {
     </div>`;
   }
   function more(r) {
-    const meta = [r.tags[0], minutes(r.total_minutes)].filter(Boolean).join(" · ");
     const { el, close } = sheet(`
       <div class="sheet-head"><span class="t-recipe recipe-name">${esc(niceTitle(r.title))}</span><button class="t-label grey" data-close>Close</button></div>
-      ${meta ? `<p class="t-label grey">${esc(meta)}</p>` : ""}
+      ${r.total_minutes ? `<p class="tile-time t-label">${icon("time", true)} About ${esc(duration(r.total_minutes))}</p>` : ""}
+      ${r.tags[0] ? `<p class="t-label grey">${esc(r.tags.join(" · "))}</p>` : ""}
       <div class="tile-actions">
         <button class="btn-text t-label" data-act="week">${icon("plus", true)} Add to this week</button>
         <a class="btn-text grey t-label" href="#/recipe/${encodeURIComponent(r.id)}">Open recipe ${icon("open", true)}</a>
