@@ -50,7 +50,7 @@ export async function galleryView(app) {
   function tile(r) {
     const name = esc(niceTitle(r.title));
     return `<div class="card tile">
-      <a class="photo" href="#/recipe/${encodeURIComponent(r.id)}" style="${photoStyle(r)}" aria-label="${name}"><span class="tile-name t-label recipe-name" aria-hidden="true">${name}</span></a>
+      <a class="photo" href="#/recipe/${encodeURIComponent(r.id)}" style="${photoStyle(r)}" aria-label="${name}"><span class="tile-name" aria-hidden="true"><span class="t-label recipe-name">${name}</span>${r.total_minutes ? `<span class="t-label grey">About ${esc(duration(r.total_minutes))}</span>` : ""}</span></a>
       <button class="tile-more" data-id="${esc(r.id)}" aria-label="${name}: add to this week or open">${icon("plus", true)}</button>
     </div>`;
   }
