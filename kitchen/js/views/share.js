@@ -32,6 +32,7 @@ export async function shareView(id, app) {
   catch (e) { console.error(e); status.textContent = "Couldn’t make the page. Go back and try again."; return; }
   const url = URL.createObjectURL(page.blob);
   img.src = url; img.hidden = false; status.remove();
+  if (page.noPhoto) toast(NO_PHOTO);
   send.disabled = printBtn.disabled = false;
   const file = pageFile(r, page);
 
@@ -56,6 +57,7 @@ export async function shareView(id, app) {
   };
 }
 
+const NO_PHOTO = "Shared without the photo. That site doesn’t allow it.";
 // The page as a file named after the recipe.
 const pageFile = (r, page) => new File([page.blob], `${r.title.replace(/[\\/:*?"<>|]/g, "").trim() || "Recipe"}.png`, { type: "image/png" });
 
@@ -64,11 +66,11 @@ const pageFile = (r, page) => new File([page.blob], `${r.title.replace(/[\\/:*?"
 // Where there's no share sheet for files (most computers), Share opens the preview page with Print.
 export function directShare(r, button) {
   if (!navigator.canShare) { button.onclick = () => { location.hash = `#/recipe/${encodeURIComponent(r.id)}/share`; }; return; }
-  let file = null;
-  const ready = new Promise(res => setTimeout(res, 400)).then(() => makePage(r)).then(p => (file = pageFile(r, p)));
+  let file = null, noPhoto = false;
+  const ready = new Promise(res => setTimeout(res, 400)).then(() => makePage(r)).then(p => { noPhoto = p.noPhoto; file = pageFile(r, p); });
   ready.catch(e => console.error(e));
-  const open = f => navigator.share({ files: [f], title: r.title })
-    .catch(e => { if (e.name === "NotAllowedError") toast("Ready. Tap Share again."); else if (e.name !== "AbortError") toast("Couldn’t share. Try again."); });
+  const open = f => { if (noPhoto) toast(NO_PHOTO); return navigator.share({ files: [f], title: r.title })
+    .catch(e => { if (e.name === "NotAllowedError") toast("Ready. Tap Share again."); else if (e.name !== "AbortError") toast("Couldn’t share. Try again."); }); };
   button.onclick = async () => {
     if (file) { if (navigator.canShare({ files: [file] })) open(file); else location.hash = `#/recipe/${encodeURIComponent(r.id)}/share`; return; }
     toast("Getting the page ready…");
@@ -80,9 +82,12 @@ export function directShare(r, button) {
 // ---------- Drawing ----------
 async function makePage(r) {
   await Promise.all(Object.values(FONT).map(f => document.fonts.load(f)));
-  const photo = r.image_url ? await loadImage(r.image_url).catch(() => null) : null;
-  try { return await draw(r, photo); }
-  catch (e) { if (!photo) throw e; console.warn("Photo couldn’t be drawn, sharing without it", e); return draw(r, null); }
+  // many recipe sites don't let browsers draw their photos: then fetch it through the app's server
+  let photo = r.image_url ? (await loadImage(r.image_url).catch(() => null)) || (await viaServer(r.image_url)) : null;
+  let page = await draw(r, photo).catch(() => null);   // only fails when the photo wasn't allowed
+  if (!page && photo) { photo = await viaServer(r.image_url); page = photo ? await draw(r, photo).catch(() => null) : null; }
+  if (!page) { photo = null; page = await draw(r, null); }
+  return { ...page, noPhoto: !!r.image_url && !photo };
 }
 
 async function draw(r, photo) {
@@ -180,6 +185,11 @@ function drawPhoto(ctx, img) {
 function cover(ctx, img, w, h) {
   const s = Math.max(w / img.naturalWidth, h / img.naturalHeight), dw = img.naturalWidth * s, dh = img.naturalHeight * s;
   ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+}
+async function viaServer(src) {
+  if (!/^https?:/i.test(src) || data.ownPhoto(src)) return null;
+  try { const blob = await data.photoFromLink(src); return await loadImage(URL.createObjectURL(blob)); }
+  catch (e) { console.warn("Photo couldn’t be fetched", e); return null; }
 }
 async function loadImage(src) {
   const img = new Image(); img.crossOrigin = "anonymous";
