@@ -28,7 +28,8 @@ const PATHS = {
   time: L(RING) + L("M10 6V10.1667L12.5 11.8333") + S(DOT),
   serves: L(RING) + D(circ(10.3333, 10.3333, 3.3333)) + S(DOT),
   made: L("M3 9.66667C2.99819 11.2015 3.52605 12.69 4.49447 13.8808C5.46289 15.0717 6.81254 15.8918 8.31557 16.2029C9.8186 16.514 11.3829 16.2969 12.7444 15.5883C14.106 14.8797 15.1813 13.7229 15.7888 12.3134C16.3964 10.9039 16.499 9.32793 16.0792 7.85155C15.6595 6.37517 14.7432 5.08884 13.485 4.20973C12.2269 3.33061 10.7039 2.91258 9.1732 3.02619C7.64253 3.1398 6.19795 3.7781 5.08334 4.83333M3 3V6.33333H6.33334") + S(DOT),
-  source: L("M6 14.3333L14.3333 6M14.3333 12.6667V6H7.66667"),
+  source: L("M10 6C8.3333 4.6667 5.6667 4.3333 3 5V15.6667C5.6667 15 8.3333 15.3333 10 16.6667C11.6667 15.3333 14.3333 15 17 15.6667V5C14.3333 4.3333 11.6667 4.6667 10 6Z") + D("M10 6V16.6667"),   // open book
+  link: L("M6 14.3333L14.3333 6M14.3333 12.6667V6H7.66667"),
   // interface
   search: L(circ(9, 9, 5)) + L("M16.75 16.75L13 13"),
   plus: L("M9.83333 4V15.6667M4 9.83333H15.6667"),
@@ -95,4 +96,14 @@ export function ingredientIcon(name, category) {
   const n = String(name || "").toLowerCase();
   for (const [k, re] of ING_ICON) if (re.test(n)) return k;
   return catIcon(category);
+}
+
+// Loading (B-42): a whisk stirring in a bowl, same 1px line style. The whisk is its own group so CSS can rock it.
+export function whiskIcon() {
+  const line = d => `<path d="${d}" vector-effect="non-scaling-stroke"/>`;
+  return `<svg class="whisk-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <g class="whisk">${line("M15.5 2L12.5 7")}${line("M12.5 7C10.6 7.6 9.2 9.8 9.8 11.8C10.4 13.6 12.8 12.9 13.6 10.9C14.3 9.1 13.7 7.7 12.5 7Z")}<path d="M12.5 7C11.7 8.7 11.4 10.6 11.6 12.4" stroke-dasharray="2 2" vector-effect="non-scaling-stroke"/></g>
+    ${line("M3 11H16.3333C16.3333 12.7681 15.631 14.4638 14.3807 15.714C13.1305 16.9643 11.4348 17.6667 9.66667 17.6667C7.89856 17.6667 6.20286 16.9643 4.95262 15.714C3.70238 14.4638 3 12.7681 3 11Z")}
+    <path d="M5.5 8.6a0.7 0.7 0 1 0 1.4 0a0.7 0.7 0 1 0 -1.4 0Z" fill="currentColor" stroke="none"/>
+  </svg>`;
 }

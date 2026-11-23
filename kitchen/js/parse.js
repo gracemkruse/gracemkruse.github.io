@@ -55,3 +55,30 @@ export function parseIngredient(line) {
   if (!name) return null;
   return { amount, unit, name: name[0].toUpperCase() + name.slice(1), prep: prep || null };
 }
+
+// A whole recipe pasted as text (B-38) → { title, ingredients: [lines], steps: [lines] }.
+// Uses headings when there are any ("Ingredients", "Method", "Directions"…); otherwise lines that start with an
+// amount are ingredients and the rest is the method. A short first line that isn't an ingredient is the title.
+export function parseRecipeText(text) {
+  const lines = String(text || "").split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const head = l => l.replace(/[:#*_]/g, "").trim().toLowerCase();
+  const ING = /^(ingredients?|you(’|')ll need|what you(’|')ll need|shopping list)$/;
+  const METHOD = /^(method|directions|instructions|steps|preparation|how to make( it)?)$/;
+  const isIng = l => /^[-•*▢□]?\s*(\d|[½⅓⅔¼¾⅛]|a |an |pinch|handful|salt|pepper)/i.test(l) && l.length < 90;
+  let mode = null, headings = false, title = "";
+  const ingredients = [], steps = [];
+  for (const l of lines) {
+    const h = head(l);
+    if (ING.test(h)) { mode = "ing"; headings = true; continue; }
+    if (METHOD.test(h)) { mode = "method"; headings = true; continue; }
+    if (!mode) {
+      if (!title && !isIng(l) && l.length < 80) { title = l; continue; }
+      mode = isIng(l) ? "ing" : "method";
+    }
+    // no headings: once a long line that isn't an ingredient shows up, the method has started
+    if (mode === "ing" && !headings && !isIng(l) && l.length > 60) mode = "method";
+    if (mode === "ing") ingredients.push(l);
+    else steps.push(l.replace(/^(step\s*)?\d+[.)]\s*/i, ""));
+  }
+  return { title, ingredients, steps };
+}
