@@ -112,6 +112,7 @@ img { display: block; max-width: 100%; }
 }
 .tile-time { display: flex; align-items: center; gap: var(--s8); margin: var(--s12) 0 0; }
 .tile-time + .t-label { margin-top: var(--s4); }
+.form-actions .error { margin-right: auto; }
 .tile-actions { display: flex; justify-content: space-between; align-items: center; gap: var(--s16); margin-top: var(--s16); }
 .card .meta { display: flex; align-items: center; gap: var(--s4); color: var(--grey); }
 .card .name { overflow: hidden; text-overflow: ellipsis; }
@@ -121,6 +122,7 @@ img { display: block; max-width: 100%; }
 .detail { max-width: 720px; margin: 0 auto; }
 .detail .page-title { margin-top: var(--s16); }
 .detail .toolbar { gap: var(--s16); }
+.detail .toolbar .btn-text { white-space: nowrap; flex: none; }
 .detail-tags { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
 .detail-body { display: grid; grid-template-areas: "hero" "ings" "method"; }
 .detail-hero { grid-area: hero; }
@@ -130,6 +132,12 @@ img { display: block; max-width: 100%; }
 /* facts under the photo: readable, wrap instead of cutting off */
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: var(--s16) var(--s24); margin-top: var(--s16); min-width: 0; }
 .fact > .t-item { overflow-wrap: anywhere; }
+.notes-box summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: var(--s4); margin-bottom: var(--s8); }
+.notes-box summary::-webkit-details-marker { display: none; }
+.notes-box summary .icon { transition: transform 0.15s; transform: rotate(-90deg); }
+.notes-box[open] summary .icon { transform: none; }
+.fact.wide { grid-column: 1 / -1; }   /* source gets its own row so it fits on one line */
+.fact.wide > .t-item { overflow-wrap: normal; }
 .fact .k { display: flex; align-items: center; gap: var(--s4); color: var(--grey); }
 .ing-row { display: grid; grid-template-columns: 80px 1fr auto; gap: var(--s8); align-items: center; min-height: 40px; border-bottom: 1px solid var(--line); }
 .ing-row .qty { color: var(--grey); }
@@ -170,7 +178,7 @@ img { display: block; max-width: 100%; }
 .chip { color: var(--grey); padding: var(--s4) 0; border-bottom: 1px solid transparent; }
 .chip[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--chartreuse); }
 /* Save stays on screen (B-81) */
-.form-actions { position: sticky; bottom: var(--tabbar); z-index: 5; display: flex; gap: var(--s24); align-items: center; flex-wrap: wrap;
+.form-actions { position: sticky; bottom: var(--tabbar); z-index: 5; display: flex; justify-content: flex-end; gap: var(--s24); align-items: center; flex-wrap: wrap;
   background: var(--white); border-top: 1px solid var(--line); padding: var(--s16) 0; margin-bottom: calc(var(--s32) * -1); }
 @media (min-width: 900px) { .form-actions { bottom: 0; } }
 /* Fill the form from a link or a photo of a recipe: two halves split by a line (B-75) */

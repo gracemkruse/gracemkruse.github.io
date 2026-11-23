@@ -1,6 +1,6 @@
 import * as data from "../data.js";
 import { icon } from "../icons.js";
-import { esc, $, $$, toast, minutes, amount, photoStyle, sourceName, isWebLink, notionNote, niceTitle } from "../ui.js";
+import { esc, $, $$, toast, minutes, amount, photoStyle, sourceName, isWebLink, notionNote, niceTitle, iso, pref } from "../ui.js";
 import { pickDay, pickStatus } from "../pickers.js";
 import { directShare } from "./share.js";
 
@@ -38,6 +38,7 @@ export async function detailView(id, app) {
       <h1 class="t-page page-title recipe-name">${esc(niceTitle(r.title))}</h1>
       <div class="toolbar">
         <button class="btn-text t-label" data-act="week">${icon("plus", true)} Add to this week</button>
+        <button class="btn-text t-label" data-act="cooked">${icon("check", true)} Cooked today</button>
         ${r.tags.length ? `<span class="detail-tags t-label grey">${r.tags.map(esc).join(" · ")}</span>` : ""}
       </div>
 
@@ -45,7 +46,7 @@ export async function detailView(id, app) {
         <div class="detail-hero">
           <button class="photo" style="${photoStyle(r)}" aria-label="${esc(r.title)}: enlarge photo" ${r.image_url ? "" : "disabled"}></button>
           <div class="facts">
-            ${facts.map(([ic, k, v, html]) => `<div class="fact"><div class="k t-label">${icon(ic, true)} ${k}</div><div class="t-item">${html ? v : esc(v)}</div></div>`).join("")}
+            ${facts.map(([ic, k, v, html]) => `<div class="fact${ic === "source" ? " wide" : ""}" data-fact="${ic}"><div class="k t-label">${icon(ic, true)} ${k}</div><div class="t-item">${html ? v : esc(v)}</div></div>`).join("")}
           </div>
         </div>
 
@@ -61,7 +62,7 @@ export async function detailView(id, app) {
 
         <section class="detail-method">
           ${r.steps.length || r.notes ? `<div class="section-head"><span class="t-label">Method</span>${r.steps.length ? `<span class="t-label grey" data-progress>${progress(done, r.steps.length)}</span>` : ""}</div>` : ""}
-          ${r.notes ? `<p class="notes t-instr">${esc(r.notes)}</p>` : ""}
+          ${r.notes ? `<details class="notes-box"${pref.get("notes", "open") === "open" ? " open" : ""}><summary class="t-label grey">Description ${icon("down", true)}</summary><p class="notes t-instr">${esc(r.notes)}</p></details>` : ""}
           ${r.steps.length ? `<ol class="steps">${r.steps.map((s, i) => `<li><button class="step${done.has(i) ? " done" : ""}" data-step="${i}" aria-pressed="${done.has(i)}"><span class="n t-label">${String(i + 1).padStart(2, "0")}</span><span class="t-instr">${esc(s)}</span></button></li>`).join("")}</ol>` : ""}
           <div class="danger-zone"><button class="btn-text grey t-label" data-act="archive">Archive</button><button class="btn-text grey t-label" data-act="delete">Delete</button></div>
         </section>
@@ -69,6 +70,20 @@ export async function detailView(id, app) {
     </article>`;
 
   $('[data-act="week"]', app).onclick = () => pickDay(r);
+  // the description folds away; the choice is remembered for every recipe
+  const notes = $(".notes-box", app); if (notes) notes.addEventListener("toggle", () => pref.set("notes", notes.open ? "open" : "closed"));
+  // Cooked today: shows on This Week as made today and counts toward Made
+  $('[data-act="cooked"]', app).onclick = async () => {
+    const madeEl = $('[data-fact="made"] .t-item', app);
+    const show = n => { if (madeEl) madeEl.textContent = n ? `${n}×` : "Not yet"; };
+    try {
+      const res = await data.markCooked(r.id, iso(new Date()));
+      show(await data.timesMade(r.id));
+      toast("Marked as cooked today.", { label: "Undo", run: async () => {
+        try { res.added ? await data.removeFromWeek(res.id) : await data.setMealStatus(res.id, "planned"); show(await data.timesMade(r.id)); }
+        catch (e) { console.error(e); toast("Couldn’t undo. Try again."); } } });
+    } catch (e) { console.error(e); toast("Couldn’t mark it. Try again."); }
+  };
   // tap a step to check it off (it dims); remembered until the tab is closed
   $$("[data-step]", app).forEach(b => b.onclick = () => {
     const i = +b.dataset.step; done.has(i) ? done.delete(i) : done.add(i);
