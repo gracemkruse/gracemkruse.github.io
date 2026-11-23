@@ -64,6 +64,7 @@ export const titleCase = s => s.charAt(0).toUpperCase() + s.slice(1);
 export function suggestGroups(pantry) {
   const by = new Map();
   for (const it of pantry) {
+    if (/\bor\b/i.test(it.name)) continue;          // "Dill or cilantro" is a choice, not a duplicate: merging would lose the other option
     const b = baseName(it.name); if (!b) continue;
     if (!by.has(b.base)) by.set(b.base, []);
     by.get(b.base).push(it);
