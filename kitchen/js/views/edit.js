@@ -1,6 +1,6 @@
 import * as data from "../data.js";
 import { icon, whiskIcon } from "../icons.js";
-import { esc, $, $$, toast, photoStyle, niceTitle, isWebLink, amount, sheet } from "../ui.js";
+import { esc, $, $$, toast, photoStyle, niceTitle, isWebLink, amount, sheet, sentence } from "../ui.js";
 import { parseIngredient, parseRecipeText } from "../parse.js";
 
 // Add and edit a recipe. Only the name is required.
@@ -20,7 +20,7 @@ export async function editView(id, app, draft = null) {
   const r = existing && draft ? { ...existing, ...Object.fromEntries(Object.entries(draft).filter(([k, v]) => found(k, v))) }
     : existing || draft || { title: "", servings: "", total_minutes: "", image_url: "", tags: [], ingredients: [], steps: [], notes: "", source_url: "", source_notes: "" };
   const selected = new Set(r.tags || []);
-  const ingText = (r.ingredients || []).filter(g => g && g.name).map(g => [amount(g.amount, g.unit), g.name.toLowerCase() + (g.prep ? `, ${g.prep}` : "")].filter(Boolean).join(" ")).join("\n");
+  const ingText = (r.ingredients || []).filter(g => g && g.name).map(g => [amount(g.amount, g.unit), sentence(g.name) + (g.prep ? `, ${g.prep}` : "")].filter(Boolean).join(" ")).join("\n");
   const back = id ? `#/recipe/${encodeURIComponent(id)}` : "#/recipes";
 
   app.innerHTML = `
@@ -178,7 +178,7 @@ export async function editView(id, app, draft = null) {
     if (!(t.ingredients.length && t.steps.length) || text.split("\n").length < 4) return;
     e.preventDefault();
     if (!F.title.value.trim() && t.title) { F.title.value = t.title; grow(F.title); }
-    F.ingredients.value = t.ingredients.map(parseIngredient).filter(Boolean).map(g => [amount(g.amount, g.unit), g.name.toLowerCase() + (g.prep ? `, ${g.prep}` : "")].filter(Boolean).join(" ")).join("\n");
+    F.ingredients.value = t.ingredients.map(parseIngredient).filter(Boolean).map(g => [amount(g.amount, g.unit), sentence(g.name) + (g.prep ? `, ${g.prep}` : "")].filter(Boolean).join(" ")).join("\n");
     F.steps.value = t.steps.join("\n");
     keep(); toast("Split into ingredients and method. Check it over, then save.");
   });

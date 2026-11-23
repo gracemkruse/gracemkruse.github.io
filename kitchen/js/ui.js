@@ -56,6 +56,9 @@ export function duration(m) {
   return `${h} hr ${r} min`;
 }
 
+// Ingredient names show in sentence case: first letter capital, the rest as stored ("Olive oil", "Parmigiano-Reggiano").
+export const sentence = s => (s = String(s ?? "").trim()) && s[0].toUpperCase() + s.slice(1);
+
 export function minutes(m) {
   if (!m) return "";
   if (m < 60) return `${m}′`;
