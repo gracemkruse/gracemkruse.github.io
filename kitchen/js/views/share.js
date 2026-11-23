@@ -33,7 +33,7 @@ export async function shareView(id, app) {
   const url = URL.createObjectURL(page.blob);
   img.src = url; img.hidden = false; status.remove();
   send.disabled = printBtn.disabled = false;
-  const file = new File([page.blob], `${r.title.replace(/[\\/:*?"<>|]/g, "").trim() || "Recipe"}.png`, { type: "image/png" });
+  const file = pageFile(r, page);
 
   // Share sheet where there is one (phones, iPad, most desktops); otherwise save the image.
   send.onclick = async () => {
@@ -53,6 +53,27 @@ export async function shareView(id, app) {
     const before = document.title; document.title = r.title;
     addEventListener("afterprint", () => { size.remove(); document.title = before; }, { once: true });
     print();
+  };
+}
+
+// The page as a file named after the recipe.
+const pageFile = (r, page) => new File([page.blob], `${r.title.replace(/[\\/:*?"<>|]/g, "").trim() || "Recipe"}.png`, { type: "image/png" });
+
+// Share straight from the recipe page: the page is drawn in the background as soon as the recipe opens,
+// so a tap on Share can open the share sheet right away (phones only allow it straight after a tap).
+// Where there's no share sheet for files (most computers), Share opens the preview page with Print.
+export function directShare(r, button) {
+  if (!navigator.canShare) { button.onclick = () => { location.hash = `#/recipe/${encodeURIComponent(r.id)}/share`; }; return; }
+  let file = null;
+  const ready = new Promise(res => setTimeout(res, 400)).then(() => makePage(r)).then(p => (file = pageFile(r, p)));
+  ready.catch(e => console.error(e));
+  const open = f => navigator.share({ files: [f], title: r.title })
+    .catch(e => { if (e.name === "NotAllowedError") toast("Ready. Tap Share again."); else if (e.name !== "AbortError") toast("Couldn’t share. Try again."); });
+  button.onclick = async () => {
+    if (file) { if (navigator.canShare({ files: [file] })) open(file); else location.hash = `#/recipe/${encodeURIComponent(r.id)}/share`; return; }
+    toast("Getting the page ready…");
+    try { await ready; } catch { toast("Couldn’t make the page. Try again."); return; }
+    if (navigator.canShare({ files: [file] })) open(file); else location.hash = `#/recipe/${encodeURIComponent(r.id)}/share`;
   };
 }
 
