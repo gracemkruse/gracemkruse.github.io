@@ -100,8 +100,7 @@ img { display: block; max-width: 100%; }
 /* Smallest view: photos only (see tile() in gallery.js) */
 .tile { position: relative; }
 .tile .photo { display: block; position: relative; }
-.tile-name { position: absolute; left: 0; right: 0; bottom: 0; padding: var(--s4) 32px var(--s4) var(--s4); background: var(--white); color: var(--ink);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0; pointer-events: none; }
+.tile-name { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: var(--s4); padding: var(--s8) 32px var(--s8) var(--s8); background: var(--white); color: var(--ink); opacity: 0; pointer-events: none; }
 .tile-more { position: absolute; right: var(--s4); bottom: var(--s4); width: 24px; height: 24px; display: grid; place-items: center; background: var(--white); color: var(--ink); }
 @media (hover: hover) {
   .tile-more { opacity: 0; }
@@ -206,7 +205,7 @@ img { display: block; max-width: 100%; }
   padding: var(--s20) var(--margin) calc(var(--s32) + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: var(--s12); }
 @media (min-width: 900px) {
   .sheet-wrap { align-items: center; }
-  .sheet { border: 1px solid var(--ink); }
+  .sheet { border: 0; }
 }
 .sheet-head { display: flex; justify-content: space-between; align-items: center; gap: var(--s16); }
 .sheet-sub { margin-top: var(--s12); }
