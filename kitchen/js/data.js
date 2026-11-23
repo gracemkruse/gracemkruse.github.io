@@ -94,6 +94,8 @@ export async function saveRecipe(input) {
     for (const g of r.ingredients) g.stock_status = status[norm(g.name)] || "not_tracked";
     saveDemo(db); return r.id;
   }
+  // a photo on another website gets copied into your own photo storage (sites move or block photos)
+  if (r.image_url && !ownPhoto(r.image_url)) { try { r.image_url = await uploadPhoto(await photoFromLink(r.image_url)); } catch (e) { console.warn("Kept the outside photo link", e); } }
   const row = { title: r.title, image_url: r.image_url, servings: r.servings, total_minutes: r.total_minutes, steps: r.steps, notes: r.notes, source_url: r.source_url, source_notes: r.source_notes };
   let id = r.id;
   if (id) { const { error } = await sb.from("recipes").update(row).eq("id", id); if (error) throw error; }
@@ -294,6 +296,15 @@ function toDraft(data, url) {
 export async function setRecipePhoto(id, url) {
   if (isDemo) { const db = demo(); const r = db.recipes.find(x => x.id === id); if (r) r.image_url = url; saveDemo(db); return; }
   const { error } = await sb.from("recipes").update({ image_url: url }).eq("id", id); if (error) throw error;
+}
+// Photos already in your storage (or saved in this browser). Anything else is on another website.
+export const ownPhoto = url => !/^https?:/i.test(url) || url.startsWith(`${SUPABASE_URL}/storage/v1/object/public/recipe-photos/`);
+// A photo from another website, fetched by the photo-from-link Edge Function (browsers can't read most of them).
+export async function photoFromLink(url) {
+  if (isDemo) throw new Error("Photos from other sites work once Supabase is connected.");
+  const { data, error } = await sb.functions.invoke("photo-from-link", { body: { url } });
+  if (error || !(data instanceof Blob) || !data.type.startsWith("image/")) throw new Error("Couldn’t fetch that photo.");
+  return data;
 }
 // Shrinks the photo in the browser first (phone photos are huge), then stores it.
 // Supabase: public "recipe-photos" bucket, one folder per account. Demo: a small data URL.
