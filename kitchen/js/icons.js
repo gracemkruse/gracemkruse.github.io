@@ -1,6 +1,7 @@
 // Geometric icon set, exported from the Figma style guide ("04 Style Guide" → Icon/*, Icon/ingredient/*).
 // 20-unit grid, 1px non-scaling line, at most one small solid per icon. icon(name) = 20px, icon(name, true) = 16px inline.
 // To update: export the component as SVG in Figma and paste its <path>s here (stroke → line, fill → solid).
+import { INGREDIENT_PATHS } from "./ingredient-icons.js";
 const L = d => `<path d="${d}"/>`;                                   // line
 const D = d => `<path d="${d}" stroke-dasharray="2 2"/>`;            // dashed line
 const S = d => `<path d="${d}" fill="currentColor" stroke="none"/>`; // small solid
@@ -41,23 +42,7 @@ const PATHS = {
   play: L("M7 4L16.1667 9.83333L7 15.6667V4Z"),
   sync: L("M3 10.5C2.99856 9.14525 3.4099 7.82222 4.17922 6.7071C4.94854 5.59199 6.03934 4.73772 7.30633 4.25807C8.57333 3.77842 9.95639 3.69616 11.2713 4.02224C12.5862 4.34833 13.7706 5.06727 14.6667 6.08333M16.3333 10.5C16.3348 11.8547 15.9234 13.1778 15.1541 14.2929C14.3848 15.408 13.294 16.2623 12.027 16.7419C10.76 17.2216 9.37696 17.3038 8.06204 16.9778C6.74712 16.6517 5.56275 15.9327 4.66667 14.9167M14.6667 3V6.33333H11.3333M4.66667 18V14.6667H8"),
   close: L("M5 5L15 15M15 5L5 15"),   // not in Figma yet: same 1px line style
-  // ingredients (shopping rows; anything unmatched uses its category icon)
-  lemon: L(RING) + L(circ(10.1667, 10.1667, 4.1667)) + L("M10 6V14.3333") + S(DOT),
-  parsley: L("M10 17.3333V9") + L("M10.1667 9.16667C7.66667 9.16667 6 7.5 6 5C8.5 5 10.1667 6.66667 10.1667 9.16667ZM10.1667 9.16667C10.1667 6.66667 11.8333 5 14.3333 5C14.3333 7.5 12.6667 9.16667 10.1667 9.16667Z") + S(dot(9.8333, 13.8333)),
-  onion: L(circ(9.8333, 10.8333, 5.8333)) + L(circ(10.3333, 11.3333, 3.3333)) + S(dot(9.8333, 10.8333)) + L("M10 5.5V3"),
-  garlic: L("M10 3C10 5.5 15 8 15 12.1667C15 13.4927 14.4732 14.7645 13.5355 15.7022C12.5979 16.6399 11.3261 17.1667 10 17.1667C8.67392 17.1667 7.40215 16.6399 6.46447 15.7022C5.52678 14.7645 5 13.4927 5 12.1667C5 8 10 5.5 10 3Z") + D("M10 8V16.3333"),
-  tomato: L(circ(9.8333, 10.8333, 5.8333)) + L("M13 4.66667L10.5 6.33333L8 4.66667M10.5 6.33333V3") + S(dot(12.8333, 11.8333)),
-  chicken: L(circ(12.1667, 7.1667, 4.1667)) + L("M9 11L4 16") + S(circ(4.6667, 15.6667, 1.6667)),
-  egg: L("M9.83333 3C13.1667 3 15.6667 8.83333 15.6667 12.1667C15.6667 13.7138 15.0521 15.1975 13.9581 16.2915C12.8642 17.3854 11.3804 18 9.83333 18C8.28624 18 6.80251 17.3854 5.70854 16.2915C4.61458 15.1975 4 13.7138 4 12.1667C4 8.83333 6.5 3 9.83333 3Z") + D(circ(10.5, 12.5, 2.5)) + S(dot(9.8333, 12.8333)),
-  feta: L("M3 15.1667L17.1667 6V15.1667H3Z") + S(dot(12.8333, 11.8333)) + L(circ(13.8333, 8.8333, 0.8333)),
-  yogurt: L("M5 8H15L13.3333 17.1667H6.66667L5 8Z") + L("M4 8H15.6667") + D("M7 11.2406C7.83333 10.4072 9.5 12.0739 10.3333 11.2406C11.1667 10.4072 12.8333 12.0739 13.6667 11.2406"),
-  beans: L("M16.3333 5H3V15H16.3333V5Z") + S(circ(6.6667, 9.6667, 1.6667)) + S(circ(9.6667, 9.6667, 1.6667)) + L(circ(13.6667, 9.6667, 1.6667)),
-  stock: L(BOWL) + L("M10 8V3M6.66667 8L5 4.66667M13.3333 8L15 4.66667"),
-  flour: L("M5.66667 7H14L15.6667 17H4L5.66667 7Z") + L("M7.83333 6.33333L7 3H13.6667L12.8333 6.33333") + S(dot(8.8333, 11.8333)) + L(circ(11.8333, 11.8333, 0.8333)) + L(circ(9.8333, 13.8333, 0.8333)),
-  paprika: [[5.6667, 5.6667, 0], [9.6667, 5.6667, 1], [14.6667, 5.6667, 1], [5.6667, 9.6667, 1], [9.6667, 9.6667, 0], [14.6667, 9.6667, 1], [5.6667, 14.6667, 0], [9.6667, 14.6667, 1], [14.6667, 14.6667, 0]]
-    .map(([x, y, solid]) => (solid ? S : L)(circ(x, y, 1.6667))).join(""),
-  coffee: L("M4 8H13.1667V12.1667C13.1667 13.2717 12.7277 14.3315 11.9463 15.1129C11.1649 15.8943 10.1051 16.3333 9 16.3333H8.16667C7.0616 16.3333 6.00179 15.8943 5.22039 15.1129C4.43899 14.3315 4 13.2717 4 12.1667V8Z") + L("M13 10H14.6667C15.1087 10 15.5326 10.1756 15.8452 10.4882C16.1577 10.8007 16.3333 11.2246 16.3333 11.6667C16.3333 12.1087 16.1577 12.5326 15.8452 12.8452C15.5326 13.1577 15.1087 13.3333 14.6667 13.3333H13") + D("M8 3V6.33333M10.5 3V6.33333"),
-  towels: L("M10 6.33333C12.7614 6.33333 15 5.58714 15 4.66667C15 3.74619 12.7614 3 10 3C7.23858 3 5 3.74619 5 4.66667C5 5.58714 7.23858 6.33333 10 6.33333Z") + L("M5 5V15C5 15.8333 7.5 16.6667 10 16.6667C12.5 16.6667 15 15.8333 15 15V5") + D("M5 11H15") + S(dot(9.8333, 4.8333)),
+  // ingredients: see ingredient-icons.js (added below)
 };
 
 export function icon(name, inline = false, extraClass = "") {
@@ -81,20 +66,98 @@ export function densityGlyph(n, active) {
   return `<svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">${shapes}</svg>`;
 }
 
-// Ingredient icon for a shopping row: a matching drawing, otherwise the category icon.
+Object.assign(PATHS, INGREDIENT_PATHS);
+
+// Ingredient icon for a shopping row: the food's own drawing, otherwise its category icon.
+// One icon per food, not per variety. Order matters: the more specific phrase wins
+// ("garlic powder" is a spice jar, "chicken stock" is stock, "peanut butter" is a jar).
 const ING_ICON = [
-  ["lemon", /\b(lemons?|limes?)\b/], ["onion", /\b(onions?|shallots?|scallions?|leeks?)\b/], ["garlic", /\bgarlic\b/],
-  ["beans", /\b(beans|chickpeas|lentils|crushed|canned)\b/], // before tomato: canned tomatoes get the can
-  ["tomato", /\btomato(es)?\b/], ["chicken", /\b(chicken|turkey)\b/], ["egg", /\beggs?\b/],
-  ["feta", /\b(feta|cheddar|parmesan|pecorino|mozzarella|cheese)\b/], ["yogurt", /\b(yogh?urt|sour cream|miso)\b/],
+  // household
+  ["towels", /\b(paper towels?|towels?|toilet paper|tin foil|foil|cling wrap|parchment)\b/],
+  ["soap", /\b(soap|detergent|bleach|scrub bubbles|clorox|tide|mop|cleaner)\b/],
+  ["sponge", /\bsponges?\b/], ["bag", /\b(bags?|containers?)\b/], ["medicine", /\b(benadryl|nyquil|vitamins?|medicine)\b/],
+  ["tube", /\b(toothpaste|tomato paste|anchovy paste|harissa)\b/],
+  // drinks, vinegars and sauces before the foods they're made from
+  ["vinegar", /\b(vinegar|vinaigrette)\b/], ["fish", /\b(anchov(y|ies)|tuna)\b/], ["peas", /\bsugar snap\b/],
+  ["seeds", /\bmustard seeds?\b/], ["spice-jar", /\bground mustard\b/], ["chocolate", /\b(chocolate|cocoa|coco powder)\b/], ["tea", /\bmatcha\b/], ["coffee", /\b(coffee|espresso)\b(?! powder)/], ["beer", /\b(beer|lager|hard cider)\b/],
+  ["spirits", /\b(vodka|gin|tequila|bourbon|brandy|liqueur|kahl[uú]a|triple sec|kirsch|rum|whiskey)\b/],
+  ["wine", /\b(wine|sherry|vermouth|prosecco|cava|rioja|sake)\b/],
+  ["soy-sauce", /\b(soy sauce|fish sauce|oyster sauce|worcestershire|tamari|seasoning sauce)\b/],
+  ["hot-sauce", /\b(hot sauce|chili sauce|chili crunch|chili oil|sambal|sriracha|prik nam)\b/],
+  ["oil", /\b(oil|cooking spray)\b/],
+  ["ice-cream", /\b(ice cream|whipped cream)\b/],
+  ["jar", /\b(jam|peanut butter|almond butter|apple butter|nut butter|tahini|miso|pesto|mayo(nnaise)?|aioli|mustard|dijon|kimchi|pickles?|hummus|tzatziki|chutney|skhug)\b/],
+  ["honey", /\b(honey|agave|maple syrup|corn syrup)\b/],
+  ["tin", /\b(baking powder|baking power|baking soda|yeast|corn ?starch|espresso powder|matzo meal)\b/],
+  // spices before the plants they come from
+  ["salt", /\bsalt\b/], ["flakes", /\b(chil[ei] flakes|pepper flakes|aleppo)\b/],
+  ["seeds", /\b(seeds?|pepitas|sesame)\b/], ["cinnamon", /\bcinnamon sticks?\b/],
+  ["spice-jar", /\b(ground(?! (beef|pork|lamb|chicken|turkey|veal))|powder|cumin|nutmeg|turmeric|tumeric|garam masala|za.?atar|cayenne|allspice|cardamom|ras el hanout|sumac|saffron|whole cloves|seasoning|spices?|jeera|cinnamon)\b/],
+  ["pepper", /(\b(black|white|cracked|sichuan|ground) pepper\b|\bpepper ?corns?\b|^pepper$)/],
+  ["paprika", /\bpaprika\b/], ["vanilla", /\b(vanilla|rosewater|extract|elderflower)\b/], ["bay-leaf", /\bbay lea(f|ves)\b/],
+  // pasta, grains, breads
+  ["spaghetti", /\b(spaghetti|bucatini|noodles|ramen|linguine|fettuccine|pappardelle|tagliatelle|angel hair|lasagn[ae])\b/],
+  ["rigatoni", /\b(rigatoni|paccheri|orecchiette|pasta|shells|orzo|gnocchi|tortellini|fregola|ravioli|ditalini|penne|fusilli|farfalle|macaroni|ziti|conchiglie|campanelle|mezzi)\b/],
+  ["flour", /\b(flour|cornmeal|semolina)\b/],
+  ["rice", /\b(rice|basmati|quinoa|farro|barley|couscous|oats|oatmeal|granola|cereal|buckwheat)\b/],
+  ["tortilla", /\b(tortillas?|pita|flatbreads?|tortilla chips|wraps)\b/],
+  ["dough", /\b(dough|puff pastry|phyllo|pie crust|crust)\b/],
+  ["bread", /\b(bread|baguette|sourdough|brioche|buns|muffins|croissant|crumbs|panko|toast|croutons)\b/],
+  ["cracker", /\bcrackers?\b/], ["chocolate", /\b(chocolate|cocoa|coco powder)\b/],
+  ["sugar", /\bsugar\b/],
+  // dairy
+  ["grater", /\b(parmesan|parmigiano|pecorino|grana padano|piave)\b/], ["mozzarella", /\b(mozzarella|burrata)\b/],
+  ["goat-cheese", /\bgoats? cheese\b/],
+  ["yogurt", /\b(yogh?urt|sour cream|cr[eè]me fra[iî]che|labneh|ricotta|cream cheese|mascarpone|marscapone)\b/],
+  ["coconut", /\bcoconut\b/],
+  ["milk", /\b(milk|buttermilk|cream|half.and.half|creamer)\b/], ["butter", /\bbutter\b/],
+  ["feta", /\b(feta|cheddar|gruy[eè]re|brie|halloumi|cotija|vacherin|cheese)\b/],
+  // protein (stock before chicken; egg noodles caught above)
   ["stock", /\b(stock|broth|dashi)\b/],
-  ["flour", /\b(flour|sugar|yeast)\b/], ["paprika", /\b(paprika|cumin|black pepper|peppercorns|salt|chili|cinnamon|turmeric)\b/],
-  ["coffee", /\b(coffee|tea)\b/], ["towels", /\b(paper towels?|towels?|toilet paper)\b/], ["parsley", /\b(parsley|cilantro|basil|dill|mint|herbs)\b/],
+  ["ground-meat", /\bground (beef|pork|lamb|chicken|turkey|veal)\b/],
+  ["bacon", /\b(bacon|pancetta|guanciale)\b/], ["sausage", /\b(sausage|chorizo)\b/],
+  ["salami", /\b(salami|prosciutto|proscuitto|mortadella|ham|lunch meat)\b/],
+  ["chicken", /\b(chicken|turkey)\b/], ["egg", /\beggs?\b/],
+  ["shrimp", /\bshrimp\b/], ["shellfish", /\b(clams?|manilas|scallops?|mussels)\b/],
+  ["fish", /\b(salmon|cod|snapper|swordfish|tuna|anchov(y|ies)|fish)\b/],
+  ["pork", /\bpork\b/], ["steak", /\b(steak|ribeye|short ribs|lamb|beef|veal)\b/], ["tofu", /\btofu\b/],
+  // produce
+  ["greens", /\bbeet greens\b/], ["green-beans", /\bgreen beans\b/], ["beans", /\b(beans|chickpeas|garbanzo|lentils|black.eyed peas)\b/],
+  ["date", /\b(dates?|raisins?|craisins|dried cranberries)\b/],
+  ["lemon", /\b(lemons?|limes?|zest)\b/],
+  ["orange", /\b(oranges?|tangerines?|grapefruit|clementines?)\b/],
+  ["apple", /\bapples?\b/], ["pear", /\bpears?\b/], ["banana", /\bbananas?\b/],
+  ["strawberry", /\bstrawberr(y|ies)\b/], ["berries", /\b(blueberr(y|ies)|raspberr(y|ies)|cranberr(y|ies)|berries)\b/],
+  ["grapes", /\bgrapes\b/], ["peach", /\b(peach(es)?|nectarines?)\b/], ["pineapple", /\bpineapple\b/],
+  ["mango", /\bmangos?\b/], ["kiwi", /\bkiwi\b/], ["watermelon", /\bwatermelon\b(?! radish)/], ["fig", /\bfigs?\b/],
+  ["persimmon", /\bpersimmons?\b/], ["avocado", /\bavocados?\b/], ["olive", /\b(olives?|capers)\b/],
+  ["garlic", /\bgarlic\b/], ["onion", /\b(onions?|shallots?)\b/],
+  ["leek", /\b(leeks?|scallions?|chives?|green onions?|spring onions?)\b/],
+  ["tomato", /\b(tomato(es)?|tomatillos?|san marzano)\b/],
+  ["sweet-potato", /\b(sweet potato(es)?|yams?)\b/], ["potato", /\bpotato(es)?\b/],
+  ["carrot", /\b(carrots?|parsnips?)\b/], ["beet", /\b(beets?|beetroot)\b/], ["radish", /\b(radish(es)?|turnips?)\b/],
+  ["celery", /\bcelery\b/], ["cucumber", /\b(cucumbers?|cucamelon)\b/], ["zucchini", /\b(zucchini|yellow squash|courgettes?)\b/],
+  ["squash", /\b(squash|pumpkin|butternut|delicata|acorn)\b/], ["eggplant", /\beggplants?\b/],
+  ["chile", /\b(jalape[nñ]os?|serrano|fresno|chil(e|es|i|ies|lies|les)|calabrian)\b/],
+  ["bell-pepper", /\b(bell pepper|sweet peppers?|red peppers?|peppers)\b/],
+  ["mushroom", /\b(mushrooms?|shiitake)\b/], ["corn", /\b(corn|popcorn|kettlecorn)\b/],
+  ["peas", /\b(peas|edamame)\b/], ["fennel", /\bfennel\b/], ["asparagus", /\basparagus\b/],
+  ["broccoli", /\b(broccoli|broccolini|gai lan|rabe)\b/], ["cauliflower", /\bcauliflower\b/],
+  ["brussels-sprouts", /\bbrussels?\b/], ["cabbage", /\bcabbage\b/],
+  ["lettuce", /\b(lettuce|romaine|mixed greens|arugula|rocket|escarole|radicchio)\b/],
+  ["greens", /\b(kale|spinach|chard|collard|beet greens|microgreens|pea shoots?|greens)\b/],
+  ["ginger", /\bginger\b/], ["artichoke", /\bartichokes?\b/],
+  // herbs
+  ["parsley", /\b(parsley|cilantro|coriander)\b/], ["dill", /\bdill\b/],
+  ["rosemary", /\b(rosemary|thyme|oregano|tarragon)\b/], ["basil", /\b(basil|mint|sage|marjoram)\b/],
+  ["nuts", /\b(almonds?|walnuts?|pecans?|pistachios?|cashews?|peanuts?|pine nuts|nuts|hazelnuts?)\b/],
+  ["coffee", /\b(coffee|espresso)\b/], ["tea", /\b(tea|matcha)\b/],
+  ["glass", /\b(water|ice|seltzer|juice|tonic|club soda|limeade|cider)\b/],
 ];
 const CAT_ICON = { "produce": "produce", "protein": "protein", "dairy": "dairy", "pantry": "pantry", "herbs & spices": "herbs", "household": "household" };
 export function catIcon(category) { return CAT_ICON[String(category || "").toLowerCase()] || "pantry"; }
 export function ingredientIcon(name, category) {
-  const n = String(name || "").toLowerCase();
+  const n = String(name || "").toLowerCase().replace(/[’']/g, "'");
   for (const [k, re] of ING_ICON) if (re.test(n)) return k;
   return catIcon(category);
 }
