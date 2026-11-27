@@ -22,7 +22,8 @@ const routes = [
   { re: /^#\/recipe\/([^/]+)\/edit$/, view: ([id], app) => editView(id, app), tab: "recipes" },
   { re: /^#\/recipe\/([^/]+)$/, view: ([id], app) => detailView(id, app), tab: "recipes" },
   { re: /^#\/week(?:\?w=(\d{4}-\d{2}-\d{2}))?$/, view: ([w], app) => weekView(app, w), tab: "week" },
-  { re: /^#\/list(?:\?tab=(week|pantry))?$/, view: ([tab], app) => listView(app, tab || "buy"), tab: "list" },
+  // Shopping list (Full list · Shopping) and Pantry. Old ?tab=week links land on Full list.
+  { re: /^#\/list(?:\?(?:tab=(week|pantry)|mode=(shop)))?$/, view: ([tab, mode], app) => listView(app, tab === "pantry" ? "pantry" : "list", mode === "shop" ? "shop" : "full"), tab: "list" },
 ];
 
 async function render() {
