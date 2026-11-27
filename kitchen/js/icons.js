@@ -124,7 +124,7 @@ const ING_ICON = [
   // produce
   ["greens", /\bbeet greens\b/], ["green-beans", /\bgreen beans\b/], ["beans", /\b(beans|chickpeas|garbanzo|lentils|black.eyed peas)\b/],
   ["date", /\b(dates?|raisins?|craisins|dried cranberries)\b/],
-  ["lemon", /\b(lemons?|limes?|zest)\b/],
+  ["lemon", /\b(lemons?|limes?|zest|citrus|yuzu)\b/],
   ["orange", /\b(oranges?|tangerines?|grapefruit|clementines?)\b/],
   ["apple", /\bapples?\b/], ["pear", /\bpears?\b/], ["banana", /\bbananas?\b/],
   ["strawberry", /\bstrawberr(y|ies)\b/], ["berries", /\b(blueberr(y|ies)|raspberr(y|ies)|cranberr(y|ies)|berries)\b/],
