@@ -12,9 +12,12 @@ import { importView } from "./views/import.js";
 import { fillView } from "./views/fill.js";
 import { weekView } from "./views/week.js";
 import { settingsView, archivedView } from "./views/settings.js";
+import { joinView, privacyView } from "./views/join.js";
 
 const routes = [
   { re: /^#\/login$/, view: (p, app) => loginView(app), public: true, tab: null },
+  { re: /^#\/join\/([A-Za-z0-9_-]+)$/, view: ([code], app) => joinView(code, app), public: true, tab: null },
+  { re: /^#\/privacy$/, view: (p, app) => privacyView(app), public: true, tab: null },
   { re: /^#\/recipes$/, view: (p, app) => galleryView(app), tab: "recipes" },
   { re: /^#\/import$/, view: (p, app) => importView(app), tab: "recipes" },
   { re: /^#\/fill$/, view: (p, app) => fillView(app), tab: "recipes" },

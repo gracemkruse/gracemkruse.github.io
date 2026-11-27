@@ -1,7 +1,7 @@
 // Data layer. One interface, two backends:
 //   • Supabase (real, shared across devices) when config.js has a URL + key
 //   • Demo (sample recipes in localStorage) otherwise
-import { SUPABASE_URL, SUPABASE_ANON_KEY, HOUSEHOLD_EMAIL } from "./config.js";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./config.js";
 import { mergedPrep } from "./ingredients.js";
 import { parseIngredient } from "./parse.js";
 
@@ -23,13 +23,74 @@ export async function hasSession() {
   return !!data.session;
 }
 
-export async function signIn(password) {
-  if (isDemo) {
-    if (!password) throw new Error("Enter the household password.");
-    safeSet(DEMO_SESSION, "1"); return;
+// Sign in by emailed code (no passwords). Only existing accounts get a code; new ones come from an invite.
+export async function sendCode(email) {
+  email = String(email || "").trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("That email doesn’t look right.");
+  if (isDemo) return;
+  const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+  if (error) {
+    if (/signups? not allowed|not found|user/i.test(error.message)) throw new Error("No account with that email. Kitchen is invite-only; ask Grace for a link.");
+    if (/rate|seconds/i.test(error.message)) throw new Error("A code was just sent. Wait a minute, then try again.");
+    throw new Error("Couldn’t send a code. Try again.");
   }
-  const { error } = await sb.auth.signInWithPassword({ email: HOUSEHOLD_EMAIL, password });
-  if (error) throw new Error("That password didn’t work.");
+}
+export async function verifyCode(email, code) {
+  code = String(code || "").replace(/\D/g, "");
+  if (code.length < 6) throw new Error("Enter the 6-digit code.");
+  if (isDemo) { safeSet(DEMO_SESSION, "1"); return; }
+  const { error } = await sb.auth.verifyOtp({ email: String(email).trim().toLowerCase(), token: code, type: "email" });
+  if (error) throw new Error(/expired/i.test(error.message) ? "That code has expired. Send a new one." : "That code didn’t work. Check it and try again.");
+}
+
+// Join from an invite (server function makes the account), then a code is emailed to finish.
+export async function join({ code, email, name, birth_year, gender }) {
+  if (isDemo) return;
+  const { data, error } = await sb.functions.invoke("join", { body: { code, email, name, birth_year: birth_year || null, gender: gender || null } });
+  const msg = data?.error || (error && (await error.context?.json?.().catch(() => null))?.error);
+  if (msg === "used" || msg === "expired") { const e = new Error(msg); e.code = msg; throw e; }
+  if (msg || error) throw new Error(msg || "Couldn’t join. Try again.");
+  await sendCode(email);
+}
+
+// ---------------- Profile, invites, account ----------------
+export async function getProfile() {
+  if (isDemo) return { display_name: "", birth_year: null, gender: null, can_invite: true, onboarded_at: new Date().toISOString() };
+  const { data: s } = await sb.auth.getSession(); const id = s.session?.user?.id;
+  const { data, error } = await sb.from("profiles").select("display_name,birth_year,gender,can_invite,onboarded_at").eq("id", id).maybeSingle();
+  if (error) throw error;
+  return data || { display_name: "", birth_year: null, gender: null, can_invite: false, onboarded_at: null };
+}
+export async function updateProfile(fields) {
+  if (isDemo) return;
+  const { data: s } = await sb.auth.getSession(); const id = s.session?.user?.id;
+  const { error } = await sb.from("profiles").upsert({ id, ...fields }); if (error) throw error;
+}
+export async function listInvites() {
+  if (isDemo) return [];
+  const { data, error } = await sb.from("invites").select("code,name,used_by,used_at,expires_at,created_at").order("created_at", { ascending: false });
+  if (error) throw error; return data;
+}
+export async function createInvite(name) {
+  if (isDemo) return "demo-invite";
+  const { data, error } = await sb.from("invites").insert({ name: String(name || "").trim() || null }).select("code").single();
+  if (error) throw new Error("Couldn’t make an invite."); return data.code;
+}
+export async function cancelInvite(code) {
+  if (isDemo) return;
+  const { error } = await sb.from("invites").delete().eq("code", code); if (error) throw error;
+}
+export async function copyLibraryTo(email) {
+  const { data, error } = await sb.functions.invoke("copy-library", { body: { to_email: email } });
+  const msg = data?.error || (error && (await error.context?.json?.().catch(() => null))?.error);
+  if (msg || error) throw new Error(msg || "Couldn’t copy."); return data;
+}
+export async function deleteAccount() {
+  if (isDemo) { safeDel(DEMO_KEY); safeDel(DEMO_SESSION); return; }
+  const { data, error } = await sb.functions.invoke("delete-account", { body: { confirm: "DELETE" } });
+  const msg = data?.error || (error && (await error.context?.json?.().catch(() => null))?.error);
+  if (msg || error) throw new Error(msg || "Couldn’t delete the account.");
+  await sb.auth.signOut();
 }
 
 export async function signOut() {
@@ -41,7 +102,8 @@ export async function signOut() {
 export async function me() {
   if (isDemo) return { email: "demo@kitchen", name: "" };
   const { data } = await sb.auth.getSession(); const u = data.session?.user;
-  return { email: u?.email || "", name: u?.user_metadata?.name || "" };
+  const { data: p } = await sb.from("profiles").select("display_name").eq("id", u?.id).maybeSingle();
+  return { email: u?.email || "", name: p?.display_name || u?.user_metadata?.name || "" };
 }
 
 // ---------------- Archived recipes (Settings) ----------------

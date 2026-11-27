@@ -68,6 +68,19 @@ img { display: block; max-width: 100%; }
 /* ---------- Login ---------- */
 .login { max-width: 342px; margin: 18vh auto 0; display: flex; flex-direction: column; gap: var(--s24); }
 .login .error { color: var(--clay); min-height: 16px; margin: -8px 0 0; }
+.login .t-instr { margin: 0; }
+/* 6-digit code: one real input under six underlined slots */
+.code-slots { position: relative; display: block; }
+.code-slots input { position: absolute; inset: 0; width: 100%; opacity: 0; font-size: 16px; }
+.code-slots span { display: flex; gap: var(--s12); pointer-events: none; }
+.code-slots i { flex: 1; max-width: 46px; height: 48px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: var(--s8);
+  font: 400 24px/32px var(--mono); font-style: normal; border-bottom: 1px solid var(--line); }
+.code-slots i.on { border-bottom-color: var(--ink); }
+.code-slots i.next { border-bottom-color: var(--chartreuse-bright); }
+.login-actions { display: flex; gap: var(--s24); flex-wrap: wrap; }
+.join-optional { display: flex; flex-direction: column; gap: var(--s8); }
+.select-line select { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; padding: 0; appearance: none; -webkit-appearance: none; color: var(--ink); }
+.select-line select.grey { color: var(--grey); }
 
 /* ---------- Gallery ---------- */
 .gallery { display: grid; grid-template-columns: var(--sidebar) 1fr; margin: 0 calc(var(--margin) * -1); }
@@ -172,7 +185,7 @@ img { display: block; max-width: 100%; }
 .field > span { color: var(--grey); }
 .field input, .field textarea { border: 0; border-bottom: 1px solid var(--line); background: transparent; padding: var(--s8) 0; outline: 0; border-radius: 0; }
 .field textarea { border: 1px solid var(--line); padding: var(--s12); resize: vertical; min-height: 160px; }
-input.t-item, textarea.t-item, .field textarea.t-instr { font-size: 16px; line-height: 24px; }   /* typing boxes stay 16: smaller makes iPhone zoom in */
+input.t-item, textarea.t-item, select.t-item, .field textarea.t-instr { font-size: 16px; line-height: 24px; }   /* typing boxes stay 16: smaller makes iPhone zoom in */
 .field input:focus, .field textarea:focus { border-color: var(--ink); }
 .field .input-line input { border: 0; padding: 0; }
 .field .hint { color: var(--grey); }
@@ -233,6 +246,13 @@ input.t-item, textarea.t-item, .field textarea.t-instr { font-size: 16px; line-h
 div.set-row { cursor: default; }
 .set-row .spacer { flex: 1; }
 .set-key { width: 88px; flex: none; }
+.set-head-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s16); }
+.settings .danger-zone { margin-top: var(--s48); }
+.privacy .t-instr { margin: 0; max-width: 560px; }
+.edit-field { display: flex; flex-direction: column; gap: var(--s16); margin-top: var(--s16); }
+.edit-field .t-instr { margin: 0; }
+.edit-field .error { color: var(--clay); min-height: 16px; margin: 0; }
+.sheet-actions { display: flex; justify-content: flex-end; align-items: center; gap: var(--s24); }
 .day { display: grid; grid-template-columns: 36px 1fr; border-bottom: 1px solid var(--line); }
 .day .date { writing-mode: vertical-rl; transform: rotate(180deg); color: var(--grey); align-self: center; justify-self: start; padding: var(--s8) 0; position: relative; }
 .day.today .date { color: var(--chartreuse); }
