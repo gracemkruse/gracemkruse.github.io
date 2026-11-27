@@ -3,6 +3,7 @@ import { icon, ingredientIcon, catIcon } from "../icons.js";
 import { suggestGroups, titleCase } from "../ingredients.js";
 import { esc, $, $$, toast, sheet, amount, iso, addDays, weekStart, monthDay, fromIso, dayLabel, niceTitle } from "../ui.js";
 import { pickStatus } from "../pickers.js";
+import { accountButton, wireAccount } from "../account.js";
 
 // Shopping List: two tabs.
 //   Shopping list — one list with two modes:
@@ -99,7 +100,7 @@ export async function listView(app, tab = "list", mode = "full") {
 
   app.innerHTML = `
     <section class="list">
-      <h1 class="t-page page-title">Shopping List</h1>
+      <div class="title-row"><h1 class="t-page page-title">Shopping List</h1>${accountButton()}</div>
       <nav class="list-tabs">${TABS.map(([k, l]) => `<a class="t-label${k === tab ? " active" : ""}" href="#/list${k === "list" ? "" : "?tab=" + k}">${l}</a>`).join("")}</nav>
       ${tab === "pantry" ? "" : `
         <nav class="chips list-mode" aria-label="List mode">${[["full", "Full list", "#/list"], ["shop", "Shopping", "#/list?mode=shop"]]
@@ -108,6 +109,7 @@ export async function listView(app, tab = "list", mode = "full") {
       ${body}
     </section>`;
 
+  wireAccount(app);
   const run = async (fn, msg = "Couldn’t update — try again.") => { try { await fn(); } catch (e) { console.error(e); toast(msg); } rerender(); };
   $$("[data-cart]", app).forEach(b => b.onclick = () => { b.classList.toggle("on"); run(() => data.setInCart(b.dataset.cart, b.getAttribute("aria-pressed") !== "true")); });
   $$("[data-extra]", app).forEach(b => b.onclick = () => { b.classList.toggle("on"); run(() => data.setExtraInCart(b.dataset.extra, b.getAttribute("aria-pressed") !== "true")); });
@@ -204,6 +206,8 @@ async function editIngredient(it, pantry, order, done) {
 }
 
 // ---------- Tidy up: review suggested duplicate groups, merge the ones you keep ----------
+// Settings → Tidy up opens the same sheet.
+export function openTidy(pantry, done) { return tidySheet(pantry, done); }
 function tidySheet(pantry, done) {
   const groups = suggestGroups(pantry);
   const off = new Set();                      // "g:i" member keys you excluded

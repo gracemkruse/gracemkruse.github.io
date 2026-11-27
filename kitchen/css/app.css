@@ -213,7 +213,26 @@ input.t-item, textarea.t-item, .field textarea.t-instr { font-size: 16px; line-h
 .week { max-width: 720px; margin: 0 auto; }
 .weeknav { display: flex; justify-content: space-between; align-items: center; height: 24px; margin-bottom: var(--s12); }
 .title-row { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s16); }
-.title-row .page-title { margin-bottom: var(--s8); }
+.title-row .page-title { margin-bottom: var(--s8); min-width: 0; }
+
+/* Your initial, top right of Recipes / This Week / Shopping List → account menu */
+.account-btn { flex: none; align-self: center; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--ink); background: var(--white);
+  color: var(--ink); display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+.head-right { display: inline-flex; align-items: center; gap: var(--s16); }   /* Recipes: initial sits after the view switch so the title keeps its width */
+.account-wrap { position: fixed; inset: 0; z-index: 30; }
+.account-scrim { position: absolute; inset: 0; background: var(--ink); opacity: 0.2; }
+.account-menu { position: fixed; width: 248px; background: var(--white); border: 1px solid var(--line); padding: var(--s16) var(--s20) var(--s4); }
+.account-who { padding-bottom: var(--s8); }
+.account-menu a, .account-menu button { display: block; width: 100%; text-align: left; padding: var(--s12) 0; border-top: 1px solid var(--line); color: var(--ink); }
+.account-menu button.grey { color: var(--grey); }
+
+/* Settings and Archived recipes */
+.settings .back { margin-bottom: var(--s16); }
+.set-head { margin: var(--s32) 0 var(--s4); font-weight: 400; }
+.set-row { display: flex; align-items: center; gap: var(--s12); padding: var(--s12) 0; border-bottom: 1px solid var(--line); color: var(--ink); cursor: pointer; }
+div.set-row { cursor: default; }
+.set-row .spacer { flex: 1; }
+.set-key { width: 88px; flex: none; }
 .day { display: grid; grid-template-columns: 36px 1fr; border-bottom: 1px solid var(--line); }
 .day .date { writing-mode: vertical-rl; transform: rotate(180deg); color: var(--grey); align-self: center; justify-self: start; padding: var(--s8) 0; position: relative; }
 .day.today .date { color: var(--chartreuse); }

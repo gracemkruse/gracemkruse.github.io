@@ -11,6 +11,7 @@ import { listView } from "./views/list.js";
 import { importView } from "./views/import.js";
 import { fillView } from "./views/fill.js";
 import { weekView } from "./views/week.js";
+import { settingsView, archivedView } from "./views/settings.js";
 
 const routes = [
   { re: /^#\/login$/, view: (p, app) => loginView(app), public: true, tab: null },
@@ -22,6 +23,9 @@ const routes = [
   { re: /^#\/recipe\/([^/]+)\/edit$/, view: ([id], app) => editView(id, app), tab: "recipes" },
   { re: /^#\/recipe\/([^/]+)$/, view: ([id], app) => detailView(id, app), tab: "recipes" },
   { re: /^#\/week(?:\?w=(\d{4}-\d{2}-\d{2}))?$/, view: ([w], app) => weekView(app, w), tab: "week" },
+  // Settings is a page, not a tab: the tab bar shows with nothing selected.
+  { re: /^#\/settings$/, view: (p, app) => settingsView(app), tab: "settings" },
+  { re: /^#\/archived$/, view: (p, app) => archivedView(app), tab: "settings" },
   // Shopping list (Full list · Shopping) and Pantry. Old ?tab=week links land on Full list.
   { re: /^#\/list(?:\?(?:tab=(week|pantry)|mode=(shop)))?$/, view: ([tab, mode], app) => listView(app, tab === "pantry" ? "pantry" : "list", mode === "shop" ? "shop" : "full"), tab: "list" },
 ];
