@@ -18,7 +18,6 @@ export async function listView(app, tab = "buy") {
   const d = await data.shoppingData(iso(start), iso(end));
   const order = d.categories.map(c => c.name);
   const toBuy = d.week.filter(i => i.stock_status !== "in_stock" || i.in_cart);
-  const openCount = toBuy.filter(i => !i.in_cart).length + d.extras.filter(x => !x.in_cart).length;
   const rerender = () => listView(app, tab);
 
   const qty = i => i.amounts.map(a => amount(a.amount, a.unit)).filter(Boolean).join(" + ");
@@ -90,8 +89,8 @@ export async function listView(app, tab = "buy") {
   app.innerHTML = `
     <section class="list">
       <h1 class="t-page page-title">Shopping List</h1>
-      <div class="t-label grey">${tab === "buy" ? `${openCount} to buy · ` : ""}Meals ${esc(monthDay(start))} — ${esc(monthDay(end))}</div>
       <nav class="list-tabs">${TABS.map(([k, l]) => `<a class="t-label${k === tab ? " active" : ""}" href="#/list${k === "buy" ? "" : "?tab=" + k}">${l}</a>`).join("")}</nav>
+      ${tab === "pantry" ? "" : `<div class="t-label grey list-sub">Ingredients for meals ${esc(monthDay(start))} — ${esc(monthDay(end))}</div>`}
       ${body}
     </section>`;
 

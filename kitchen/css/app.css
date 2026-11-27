@@ -257,6 +257,7 @@ input.t-item, textarea.t-item, .field textarea.t-instr { font-size: 16px; line-h
 .list-tabs a::after { content: ""; width: 6px; height: 6px; border-radius: 50%; }
 .list-tabs a.active { color: var(--ink); }
 .list-tabs a.active::after { background: var(--chartreuse-bright); }
+.list-sub { margin: var(--s8) 0 var(--s8); }   /* the meal dates belong to To buy / Week, not the page */
 .add-item { margin-bottom: var(--s8); }
 .group { display: grid; grid-template-columns: 36px 1fr; border-bottom: 1px solid var(--line); }
 .group .cat { writing-mode: vertical-rl; transform: rotate(180deg); display: flex; align-items: center; gap: var(--s8); color: var(--grey);
