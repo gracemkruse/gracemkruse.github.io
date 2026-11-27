@@ -24,7 +24,7 @@ export async function settingsView(app) {
   const now = new Date();
   const people = invites.map(i => {
     const used = !!i.used_by, expired = !used && new Date(i.expires_at) < now;
-    const right = used ? `<button class="btn-text t-label" type="button" data-copy="${esc(i.code)}">Give my recipes</button><span class="t-label green">Joined</span>`
+    const right = used ? `${i.with_library ? "" : `<button class="btn-text t-label" type="button" data-copy="${esc(i.code)}">Give my recipes</button>`}<span class="t-label green">Joined</span>`
       : expired ? `<span class="t-label grey">Expired</span>`
       : `<button class="btn-text t-label" type="button" data-share="${esc(i.code)}">Share link</button><span class="t-label grey">Invite sent</span>`;
     return `<div class="set-row"><span class="t-item">${esc(i.name || "Someone")}</span><span class="spacer"></span>${right}</div>`;
@@ -130,12 +130,21 @@ function inviteSheet(done) {
     <form class="edit-field">
       <p class="t-instr">They get a link to join with their own recipes. Each link works once and lasts 14 days.</p>
       <label class="input-line"><input class="t-item" name="n" placeholder="Their name (optional)"></label>
+      <button class="check-row" type="button" data-opt="library" aria-pressed="false"><span class="box"></span><span class="t-item">Give them a copy of my recipes</span></button>
+      <button class="check-row" type="button" data-opt="meals" aria-pressed="false" hidden><span class="box"></span><span class="t-item">Include meal plans</span></button>
+      <p class="t-instr grey" data-opt-note hidden>They start with your recipes, ingredients and photos instead of the starter recipes. Their own copy.</p>
       <p class="error t-label" aria-live="assertive"></p>
       <button class="btn-primary t-label" type="submit">Share invite link</button>
       <button class="btn-text t-label" type="button" data-copylink>Copy link</button>
     </form>`, "Invite someone");
-  let code = null;
-  const make = async () => (code ||= await data.createInvite(el.querySelector("input").value));
+  let code = null; const opts = { library: false, meals: false };
+  el.querySelectorAll("[data-opt]").forEach(b => b.onclick = () => {
+    opts[b.dataset.opt] = !opts[b.dataset.opt]; b.setAttribute("aria-pressed", opts[b.dataset.opt]);
+    b.querySelector(".box").innerHTML = opts[b.dataset.opt] ? icon("check", true) : "";
+    if (b.dataset.opt === "library") { el.querySelector('[data-opt="meals"]').hidden = !opts.library; el.querySelector("[data-opt-note]").hidden = !opts.library; if (!opts.library) opts.meals = false; }
+    code = null;   // options changed: make a fresh link
+  });
+  const make = async () => (code ||= await data.createInvite(el.querySelector("input").value, opts));
   el.querySelector("form").onsubmit = async e => { e.preventDefault(); try { await shareLink(joinLink(await make())); close(); done(); } catch (ex) { el.querySelector(".error").textContent = ex.message; } };
   el.querySelector("[data-copylink]").onclick = async () => { try { const url = joinLink(await make()); await navigator.clipboard.writeText(url); toast("Invite link copied."); close(); done(); } catch (ex) { el.querySelector(".error").textContent = ex.message; } };
 }

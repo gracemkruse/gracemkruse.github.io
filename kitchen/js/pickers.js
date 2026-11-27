@@ -23,7 +23,7 @@ export function chooseDay(heading, current = null) {
 export async function pickDay(recipe) {
   const day = await chooseDay(`Add “<span class="recipe-name">${esc(niceTitle(recipe.title))}</span>” to…`);
   if (!day) return null;
-  try { await data.addToWeek(recipe.id, day.date); toast(`Added to ${day.label}.`); return day.date; }
+  try { await data.addToWeek(recipe.id, day.date); toast(`Added to ${day.label}.`); window.dispatchEvent(new Event("kitchen:planned")); return day.date; }
   catch (err) { console.error(err); toast("Couldn’t add — try again."); return null; }
 }
 

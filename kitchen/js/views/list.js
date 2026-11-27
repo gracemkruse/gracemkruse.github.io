@@ -111,12 +111,13 @@ export async function listView(app, tab = "list", mode = "full") {
 
   wireAccount(app);
   const run = async (fn, msg = "Couldn’t update — try again.") => { try { await fn(); } catch (e) { console.error(e); toast(msg); } rerender(); };
-  $$("[data-cart]", app).forEach(b => b.onclick = () => { b.classList.toggle("on"); run(() => data.setInCart(b.dataset.cart, b.getAttribute("aria-pressed") !== "true")); });
-  $$("[data-extra]", app).forEach(b => b.onclick = () => { b.classList.toggle("on"); run(() => data.setExtraInCart(b.dataset.extra, b.getAttribute("aria-pressed") !== "true")); });
+  const tick = () => window.dispatchEvent(new Event("kitchen:cart"));   // the tour waits for this
+  $$("[data-cart]", app).forEach(b => b.onclick = () => { b.classList.toggle("on"); run(() => data.setInCart(b.dataset.cart, b.getAttribute("aria-pressed") !== "true")).then(tick); });
+  $$("[data-extra]", app).forEach(b => b.onclick = () => { b.classList.toggle("on"); run(() => data.setExtraInCart(b.dataset.extra, b.getAttribute("aria-pressed") !== "true")).then(tick); });
   $$("[data-rm]", app).forEach(b => b.onclick = () => run(() => data.removeExtra(b.dataset.rm)));
   // status: tap → pick one of the four in place
   $$("[data-status]", app).forEach(b => b.onclick = async () => { const next = await pickStatus(b, b.dataset.now, { skip: b.hasAttribute("data-skip") }); if (!next) return;
-    run(() => next === "skip" ? data.setSkip(b.dataset.status, iso(end)) : data.setStock(b.dataset.status, next)); });
+    run(() => next === "skip" ? data.setSkip(b.dataset.status, iso(end)) : data.setStock(b.dataset.status, next)).then(() => window.dispatchEvent(new Event("kitchen:status"))); });
   // quantity: tap → which recipes need it, and how much each
   $$("[data-qty]", app).forEach(b => b.onclick = () => {
     const it = d.week.find(i => String(i.ingredient_id) === b.dataset.qty); if (!it) return;
