@@ -2,6 +2,7 @@ import * as data from "../data.js";
 import { icon, tagIcon, densityGlyph } from "../icons.js";
 import { esc, $, $$, minutes, photoStyle, pref, niceTitle, sheet, duration } from "../ui.js";
 import { pickDay } from "../pickers.js";
+import { accountButton, wireAccount } from "../account.js";
 
 // Gallery state survives navigation within the session.
 const state = { tag: "All", q: "", searching: false };
@@ -26,9 +27,11 @@ export async function galleryView(app) {
         <section class="gallery-main">
           <div class="gallery-head">
             <span class="t-label grey">Kitchen — ${shown.length}</span>
-            <div class="view-switch" role="group" aria-label="Recipes per row">
-              ${[1, 2, 4].map(n => `<button data-view="${n}" aria-pressed="${n === view}" aria-label="${n} per row">${densityGlyph(n, n === view)}</button>`).join("")}
-            </div>
+            <span class="head-right">
+              <span class="view-switch" role="group" aria-label="Recipes per row">
+                ${[1, 2, 4].map(n => `<button data-view="${n}" aria-pressed="${n === view}" aria-label="${n} per row">${densityGlyph(n, n === view)}</button>`).join("")}
+              </span>${accountButton()}
+            </span>
           </div>
           <div class="gallery-title"><h1 class="t-page page-title">${esc(title)}</h1><a class="btn-primary btn-small t-label" href="#/add" aria-label="Add recipe">${icon("plus", true)}<span>Add<span class="wide-only"> recipe</span></span></a></div>
           ${state.searching ? `<label class="input-line search-line">${icon("search", false, "grey")}<input class="t-item" type="search" placeholder="Search ${recipes.length} recipes" value="${esc(state.q)}"></label>` : ""}
@@ -37,6 +40,7 @@ export async function galleryView(app) {
         </section>
       </div>`;
 
+    wireAccount(app);
     $$(".tag-v", app).forEach(b => b.onclick = () => { state.tag = b.dataset.tag; paint(); });
     $$(".tile-more", app).forEach(b => b.onclick = () => more(recipes.find(x => x.id === b.dataset.id)));
     $$(".view-switch button", app).forEach(b => b.onclick = () => { view = Number(b.dataset.view); pref.set("view", String(view)); paint(); });

@@ -1,4 +1,5 @@
 import * as data from "../data.js";
+import { accountButton, wireAccount } from "../account.js";
 import { icon, tagIcon } from "../icons.js";
 import { pickRecipe, chooseDay } from "../pickers.js";
 import { esc, $, $$, toast, sheet, minutes, iso, fromIso, addDays, weekStart, dayLabel, rangeLabel, monthDay, niceTitle } from "../ui.js";
@@ -47,7 +48,7 @@ export async function weekView(app, startIso) {
         <a class="grey" href="#/week?w=${iso(addDays(start, 7))}" aria-label="Next week">${icon("open")}</a>
       </div>
       <div class="title-row">
-        <h1 class="t-page page-title">${esc(title)}</h1>
+        <h1 class="t-page page-title">${esc(title)}</h1>${accountButton()}
       </div>
       <div class="t-label grey">${esc(summary)}</div>
       <hr class="rule ink" style="margin-top:24px">
@@ -65,6 +66,7 @@ export async function weekView(app, startIso) {
       ${offset !== 0 ? `<div class="week-foot"><a class="btn-text grey t-label" href="#/week">Back to this week</a></div>` : ""}
     </section>`;
 
+  wireAccount(app);
   const rerender = () => weekView(app, iso(start));
   $$("[data-toggle]", app).forEach(b => b.onclick = async () => {
     const m = items.find(x => x.id === b.dataset.toggle);

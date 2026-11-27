@@ -37,6 +37,37 @@ export async function signOut() {
   await sb.auth.signOut();
 }
 
+// Who's signed in: { email, name }. The name comes with accounts (profiles); until then it's empty.
+export async function me() {
+  if (isDemo) return { email: "demo@kitchen", name: "" };
+  const { data } = await sb.auth.getSession(); const u = data.session?.user;
+  return { email: u?.email || "", name: u?.user_metadata?.name || "" };
+}
+
+// ---------------- Archived recipes (Settings) ----------------
+export async function listArchived() {
+  if (isDemo) return demo().recipes.filter(r => r.archived_at).map(r => ({ id: r.id, title: r.title, archived_at: r.archived_at })).sort(byTitle);
+  const { data, error } = await sb.from("recipes").select("id,title,archived_at").not("archived_at", "is", null).order("title");
+  if (error) throw error; return data;
+}
+export async function restoreRecipe(id) {
+  if (isDemo) { const db = demo(); const r = db.recipes.find(x => x.id === id); if (r) r.archived_at = null; saveDemo(db); return; }
+  const { error } = await sb.from("recipes").update({ archived_at: null }).eq("id", id); if (error) throw error;
+}
+
+// Download my recipes: everything, as one JSON file (your own backup).
+export async function exportRecipes() {
+  if (isDemo) return { format: "kitchen-export-v1", exported_at: new Date().toISOString(), recipes: demo().recipes };
+  const { data, error } = await sb.from("recipes")
+    .select("id,title,image_url,servings,total_minutes,steps,notes,source_url,source_notes,archived_at,created_at,recipe_tags(tags(name)),recipe_ingredients(amount,unit,prep,position,ingredients(name))")
+    .order("title");
+  if (error) throw error;
+  const recipes = data.map(({ recipe_tags, recipe_ingredients, ...r }) => ({ ...r,
+    tags: (recipe_tags || []).map(x => x.tags?.name).filter(Boolean),
+    ingredients: (recipe_ingredients || []).sort((a, b) => a.position - b.position).map(x => ({ amount: x.amount, unit: x.unit, name: x.ingredients?.name || "", prep: x.prep })) }));
+  return { format: "kitchen-export-v1", exported_at: new Date().toISOString(), recipes };
+}
+
 // ---------------- Recipes ----------------
 // Recipe shape used by the views:
 // { id, title, image_url, servings, total_minutes, steps: [], notes, source_url, source_notes,
