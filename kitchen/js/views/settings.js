@@ -23,7 +23,6 @@ export async function settingsView(app) {
       <div class="set-row"><span class="t-label grey set-key">Email</span><span class="t-item">${esc(m.email || "—")}</span></div>
 
       <h2 class="t-label grey set-head">Ingredients</h2>
-      ${row("All ingredients", "#/list?tab=pantry", { text: "Rename · category" })}
       ${row("Tidy up", "", dupes ? { text: `${dupes} to review`, cls: "green" } : "", "data-tidy")}
 
       <h2 class="t-label grey set-head">Recipes</h2>
