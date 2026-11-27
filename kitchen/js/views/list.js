@@ -4,27 +4,31 @@ import { suggestGroups, titleCase } from "../ingredients.js";
 import { esc, $, $$, toast, sheet, amount, iso, addDays, weekStart, monthDay, fromIso, dayLabel, niceTitle } from "../ui.js";
 import { pickStatus } from "../pickers.js";
 
-// Shopping List: To buy / Week / Pantry (mirrors the Notion Grocery views).
-//   To buy — ingredients for upcoming meals that aren't in stock, plus hand-added items. Check off → In the cart → Done shopping.
-//   Week   — every ingredient the upcoming meals need, with its stock status (tap to change).
+// Shopping List: two tabs.
+//   Shopping list — one list with two modes:
+//     Full list — every ingredient the upcoming meals need, with its status (In stock · Low · Out · Skip). Opens here.
+//     Shopping  — what's Low or Out (not skipped) plus hand-added items. Tick → In the cart → Done shopping (always on screen).
 //   Pantry — every ingredient you've ever used: status, search, filter, category.
-const TABS = [["buy", "To buy"], ["week", "Week"], ["pantry", "Pantry"]];
-const STATUS = { in_stock: ["In stock", "green"], low: ["Low", "grey"], out: ["Out", "clay"], not_tracked: ["Not tracked", "grey"] };
+const TABS = [["list", "Shopping list"], ["pantry", "Pantry"]];
+const STATUS = { in_stock: ["In stock", "green"], low: ["Low", "grey"], out: ["Out", "clay"], skip: ["Skip", "grey"] };
 let pantryQuery = "", pantryFilter = "all";
 
-export async function listView(app, tab = "buy") {
+export async function listView(app, tab = "list", mode = "full") {
   // Upcoming meals: today through the end of next week (so weekend shopping covers next week's plan).
   const start = new Date(), end = addDays(weekStart(), 13);
   const d = await data.shoppingData(iso(start), iso(end));
   const order = d.categories.map(c => c.name);
-  const toBuy = d.week.filter(i => i.stock_status !== "in_stock" || i.in_cart);
-  const rerender = () => listView(app, tab);
+  const today = iso(new Date());
+  const skipped = i => !!i.skip_until && i.skip_until >= today;
+  const toBuy = d.week.filter(i => (i.stock_status !== "in_stock" && !skipped(i)) || i.in_cart);
+  const rerender = () => listView(app, tab, mode);
 
   const qty = i => i.amounts.map(a => amount(a.amount, a.unit)).filter(Boolean).join(" + ");
   const flag = s => s === "out" ? `<span class="t-label clay">Out</span>` : s === "low" ? `<span class="t-label grey">Low</span>` : "";
   const qtyBtn = i => i.lines?.length ? `<button class="qty t-label grey" data-qty="${esc(i.ingredient_id)}" aria-label="${esc(i.name)}: ${esc(qty(i))}. See amounts by recipe">${esc(qty(i) || `${i.lines.length} recipe${i.lines.length > 1 ? "s" : ""}`)}</button>` : "";
-  const statusBtn = i => { const [label, cls] = STATUS[i.stock_status] || STATUS.not_tracked;
-    return `<button class="status t-label ${cls}" data-status="${esc(i.ingredient_id)}" data-now="${esc(i.stock_status)}" aria-label="${esc(i.name)}: ${label}. Tap to change">${label}</button>`; };
+  // status word; tap → pick in place. Skip only applies to this week's list.
+  const statusBtn = (i, withSkip) => { const now = withSkip && skipped(i) ? "skip" : (STATUS[i.stock_status] ? i.stock_status : "out"); const [label, cls] = STATUS[now];
+    return `<button class="status t-label ${cls}" data-status="${esc(i.ingredient_id)}" data-now="${now}"${withSkip ? " data-skip" : ""} aria-label="${esc(i.name)}: ${label}. Tap to change">${label}</button>`; };
   const box = (on, attr) => `<button class="box${on ? " on" : ""}" ${attr} aria-pressed="${on}" aria-label="${on ? "In the cart — tap to undo" : "Got it"}">${on ? icon("check", true) : ""}</button>`;
 
   // Rows grouped under vertical category labels, in store order.
@@ -39,42 +43,49 @@ export async function listView(app, tab = "buy") {
   };
 
   let body = "";
-  if (tab === "buy") {
+  const rowExtra = x => `<div class="srow${x.in_cart ? " done" : ""}">
+      ${mode === "shop" ? box(x.in_cart, `data-extra="${esc(x.id)}"`) : ""}
+      ${icon(ingredientIcon(x.name, x.category), false, "ing")}
+      <span class="name t-item">${esc(x.name)}</span><span class="spacer"></span>
+      <button class="rm grey" data-rm="${esc(x.id)}" aria-label="Remove ${esc(x.name)}">${icon("close", true)}</button>
+    </div>`;
+  const addForm = `<form class="add-item input-line" autocomplete="off">${icon("plus", false, "green")}<input class="t-item" name="item" placeholder="Add an item" aria-label="Add an item"></form>`;
+  if (tab === "list" && mode === "shop") {
     const rowIng = i => `<div class="srow${i.in_cart ? " done" : ""}">
         ${box(i.in_cart, `data-cart="${esc(i.ingredient_id)}"`)}
         ${icon(ingredientIcon(i.name, i.category), false, "ing")}
         <span class="name t-item">${esc(i.name)}</span>${i.in_cart ? "" : flag(i.stock_status)}
         <span class="spacer"></span>${qtyBtn(i)}
       </div>`;
-    const rowExtra = x => `<div class="srow${x.in_cart ? " done" : ""}">
-        ${box(x.in_cart, `data-extra="${esc(x.id)}"`)}
-        ${icon(ingredientIcon(x.name, x.category), false, "ing")}
-        <span class="name t-item">${esc(x.name)}</span><span class="spacer"></span>
-        <button class="rm grey" data-rm="${esc(x.id)}" aria-label="Remove ${esc(x.name)}">${icon("close", true)}</button>
-      </div>`;
     const open = [...toBuy.filter(i => !i.in_cart).map(i => ({ ...i, row: rowIng })), ...d.extras.filter(x => !x.in_cart).map(x => ({ ...x, row: rowExtra }))];
     const cart = [...toBuy.filter(i => i.in_cart).map(i => ({ ...i, row: rowIng })), ...d.extras.filter(x => x.in_cart).map(x => ({ ...x, row: rowExtra }))];
     body = `
-      <form class="add-item input-line" autocomplete="off">${icon("plus", false, "green")}<input class="t-item" name="item" placeholder="Add an item" aria-label="Add an item"></form>
+      ${addForm}
       ${open.length ? groups(open, x => x.row(x)) : `<p class="t-item grey list-empty">${cart.length ? "Everything’s in the cart." : "Nothing to buy. Plan meals in This Week, or add an item above."}</p>`}
       ${cart.length ? `
         <div class="cart-head t-label">In the cart · ${cart.length}</div>
-        <div class="cart">${cart.map(x => x.row(x)).join("")}</div>
-        <div class="list-foot"><button class="btn-primary t-label" data-finish>${icon("check", true)} Done shopping</button></div>` : ""}`;
-  } else if (tab === "week") {
-    const rowWeek = i => `<div class="srow">
+        <div class="cart">${cart.map(x => x.row(x)).join("")}</div>` : ""}
+      <div class="done-bar">
+        <button class="btn-primary t-label" data-finish>${icon("check", true)} Done shopping</button>
+        <p class="t-instr grey">Marks everything in your cart as In stock.</p>
+      </div>`;
+  } else if (tab === "list") {
+    const rowWeek = i => `<div class="srow${skipped(i) ? " skipped" : ""}">
         ${icon(ingredientIcon(i.name, i.category), false, "ing")}
         <span class="name t-item" title="${esc(i.recipes.join(", "))}">${esc(i.name)}</span>
-        ${qtyBtn(i)}<span class="spacer"></span>${statusBtn(i)}
+        ${qtyBtn(i)}<span class="spacer"></span>${statusBtn(i, true)}
       </div>`;
-    body = d.week.length ? groups(d.week, rowWeek) : `<p class="t-item grey list-empty">No meals planned between now and the end of next week. <a class="green" href="#/week">Plan some</a>.</p>`;
+    const items = [...d.week.map(i => ({ ...i, row: rowWeek })), ...d.extras.map(x => ({ ...x, row: rowExtra }))];
+    body = `
+      ${addForm}
+      ${items.length ? groups(items, x => x.row(x)) : `<p class="t-item grey list-empty">No meals planned between now and the end of next week. <a class="green" href="#/week">Plan some</a>, or add an item above.</p>`}`;
   } else {
     const q = pantryQuery.trim().toLowerCase();
     const shown = d.pantry.filter(i => (!q || i.name.toLowerCase().includes(q)) && (pantryFilter === "all" || i.stock_status === pantryFilter));
     const rowPantry = i => `<div class="srow">
         ${icon(ingredientIcon(i.name, i.category), false, "ing")}
         <button class="name t-item" data-ing="${esc(i.ingredient_id)}" aria-label="Edit ${esc(i.name)}">${esc(i.name)}</button>
-        <span class="spacer"></span>${statusBtn(i)}
+        <span class="spacer"></span>${statusBtn(i, false)}
       </div>`;
     const count = s => d.pantry.filter(i => i.stock_status === s).length;
     const dupes = suggestGroups(d.pantry).length;
@@ -89,8 +100,11 @@ export async function listView(app, tab = "buy") {
   app.innerHTML = `
     <section class="list">
       <h1 class="t-page page-title">Shopping List</h1>
-      <nav class="list-tabs">${TABS.map(([k, l]) => `<a class="t-label${k === tab ? " active" : ""}" href="#/list${k === "buy" ? "" : "?tab=" + k}">${l}</a>`).join("")}</nav>
-      ${tab === "pantry" ? "" : `<div class="t-label grey list-sub">Ingredients for meals ${esc(monthDay(start))} — ${esc(monthDay(end))}</div>`}
+      <nav class="list-tabs">${TABS.map(([k, l]) => `<a class="t-label${k === tab ? " active" : ""}" href="#/list${k === "list" ? "" : "?tab=" + k}">${l}</a>`).join("")}</nav>
+      ${tab === "pantry" ? "" : `
+        <nav class="chips list-mode" aria-label="List mode">${[["full", "Full list", "#/list"], ["shop", "Shopping", "#/list?mode=shop"]]
+          .map(([k, l, h]) => `<a class="chip t-label" href="${h}" aria-pressed="${mode === k}">${l}</a>`).join("")}</nav>
+        <div class="t-label grey list-sub">Ingredients for meals ${esc(monthDay(start))} — ${esc(monthDay(end))}</div>`}
       ${body}
     </section>`;
 
@@ -99,7 +113,8 @@ export async function listView(app, tab = "buy") {
   $$("[data-extra]", app).forEach(b => b.onclick = () => { b.classList.toggle("on"); run(() => data.setExtraInCart(b.dataset.extra, b.getAttribute("aria-pressed") !== "true")); });
   $$("[data-rm]", app).forEach(b => b.onclick = () => run(() => data.removeExtra(b.dataset.rm)));
   // status: tap → pick one of the four in place
-  $$("[data-status]", app).forEach(b => b.onclick = async () => { const next = await pickStatus(b, b.dataset.now); if (next) run(() => data.setStock(b.dataset.status, next)); });
+  $$("[data-status]", app).forEach(b => b.onclick = async () => { const next = await pickStatus(b, b.dataset.now, { skip: b.hasAttribute("data-skip") }); if (!next) return;
+    run(() => next === "skip" ? data.setSkip(b.dataset.status, iso(end)) : data.setStock(b.dataset.status, next)); });
   // quantity: tap → which recipes need it, and how much each
   $$("[data-qty]", app).forEach(b => b.onclick = () => {
     const it = d.week.find(i => String(i.ingredient_id) === b.dataset.qty); if (!it) return;
@@ -113,10 +128,10 @@ export async function listView(app, tab = "buy") {
       <div class="qty-total"><span class="t-label">Total</span><span class="t-item">${esc(qty(it) || "—")}</span></div>`, `${it.name}: amounts by recipe`);
   });
   const finish = $("[data-finish]", app);
-  if (finish) finish.onclick = () => run(async () => {
+  if (finish) finish.onclick = () => { if (!toBuy.some(i => i.in_cart) && !d.extras.some(x => x.in_cart)) { toast("Nothing in the cart yet. Tick things as they go in."); return; } run(async () => {
     const ids = toBuy.filter(i => i.in_cart).map(i => i.ingredient_id);
     await data.finishShopping(ids); toast(ids.length ? `${ids.length} marked in stock.` : "Cart cleared.");
-  });
+  }); };
   const add = $(".add-item", app);
   if (add) add.onsubmit = e => { e.preventDefault(); const name = add.item.value.trim(); if (!name) return;
     run(async () => { await data.addExtra(name); requestAnimationFrame(() => $(".add-item input", app)?.focus()); }, "Couldn’t add — try again."); };

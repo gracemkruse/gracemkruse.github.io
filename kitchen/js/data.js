@@ -388,30 +388,30 @@ export async function shoppingData(start, end) {
   const ids = [...new Set(meals.map(m => m.recipe.id))];
   let lines = [];
   if (ids.length) {
-    const { data, error } = await sb.from("recipe_ingredients").select("recipe_id,amount,unit,ingredients(id,name,stock_status,category_id,in_cart)").in("recipe_id", ids);
+    const { data, error } = await sb.from("recipe_ingredients").select("recipe_id,amount,unit,ingredients(id,name,stock_status,skip_until,category_id,in_cart)").in("recipe_id", ids);
     if (error) throw error; lines = data;
   }
-  const ingAll = await fetchAll(() => sb.from("ingredients").select("id,name,stock_status,category_id,in_cart").order("name").order("id"));
+  const ingAll = await fetchAll(() => sb.from("ingredients").select("id,name,stock_status,skip_until,category_id,in_cart").order("name").order("id"));
   // give uncategorized ingredients a best-guess category (once)
   const missing = ingAll.filter(i => !i.category_id);
   for (const i of missing) { i.category_id = catId[guessCategory(i.name)]; await sb.from("ingredients").update({ category_id: i.category_id }).eq("id", i.id); }
   const ingById = Object.fromEntries(ingAll.map(i => [i.id, i]));
   const titleById = Object.fromEntries(meals.map(m => [m.recipe.id, m.recipe.title]));
   // one row per planned meal, so a recipe planned twice counts twice and each line knows its day
-  const rows = lines.flatMap(l => { const i = ingById[l.ingredients?.id]; if (!i) return []; return meals.filter(m => m.recipe.id === l.recipe_id).map(m => ({ key: i.id, name: i.name, amount: l.amount, unit: l.unit, recipe: titleById[l.recipe_id], date: m.date, stock_status: i.stock_status, in_cart: i.in_cart, category: catName[i.category_id] || "Pantry" })); });
+  const rows = lines.flatMap(l => { const i = ingById[l.ingredients?.id]; if (!i) return []; return meals.filter(m => m.recipe.id === l.recipe_id).map(m => ({ key: i.id, name: i.name, amount: l.amount, unit: l.unit, recipe: titleById[l.recipe_id], date: m.date, stock_status: i.stock_status, skip_until: i.skip_until, in_cart: i.in_cart, category: catName[i.category_id] || "Pantry" })); });
   const { data: extras, error: e3 } = await sb.from("shopping_extras").select("id,name,category_id,in_cart").order("created_at"); if (e3) throw e3;
   return {
     categories,
     week: collect(rows),
     extras: extras.map(x => ({ id: x.id, name: x.name, in_cart: x.in_cart, category: catName[x.category_id] || "Household" })),
-    pantry: ingAll.map(i => ({ ingredient_id: i.id, name: i.name, stock_status: i.stock_status, in_cart: i.in_cart, category: catName[i.category_id] || "Pantry" })),
+    pantry: ingAll.map(i => ({ ingredient_id: i.id, name: i.name, stock_status: i.stock_status, skip_until: i.skip_until, in_cart: i.in_cart, category: catName[i.category_id] || "Pantry" })),
   };
 }
 // merge lines for the same ingredient; sum amounts that share a unit
 function collect(rows) {
   const by = new Map();
   for (const r of rows) {
-    const it = by.get(r.key) || { ingredient_id: r.key, name: r.name, category: r.category, stock_status: r.stock_status, in_cart: !!r.in_cart, amounts: [], recipes: [], lines: [] };
+    const it = by.get(r.key) || { ingredient_id: r.key, name: r.name, category: r.category, stock_status: r.stock_status, skip_until: r.skip_until || null, in_cart: !!r.in_cart, amounts: [], recipes: [], lines: [] };
     it.lines.push({ recipe: r.recipe, date: r.date, amount: r.amount ?? null, unit: r.unit || null });   // for the per-recipe breakdown
     const u = (r.unit || "").trim().toLowerCase(); const a = it.amounts.find(x => (x.unit || "").toLowerCase() === u);
     if (a) a.amount = a.amount == null || r.amount == null ? null : a.amount + r.amount; else it.amounts.push({ amount: r.amount ?? null, unit: r.unit || null });
@@ -420,7 +420,7 @@ function collect(rows) {
   }
   return [...by.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
-const pick = v => (v ? { stock_status: v.stock_status, in_cart: v.in_cart, category: v.category } : { stock_status: "not_tracked", in_cart: false, category: "Pantry" });
+const pick = v => (v ? { stock_status: v.stock_status, skip_until: v.skip_until || null, in_cart: v.in_cart, category: v.category } : { stock_status: "out", in_cart: false, category: "Pantry" });
 
 async function ensureCategories() {
   let { data, error } = await sb.from("categories").select("id,name,icon,sort").order("sort");
@@ -432,8 +432,13 @@ async function ensureCategories() {
 }
 
 export async function setStock(ingredientId, status) {
-  if (isDemo) { const db = demo(); demoPantry(db)[ingredientId].stock_status = status; saveDemo(db); return; }
-  const { error } = await sb.from("ingredients").update({ stock_status: status }).eq("id", ingredientId); if (error) throw error;
+  if (isDemo) { const db = demo(), p = demoPantry(db)[ingredientId]; p.stock_status = status; p.skip_until = null; saveDemo(db); return; }
+  const { error } = await sb.from("ingredients").update({ stock_status: status, skip_until: null }).eq("id", ingredientId); if (error) throw error;
+}
+// Skip: "not buying it this week". Off the Shopping list until `until` (the end of the list's window), then back by itself.
+export async function setSkip(ingredientId, until) {
+  if (isDemo) { const db = demo(); demoPantry(db)[ingredientId].skip_until = until; saveDemo(db); return; }
+  const { error } = await sb.from("ingredients").update({ skip_until: until }).eq("id", ingredientId); if (error) throw error;
 }
 export async function setInCart(ingredientId, inCart) {
   if (isDemo) { const db = demo(); demoPantry(db)[ingredientId].in_cart = inCart; saveDemo(db); return; }
@@ -555,7 +560,7 @@ export async function deleteIngredient(id) {
 // Demo: one pantry entry per unique ingredient name, built from the recipes.
 function demoPantry(db) {
   db.pantry ||= {};
-  for (const r of db.recipes) for (const g of r.ingredients) { const k = norm(g.name); db.pantry[k] ||= { name: g.name, stock_status: g.stock_status || "not_tracked", category: guessCategory(g.name), in_cart: false }; }
+  for (const r of db.recipes) for (const g of r.ingredients) { const k = norm(g.name); db.pantry[k] ||= { name: g.name, stock_status: g.stock_status || "out", category: guessCategory(g.name), in_cart: false }; }
   return db.pantry;
 }
 
@@ -586,7 +591,7 @@ function clean(r) {
     notes: str(r.notes), source_url: str(r.source_url), source_notes: str(r.source_notes),
     tags: firstByNorm((r.tags || []).map(t => String(t).trim()).filter(Boolean)),
     ingredients: (r.ingredients || []).filter(g => String(g.name || "").trim())
-      .map(g => ({ amount: num(g.amount), unit: str(g.unit), name: String(g.name).trim(), prep: str(g.prep), stock_status: g.stock_status || "not_tracked" })),
+      .map(g => ({ amount: num(g.amount), unit: str(g.unit), name: String(g.name).trim(), prep: str(g.prep), stock_status: g.stock_status || "out" })),
   };
 }
 function safeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
@@ -614,7 +619,7 @@ function seedWeek() {
     .map(([recipe_id, n, status], i) => ({ id: "seed-" + i, recipe_id, date: day(n), status, created_at: at }));
 }
 
-const ing = (amount, unit, name, prep, stock_status = "not_tracked") => ({ amount, unit, name, prep, stock_status });
+const ing = (amount, unit, name, prep, stock_status = "out") => ({ amount, unit, name, prep, stock_status });
 const SEED = [
   { id: "pasta-e-fagioli", title: "Pasta e Fagioli", servings: 4, total_minutes: 45, tags: ["Soup", "Pasta", "Weeknight"], source_url: "https://cooking.nytimes.com", notes: "Double the garlic. Parmesan rind in the pot if we have one.",
     ingredients: [ing(2, "tbsp", "Olive oil", null, "in_stock"), ing(1, null, "Onion", "diced", "low"), ing(3, "cloves", "Garlic", "minced", "in_stock"), ing(1, "can", "White beans", "drained", "out"), ing(1, "cup", "Ditalini", null, "in_stock"), ing(4, "cups", "Stock", null, "low")],

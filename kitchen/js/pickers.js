@@ -53,13 +53,13 @@ export async function pickRecipe(date, label) {
 }
 
 // Tap a stock status → the four choices appear in place; tap one to set it. Resolves the new status, or null if cancelled.
-const STOCK = [["in_stock", "In stock"], ["low", "Low"], ["out", "Out"], ["not_tracked", "Not tracked"]];
-export function pickStatus(btn, current) {
+const STOCK = [["in_stock", "In stock"], ["low", "Low"], ["out", "Out"]];   // "Not tracked" retired; Skip is added where it applies
+export function pickStatus(btn, current, { skip = false } = {}) {
   return new Promise(resolve => {
     const row = btn.parentElement;
     const pick = document.createElement("span");
     pick.className = "status-pick"; pick.setAttribute("role", "group"); pick.setAttribute("aria-label", "Stock status");
-    pick.innerHTML = STOCK.map(([k, l]) => `<button class="t-label${k === "out" ? " clay" : k === "in_stock" ? " green" : ""}" data-s="${k}" aria-pressed="${k === current}">${l}</button>`).join("");
+    pick.innerHTML = (skip ? [...STOCK, ["skip", "Skip"]] : STOCK).map(([k, l]) => `<button class="t-label${k === "out" ? " clay" : k === "in_stock" ? " green" : ""}" data-s="${k}" aria-pressed="${k === current}">${l}</button>`).join("");
     row.appendChild(pick);
     pick.querySelector('[aria-pressed="true"]')?.focus();
     const done = v => { pick.remove(); document.removeEventListener("pointerdown", away, true); document.removeEventListener("keydown", key); resolve(v); };

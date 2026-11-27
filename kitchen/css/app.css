@@ -279,6 +279,13 @@ input.t-item, textarea.t-item, .field textarea.t-instr { font-size: 16px; line-h
 .cart .srow { border-bottom: 1px solid var(--line); }
 .cart .srow + .srow { border-top: 0; }
 .list-foot { margin: var(--s24) 0 var(--s32); }
+.list-mode { margin-top: var(--s16); }   /* Full list · Shopping: same look as the Pantry filters */
+.srow.skipped .name { color: var(--grey); }
+/* Done shopping stays on screen in Shopping mode, above the tab bar (on top of a long cart) */
+.done-bar { position: sticky; bottom: var(--tabbar); z-index: 5; background: var(--white); border-top: 1px solid var(--line);
+  margin-top: var(--s24); padding: var(--s12) 0 var(--s8); display: flex; flex-direction: column; gap: var(--s8); text-align: center; }
+.done-bar .btn-primary { width: 100%; }
+@media (min-width: 900px) { .done-bar { bottom: 0; } }
 .list-empty { padding: var(--s32) 0; }
 .filters { margin: var(--s12) 0 var(--s8); }
 .cat-pick { display: flex; align-items: center; gap: var(--s12); height: var(--row); border-bottom: 1px solid var(--line); text-align: left; }
