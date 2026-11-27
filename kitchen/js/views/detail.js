@@ -97,6 +97,7 @@ export async function detailView(id, app) {
   // tap a step to check it off (it dims); remembered until the tab is closed
   $$("[data-step]", app).forEach(b => b.onclick = () => {
     const i = +b.dataset.step; done.has(i) ? done.delete(i) : done.add(i);
+    window.dispatchEvent(new Event("kitchen:step"));   // the tour waits for this
     b.classList.toggle("done", done.has(i)); b.setAttribute("aria-pressed", done.has(i)); saveDone(r.id, done);
     const p = $("[data-progress]", app); if (p) p.textContent = progress(done, r.steps.length);
   });

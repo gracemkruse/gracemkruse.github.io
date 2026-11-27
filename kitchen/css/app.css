@@ -446,3 +446,21 @@ button.qty { text-decoration: underline; text-decoration-color: var(--line); tex
   .share > :not(.share-page) { display: none !important; }
   .share-page { width: 816px; max-width: none; margin: 0; border: 0; }
 }
+
+/* How it works: coach card + green ring on the real screens */
+.tour-coach { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--tabbar) + var(--s16)); width: min(358px, calc(100% - 32px)); z-index: 25;
+  background: var(--ink); color: var(--white); padding: var(--s20); display: flex; flex-direction: column; gap: var(--s12); }
+.tour-coach .t-instr { margin: 0; color: var(--white); }
+.tour-top { display: flex; align-items: center; justify-content: space-between; }
+.tour-try { color: var(--chartreuse-bright); }
+.tour-dots { display: inline-flex; gap: 6px; }
+.tour-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--grey); }
+.tour-dots i.on { background: var(--chartreuse-bright); }
+.tour-actions { display: flex; align-items: center; gap: var(--s24); }
+.tour-skip { color: var(--white); }
+.tour-next { background: var(--white); color: var(--ink); padding: var(--s12) var(--s24); }
+.tour-done { bottom: auto; top: 30vh; }
+.tour-coach.at-top { bottom: auto; top: var(--s16); }
+@media (min-width: 900px) { .tour-coach.at-top { top: 80px; } }
+.tour-ring { position: fixed; z-index: 24; border: 2px solid var(--chartreuse-bright); pointer-events: none; }
+@media (min-width: 900px) { .tour-coach { bottom: var(--s24); } }

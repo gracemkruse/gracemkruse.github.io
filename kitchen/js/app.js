@@ -3,6 +3,7 @@
 import * as data from "./data.js";
 import { $, $$ } from "./ui.js";
 import { whiskIcon } from "./icons.js";
+import { tourCheck } from "./tour.js";
 import { loginView } from "./views/login.js";
 import { galleryView } from "./views/gallery.js";
 import { detailView } from "./views/detail.js";
@@ -46,6 +47,7 @@ async function render() {
   $$("#tabbar a").forEach(a => a.classList.toggle("active", a.dataset.tab === route.tab));
   try {
     await route.view(params, app);
+    if (!route.public) tourCheck();
   } catch (err) {
     console.error(err);
     app.innerHTML = `<p class="t-item">Something went wrong loading this page.</p><p class="t-label grey">${String(err.message || err)}</p>`;
