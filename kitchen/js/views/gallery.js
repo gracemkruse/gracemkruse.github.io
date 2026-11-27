@@ -9,6 +9,7 @@ const state = { tag: "All", q: "", searching: false };
 export async function galleryView(app) {
   const [recipes, tags] = await Promise.all([data.listRecipes(), data.listTags()]);
   let view = Number(pref.get("view", "2")); if (![1, 2, 4].includes(view)) view = 2;
+  data.backfillThumbs(recipes);   // quiet, once per session: makes gallery previews for older photos
 
   function paint() {
     const q = state.q.trim().toLowerCase();
@@ -49,7 +50,7 @@ export async function galleryView(app) {
   function tile(r) {
     const name = esc(niceTitle(r.title));
     return `<div class="card tile">
-      <a class="photo" href="#/recipe/${encodeURIComponent(r.id)}" style="${photoStyle(r)}" aria-label="${name}"><span class="tile-name" aria-hidden="true"><span class="t-label recipe-name">${name}</span>${r.total_minutes ? `<span class="t-label grey">About ${esc(duration(r.total_minutes))}</span>` : ""}</span></a>
+      <a class="photo" href="#/recipe/${encodeURIComponent(r.id)}" style="${photoStyle(r, true)}" aria-label="${name}"><span class="tile-name" aria-hidden="true"><span class="t-label recipe-name">${name}</span>${r.total_minutes ? `<span class="t-label grey">About ${esc(duration(r.total_minutes))}</span>` : ""}</span></a>
       <button class="tile-more" data-id="${esc(r.id)}" aria-label="${name}: add to this week or open">${icon("plus", true)}</button>
     </div>`;
   }
@@ -71,7 +72,7 @@ export async function galleryView(app) {
     const ic = tagIcon(r.tags);
     const meta = [r.tags[0], minutes(r.total_minutes)].filter(Boolean).join(" · ");
     return `<a class="card" href="#/recipe/${encodeURIComponent(r.id)}">
-      <div class="photo" style="${photoStyle(r)}" role="img" aria-label="${esc(r.title)}"></div>
+      <div class="photo" style="${photoStyle(r, v !== 1)}" role="img" aria-label="${esc(r.title)}"></div>
       <span class="name t-recipe recipe-name">${esc(niceTitle(r.title))}</span>${meta ? `<span class="meta t-label">${ic ? icon(ic, true) : ""}${esc(meta)}</span>` : ""}
     </a>`;
   }
