@@ -1,5 +1,5 @@
 // Your initial, top right of Recipes, This Week and the Shopping List. Tap → a small menu:
-// Settings · Ingredients · Sign out. (How it works joins once the tour is built.)
+// Settings · Sign out. (How it works joins once the tour is built.)
 import * as data from "./data.js";
 import { esc } from "./ui.js";
 
@@ -25,7 +25,6 @@ function openMenu(btn, m) {
     <div class="account-menu" role="menu" style="top:${Math.round(r.bottom + 8)}px;right:${Math.round(window.innerWidth - r.right)}px">
       <div class="account-who">${m.name ? `<div class="t-item">${esc(m.name)}</div>` : ""}<div class="t-label grey">${esc(m.email || "")}</div></div>
       <a class="t-item" role="menuitem" href="#/settings">Settings</a>
-      <a class="t-item" role="menuitem" href="#/list?tab=pantry">Ingredients</a>
       <button class="t-item grey" role="menuitem" type="button" data-signout>Sign out</button>
     </div>`;
   document.body.appendChild(wrap);
