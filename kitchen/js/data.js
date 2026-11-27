@@ -68,12 +68,12 @@ export async function updateProfile(fields) {
 }
 export async function listInvites() {
   if (isDemo) return [];
-  const { data, error } = await sb.from("invites").select("code,name,used_by,used_at,expires_at,created_at").order("created_at", { ascending: false });
+  const { data, error } = await sb.from("invites").select("code,name,used_by,used_at,expires_at,created_at,with_library").order("created_at", { ascending: false });
   if (error) throw error; return data;
 }
-export async function createInvite(name) {
+export async function createInvite(name, { library = false, meals = false } = {}) {
   if (isDemo) return "demo-invite";
-  const { data, error } = await sb.from("invites").insert({ name: String(name || "").trim() || null }).select("code").single();
+  const { data, error } = await sb.from("invites").insert({ name: String(name || "").trim() || null, with_library: !!library, with_meals: !!(library && meals) }).select("code").single();
   if (error) throw new Error("Couldn’t make an invite."); return data.code;
 }
 export async function cancelInvite(code) {

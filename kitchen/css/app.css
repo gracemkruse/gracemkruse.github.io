@@ -253,6 +253,9 @@ div.set-row { cursor: default; }
 .edit-field .t-instr { margin: 0; }
 .edit-field .error { color: var(--clay); min-height: 16px; margin: 0; }
 .sheet-actions { display: flex; justify-content: flex-end; align-items: center; gap: var(--s24); }
+.check-row { display: flex; align-items: center; gap: var(--s12); text-align: left; padding: var(--s4) 0; color: var(--ink); }
+.check-row .box { pointer-events: none; }
+.check-row[aria-pressed="true"] .box { background: var(--chartreuse-bright); border-color: var(--chartreuse-bright); color: var(--white); }
 .day { display: grid; grid-template-columns: 36px 1fr; border-bottom: 1px solid var(--line); }
 .day .date { writing-mode: vertical-rl; transform: rotate(180deg); color: var(--grey); align-self: center; justify-self: start; padding: var(--s8) 0; position: relative; }
 .day.today .date { color: var(--chartreuse); }
