@@ -77,8 +77,9 @@ export function amount(a, unit) {
 
 // Warm gradient placeholder until a real photo is added (stable per recipe).
 const TONES = [["#7E2F22", "#E0A07A"], ["#6B3A22", "#D49A63"], ["#4F5A2E", "#C2C08A"], ["#5A4632", "#D2B48C"], ["#3E4A3A", "#B5B99A"], ["#7A5530", "#E6C28E"]];
-export function photoStyle(r) {
-  if (r.image_url) return `background-image:url('${esc(r.image_url)}')`;
+export function photoStyle(r, preview = false) {
+  const url = preview && r.image_thumb ? r.image_thumb : r.image_url;   // gallery uses the small preview when there is one
+  if (url) return `background-image:url('${esc(url)}')`;
   let h = 0; for (const c of String(r.id || r.title)) h = (h * 31 + c.charCodeAt(0)) >>> 0;
   const [a, b] = TONES[h % TONES.length];
   return `background-image:linear-gradient(160deg, ${a}, ${b})`;

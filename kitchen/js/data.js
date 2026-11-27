@@ -47,7 +47,7 @@ export async function listRecipes() {
   const words = (r, ings) => [r.title, ...r.tags, ...ings, r.source_url, r.source_notes].filter(Boolean).join(" ").toLowerCase();
   if (isDemo) return demo().recipes.filter(r => !r.archived_at).map(r => ({ ...summary(r), words: words(r, r.ingredients.map(g => g.name)) })).sort(byTitle);
   const { data, error } = await sb.from("recipes")
-    .select("id,title,image_url,servings,total_minutes,source_url,source_notes,recipe_tags(tags(name)),recipe_ingredients(ingredients(name))")
+    .select("id,title,image_url,image_thumb,servings,total_minutes,source_url,source_notes,recipe_tags(tags(name)),recipe_ingredients(ingredients(name))")
     .is("archived_at", null).order("title");
   if (error) throw error;
   return data.map(({ recipe_tags, recipe_ingredients, ...r }) => { r.tags = (recipe_tags || []).map(x => x.tags?.name).filter(Boolean);
@@ -115,6 +115,7 @@ export async function saveRecipe(input) {
   // a photo on another website gets copied into your own photo storage (sites move or block photos)
   if (r.image_url && !ownPhoto(r.image_url)) { try { r.image_url = await uploadPhoto(await photoFromLink(r.image_url)); } catch (e) { console.warn("Kept the outside photo link", e); } }
   const row = { title: r.title, image_url: r.image_url, servings: r.servings, total_minutes: r.total_minutes, steps: r.steps, notes: r.notes, source_url: r.source_url, source_notes: r.source_notes };
+  if (!r.image_url) row.image_thumb = null; else if (thumbs.has(r.image_url)) row.image_thumb = thumbs.get(r.image_url);   // unchanged photo keeps its preview
   let id = r.id;
   if (id) { const { error } = await sb.from("recipes").update(row).eq("id", id); if (error) throw error; }
   else { const { data, error } = await sb.from("recipes").insert(row).select("id").single(); if (error) throw error; id = data.id; }
@@ -150,11 +151,11 @@ export async function archiveRecipe(id) {
 // Delete for good: the recipe, its ingredient lines and tags, its days on This Week, and its photo if it's in your storage.
 export async function deleteRecipe(id) {
   if (isDemo) { const db = demo(); db.recipes = db.recipes.filter(x => x.id !== id); db.meal_plan = (db.meal_plan || []).filter(m => m.recipe_id !== id); saveDemo(db); return; }
-  const { data: r } = await sb.from("recipes").select("image_url").eq("id", id).maybeSingle();
+  const { data: r } = await sb.from("recipes").select("image_url,image_thumb").eq("id", id).maybeSingle();
   let { error } = await sb.from("meal_plan").delete().eq("recipe_id", id); if (error) throw error;
   ({ error } = await sb.from("recipes").delete().eq("id", id)); if (error) throw error;
-  const path = r?.image_url?.split("/storage/v1/object/public/recipe-photos/")[1];
-  if (path && ownPhoto(r.image_url)) await sb.storage.from("recipe-photos").remove([decodeURIComponent(path)]).catch(() => {});
+  const paths = [r?.image_url, r?.image_thumb].filter(u => u && ownPhoto(u)).map(u => u.split("/storage/v1/object/public/recipe-photos/")[1]).filter(Boolean).map(decodeURIComponent);
+  if (paths.length) await sb.storage.from("recipe-photos").remove(paths).catch(() => {});
 }
 
 // ---------------- This Week (meal plan) ----------------
@@ -324,7 +325,7 @@ function toDraft(data, url) {
 // ---------------- Photos ----------------
 export async function setRecipePhoto(id, url) {
   if (isDemo) { const db = demo(); const r = db.recipes.find(x => x.id === id); if (r) r.image_url = url; saveDemo(db); return; }
-  const { error } = await sb.from("recipes").update({ image_url: url }).eq("id", id); if (error) throw error;
+  const { error } = await sb.from("recipes").update({ image_url: url, image_thumb: url ? thumbs.get(url) || null : null }).eq("id", id); if (error) throw error;
 }
 // Photos already in your storage (or saved in this browser). Anything else is on another website.
 export const ownPhoto = url => !/^https?:/i.test(url) || url.startsWith(`${SUPABASE_URL}/storage/v1/object/public/recipe-photos/`);
@@ -340,18 +341,41 @@ export async function photoFromLink(url) {
 export async function uploadPhoto(file) {
   const blob = await shrink(file, isDemo ? 800 : 1600);
   if (isDemo) return await new Promise((ok, no) => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.onerror = no; fr.readAsDataURL(blob); });
+  const url = await storePhoto(blob);
+  // a small preview for the gallery (about a tenth of the size); the full photo is used everywhere else
+  try { thumbs.set(url, await storePhoto(await shrink(blob, THUMB, 0.72))); } catch (e) { console.warn("No preview made", e); }
+  return url;
+}
+const THUMB = 640;              // gallery preview: longest side in pixels
+const thumbs = new Map();       // full photo URL → its preview URL, for the save that follows an upload
+async function storePhoto(blob) {
   const { data: s } = await sb.auth.getSession(); const user = s.session?.user?.id; if (!user) throw new Error("Not signed in.");
   const path = `${user}/${uid()}.jpg`;
   const { error } = await sb.storage.from("recipe-photos").upload(path, blob, { contentType: "image/jpeg", cacheControl: "31536000" });
   if (error) throw new Error(/bucket/i.test(error.message) ? "Photo storage isn’t set up yet (run migration 003)." : error.message);
   return sb.storage.from("recipe-photos").getPublicUrl(path).data.publicUrl;
 }
-async function shrink(file, max) {
+// Older photos get their preview made once, quietly in the background, the first time the gallery shows them.
+let backfilling = false;
+export async function backfillThumbs(recipes) {
+  if (isDemo || backfilling) return; backfilling = true;
+  try {
+    for (const r of recipes.filter(x => x.image_url && /^https?:/i.test(x.image_url) && ownPhoto(x.image_url) && !x.image_thumb)) {
+      try {
+        const res = await fetch(r.image_url); if (!res.ok) continue;
+        const thumb = await storePhoto(await shrink(await res.blob(), THUMB, 0.72));
+        const { error } = await sb.from("recipes").update({ image_thumb: thumb }).eq("id", r.id); if (error) throw error;
+        r.image_thumb = thumb;
+      } catch (e) { console.warn("Preview skipped for", r.title, e); }
+    }
+  } finally { backfilling = false; }
+}
+async function shrink(file, max, quality = 0.85) {
   const img = await (window.createImageBitmap ? createImageBitmap(file, { imageOrientation: "from-image" }) : new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error("That file isn’t an image we can read.")); i.src = URL.createObjectURL(file); }));
   const scale = Math.min(1, max / Math.max(img.width, img.height));
   const c = document.createElement("canvas"); c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
   c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-  return await new Promise((ok, no) => c.toBlob(b => (b ? ok(b) : no(new Error("Couldn’t read that photo."))), "image/jpeg", 0.85));
+  return await new Promise((ok, no) => c.toBlob(b => (b ? ok(b) : no(new Error("Couldn’t read that photo."))), "image/jpeg", quality));
 }
 
 // ---------------- Shopping List ----------------
