@@ -1,0 +1,11 @@
+{
+  "note": "Everyday staples every new account starts with, all marked Out until checked. Hand-written names only.",
+  "staples": {
+    "Produce": ["Onions", "Red onions", "Shallots", "Garlic", "Ginger", "Lemons", "Limes", "Potatoes", "Sweet potatoes", "Carrots", "Celery", "Tomatoes", "Cherry tomatoes", "Scallions", "Bell peppers", "Jalapeños", "Mushrooms", "Spinach", "Lettuce", "Cucumbers", "Avocados", "Broccoli", "Zucchini", "Apples", "Bananas"],
+    "Herbs & Spices": ["Parsley", "Cilantro", "Basil", "Thyme", "Rosemary", "Kosher salt", "Flaky salt", "Black pepper", "Red pepper flakes", "Ground cumin", "Paprika", "Smoked paprika", "Chili powder", "Ground cinnamon", "Dried oregano", "Bay leaves", "Garlic powder", "Onion powder", "Ground turmeric", "Ground nutmeg", "Ground coriander", "Vanilla extract", "Sesame seeds"],
+    "Protein": ["Eggs", "Chicken breasts", "Chicken thighs", "Ground beef", "Bacon", "Salmon", "Tofu"],
+    "Dairy": ["Butter", "Milk", "Heavy cream", "Greek yogurt", "Sour cream", "Parmesan", "Cheddar", "Mozzarella", "Feta"],
+    "Pantry": ["Olive oil", "Neutral oil", "Sesame oil", "All-purpose flour", "Granulated sugar", "Brown sugar", "Honey", "Maple syrup", "Baking soda", "Baking powder", "Rice", "Spaghetti", "Short pasta", "Bread", "Tortillas", "Bread crumbs", "Rolled oats", "Canned tomatoes", "Tomato paste", "Chicken stock", "Vegetable stock", "Chickpeas", "Black beans", "Lentils", "Soy sauce", "Dijon mustard", "Mayonnaise", "Red wine vinegar", "Apple cider vinegar", "Balsamic vinegar", "Rice vinegar", "Hot sauce", "Peanut butter", "Almonds", "Coffee", "Tea"],
+    "Household": ["Paper towels", "Aluminum foil", "Parchment paper", "Cling wrap", "Zip-top bags", "Dish soap", "Sponges", "Trash bags"]
+  }
+}

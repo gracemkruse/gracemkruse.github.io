@@ -55,12 +55,29 @@ export async function join({ code, email, name, birth_year, gender }) {
 
 // ---------------- Profile, invites, account ----------------
 export async function getProfile() {
-  if (isDemo) return { display_name: "", birth_year: null, gender: null, can_invite: true, onboarded_at: new Date().toISOString() };
+  if (isDemo) return { display_name: "", birth_year: null, gender: null, can_invite: true, onboarded_at: new Date().toISOString(), seeded_at: new Date().toISOString() };
   const { data: s } = await sb.auth.getSession(); const id = s.session?.user?.id;
-  const { data, error } = await sb.from("profiles").select("display_name,birth_year,gender,can_invite,onboarded_at").eq("id", id).maybeSingle();
+  const { data, error } = await sb.from("profiles").select("display_name,birth_year,gender,can_invite,onboarded_at,seeded_at").eq("id", id).maybeSingle();
   if (error) throw error;
-  return data || { display_name: "", birth_year: null, gender: null, can_invite: false, onboarded_at: null };
+  return data || { display_name: "", birth_year: null, gender: null, can_invite: false, onboarded_at: null, seeded_at: null };
 }
+// First sign-in for a new account (not one that came with a library): add the everyday staples
+// (all Out) and the starter recipes, once. Marked done first so two open tabs never add them twice.
+let seeding = null;
+export function seedIfNew() { return (seeding ||= seed().catch(e => { console.error("Starter setup failed", e); return false; })); }
+async function seed() {
+  if (isDemo) return false;
+  const p = await getProfile(); if (p.seeded_at) return false;
+  await updateProfile({ seeded_at: new Date().toISOString() });
+  const base = new URL("starters/", location.href.split("#")[0]);
+  const [st, sp] = await Promise.all([fetch(new URL("starters.json", base)).then(r => r.json()), fetch(new URL("staples.json", base)).then(r => r.json())]);
+  const cats = await ensureCategories(); const catId = Object.fromEntries(cats.map(c => [c.name, c.id]));
+  const rows = Object.entries(sp.staples).flatMap(([c, names]) => names.map(name => ({ name, category_id: catId[c] || null, stock_status: "out" })));
+  const { error } = await sb.from("ingredients").upsert(rows, { onConflict: "owner_id,name_norm", ignoreDuplicates: true }); if (error) throw error;
+  for (const r of st.recipes) await saveRecipe({ ...r, id: null, image_url: null });
+  return true;
+}
+
 export async function updateProfile(fields) {
   if (isDemo) return;
   const { data: s } = await sb.auth.getSession(); const id = s.session?.user?.id;

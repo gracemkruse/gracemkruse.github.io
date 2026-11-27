@@ -1,0 +1,138 @@
+{
+  "note": "Starter recipes for new accounts. Ingredient lists from the original recipes; methods rewritten in our own words; each links to its source. No photos copied.",
+  "recipes": [
+    {
+      "title": "Thomas Keller’s Butternut Soup with Brown Butter, Sage and Nutmeg Crème Fraîche",
+      "servings": 6, "total_minutes": 120,
+      "source_url": "https://food52.com/recipes/32241-thomas-keller-s-butternut-soup-with-brown-butter-sage-and-nutmeg-creme-fraiche",
+      "source_notes": "Food52 · Thomas Keller",
+      "notes": "A silky squash soup finished with nutty brown butter. It can be made a day ahead; brown the butter just before serving.",
+      "tags": ["Soup"],
+      "ingredients": [
+        { "amount": 1, "unit": null, "name": "Butternut squash", "prep": "about 3 lb" },
+        { "amount": 2, "unit": "tbsp", "name": "Canola oil", "prep": "plus more for frying sage" },
+        { "amount": null, "unit": null, "name": "Salt", "prep": null },
+        { "amount": null, "unit": null, "name": "Black pepper", "prep": null },
+        { "amount": 2, "unit": "sprig", "name": "Sage", "prep": "plus a few leaves to garnish (optional)" },
+        { "amount": 1, "unit": "cup", "name": "Leek", "prep": "sliced, white and light green parts" },
+        { "amount": 0.5, "unit": "cup", "name": "Carrot", "prep": "sliced" },
+        { "amount": 0.5, "unit": "cup", "name": "Shallot", "prep": "sliced" },
+        { "amount": 0.5, "unit": "cup", "name": "Onion", "prep": "thinly sliced" },
+        { "amount": 6, "unit": "clove", "name": "Garlic", "prep": "smashed" },
+        { "amount": 2, "unit": "tbsp", "name": "Honey", "prep": null },
+        { "amount": 6, "unit": "cup", "name": "Vegetable stock", "prep": "plus more if needed" },
+        { "amount": 8, "unit": "sprig", "name": "Thyme", "prep": "for the herb bundle" },
+        { "amount": 2, "unit": "sprig", "name": "Parsley", "prep": "for the herb bundle" },
+        { "amount": 2, "unit": null, "name": "Bay leaves", "prep": "for the herb bundle" },
+        { "amount": 4, "unit": "tbsp", "name": "Unsalted butter", "prep": null },
+        { "amount": 0.25, "unit": "cup", "name": "Crème fraîche", "prep": null },
+        { "amount": null, "unit": "pinch", "name": "Nutmeg", "prep": "freshly grated" },
+        { "amount": 1, "unit": "tbsp", "name": "Chives", "prep": "minced" },
+        { "amount": null, "unit": null, "name": "Olive oil", "prep": "to finish" }
+      ],
+      "steps": [
+        "Heat the oven to 350°F and line a small tray. Cut the squash where the neck meets the round base. Halve the base, scoop out the seeds, rub with a little of the oil, season, tuck a sage sprig into each half and roast cut side down for about an hour, until completely soft. Scoop out the flesh.",
+        "While it roasts, peel the neck and cut it into ½-inch cubes (about 4 cups). Tie the thyme, parsley and bay leaves into a small bundle with a few peppercorns.",
+        "Warm the rest of the oil in a large pot over medium-high heat. Cook the leek, carrot, shallot and onion, stirring often, for about 6 minutes, until soft but not browned.",
+        "Add the cubed squash, garlic, 1½ teaspoons salt and ½ teaspoon pepper and cook gently for 3 minutes, without letting anything colour. Stir in the honey and cook 2 to 3 minutes more.",
+        "Pour in the stock, add the herb bundle and simmer until the squash is tender, 10 to 15 minutes. Add the roasted squash and simmer gently for 30 minutes.",
+        "Take out the herbs. Blend the soup in batches until very smooth, then press it through a fine sieve. Taste for salt and pepper. It keeps well in the fridge overnight.",
+        "Whisk the crème fraîche with a pinch of nutmeg until it just holds its shape. Keep it cold.",
+        "Reheat the soup, adding a splash of stock if it’s thick. In a very hot skillet, cook the butter until it foams, then turns hazelnut brown and smells nutty, and pour it straight into the soup. Watch it: it goes from brown to burnt in seconds.",
+        "If you like, fry a few sage leaves in a thin layer of hot oil for 30 to 45 seconds until crisp, then drain and salt them.",
+        "Serve each bowl with a spoonful of the nutmeg crème fraîche, black pepper, sage leaves or chives, and a little olive oil."
+      ]
+    },
+    {
+      "title": "Bloody Mary Tomato Salad",
+      "servings": 4, "total_minutes": 20,
+      "source_url": "https://cooking.nytimes.com/recipes/1024365-bloody-mary-tomato-salad",
+      "source_notes": "NYT Cooking",
+      "notes": "Everything good about a Bloody Mary, as a salad. Best with ripe summer tomatoes.",
+      "tags": ["Salad"],
+      "ingredients": [
+        { "amount": 2, "unit": "stalk", "name": "Celery", "prep": "thinly sliced" },
+        { "amount": 1, "unit": null, "name": "Red onion", "prep": "small, thinly sliced" },
+        { "amount": 1, "unit": "tbsp", "name": "Lemon", "prep": "juice, from ½ small lemon" },
+        { "amount": 0.25, "unit": "tsp", "name": "Granulated sugar", "prep": null },
+        { "amount": null, "unit": null, "name": "Salt", "prep": null },
+        { "amount": 2, "unit": "lb", "name": "Tomatoes", "prep": "ripe, any kind, cut into 1- to 2-inch pieces" },
+        { "amount": 0.5, "unit": "tsp", "name": "Black pepper", "prep": null },
+        { "amount": 1, "unit": "tbsp", "name": "Soy sauce", "prep": null },
+        { "amount": 1, "unit": "tbsp", "name": "Balsamic vinegar", "prep": null },
+        { "amount": 1.5, "unit": "tsp", "name": "Hot sauce", "prep": "such as Tabasco" },
+        { "amount": 1, "unit": "clove", "name": "Garlic", "prep": "grated" },
+        { "amount": 0.5, "unit": "tsp", "name": "Celery salt", "prep": null },
+        { "amount": 2, "unit": "tbsp", "name": "Olive oil", "prep": null },
+        { "amount": null, "unit": "handful", "name": "Parsley", "prep": "chopped" }
+      ],
+      "steps": [
+        "Toss the celery and red onion with the lemon juice, sugar and ¼ teaspoon salt. Leave them to soften for 5 to 10 minutes.",
+        "Stir together the soy sauce, balsamic, hot sauce, grated garlic, celery salt and olive oil.",
+        "Drain the celery and onion and squeeze out any extra liquid.",
+        "Put the tomatoes in a big bowl with the celery and onion, add the dressing and the pepper and fold gently. Taste for salt, and finish with parsley."
+      ]
+    },
+    {
+      "title": "Banana Bread",
+      "servings": 8, "total_minutes": 70,
+      "source_url": "https://www.loveandlemons.com/banana-bread/",
+      "source_notes": "Love and Lemons",
+      "notes": "One bowl, no mixer. Swap the walnuts for pecans, chocolate chips or raisins.",
+      "tags": ["Baking"],
+      "ingredients": [
+        { "amount": 2, "unit": "cup", "name": "Bananas", "prep": "very ripe, mashed (about 4 large)" },
+        { "amount": 0.5, "unit": "cup", "name": "Cane sugar or brown sugar", "prep": null },
+        { "amount": 0.5, "unit": "cup", "name": "Butter", "prep": "melted, or vegetable oil, plus more for the pan" },
+        { "amount": 2, "unit": null, "name": "Eggs", "prep": "large" },
+        { "amount": 1, "unit": "tsp", "name": "Vanilla extract", "prep": null },
+        { "amount": 1.5, "unit": "cup", "name": "All-purpose flour", "prep": "spooned and leveled" },
+        { "amount": 1, "unit": "tsp", "name": "Baking soda", "prep": null },
+        { "amount": 0.5, "unit": "tsp", "name": "Sea salt", "prep": null },
+        { "amount": 0.5, "unit": "tsp", "name": "Cinnamon", "prep": null },
+        { "amount": 0.25, "unit": "tsp", "name": "Nutmeg", "prep": null },
+        { "amount": 0.5, "unit": "cup", "name": "Walnuts", "prep": "chopped, plus 2 tbsp for the top" }
+      ],
+      "steps": [
+        "Heat the oven to 350°F and grease an 8×4 or 9×5-inch loaf pan.",
+        "In a large bowl, whisk the mashed banana with the sugar, melted butter, eggs and vanilla.",
+        "In another bowl, whisk the flour, baking soda, salt, cinnamon and nutmeg.",
+        "Stir the dry mix into the wet just until no flour shows, then fold in the ½ cup walnuts.",
+        "Spread the batter in the pan and scatter the last 2 tablespoons of walnuts on top.",
+        "Bake 50 to 60 minutes, until a toothpick comes out clean. Check at 40 minutes and lay foil over the top if it’s already deep golden."
+      ]
+    },
+    {
+      "title": "Chicken with Braised Cherry Tomatoes and Burrata",
+      "servings": 4, "total_minutes": 35,
+      "source_url": "https://food52.com/recipes/85988-chicken-with-braised-cherry-tomatoes-burrata",
+      "source_notes": "Food52",
+      "notes": "A one-pan weeknight dinner. Good with a big salad and crusty bread.",
+      "tags": ["Weeknight"],
+      "ingredients": [
+        { "amount": 2, "unit": null, "name": "Chicken breasts", "prep": "large" },
+        { "amount": 2, "unit": null, "name": "Burrata", "prep": "about 5 oz each" },
+        { "amount": 400, "unit": "g", "name": "Cherry tomatoes", "prep": null },
+        { "amount": 3, "unit": "tbsp", "name": "Olive oil", "prep": null },
+        { "amount": 1, "unit": "tbsp", "name": "Unsalted butter", "prep": null },
+        { "amount": 4, "unit": "clove", "name": "Garlic", "prep": "minced" },
+        { "amount": 1, "unit": "tbsp", "name": "Honey", "prep": null },
+        { "amount": 2, "unit": "tbsp", "name": "Balsamic vinegar", "prep": null },
+        { "amount": 4, "unit": "sprig", "name": "Thyme", "prep": null },
+        { "amount": 2, "unit": "tsp", "name": "Salt", "prep": null },
+        { "amount": 2, "unit": "tsp", "name": "Black pepper", "prep": "plus more to finish" },
+        { "amount": null, "unit": null, "name": "Paprika", "prep": "sweet" },
+        { "amount": null, "unit": null, "name": "Red pepper flakes", "prep": null },
+        { "amount": null, "unit": null, "name": "Pine nuts", "prep": "toasted, for serving" }
+      ],
+      "steps": [
+        "Season the chicken with 1 teaspoon each of salt and pepper and a good shake of paprika. Heat the oil and butter in a large skillet over medium-high heat.",
+        "Brown the chicken 5 to 7 minutes per side, until cooked through (165°F inside). Move it to a plate.",
+        "Turn the heat down, add the garlic and cook for a minute. Pour in ¼ cup water and scrape up the browned bits; let it bubble for a minute.",
+        "Add the tomatoes, the rest of the salt and pepper, a pinch of red pepper flakes, the balsamic, honey and thyme. Cover and simmer 10 minutes, until the tomatoes slump.",
+        "Slice the chicken, slide it back into the pan and warm it through, uncovered, for 1 to 2 minutes.",
+        "Tear the burrata over the top, turn off the heat and let it sit for 3 minutes. Finish with black pepper, red pepper flakes and toasted pine nuts."
+      ]
+    }
+  ]
+}

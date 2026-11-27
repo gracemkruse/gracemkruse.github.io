@@ -2,6 +2,7 @@
 // Auth is checked per route (not app-wide), so a single page could be made public later.
 import * as data from "./data.js";
 import { $, $$ } from "./ui.js";
+import { whiskIcon } from "./icons.js";
 import { loginView } from "./views/login.js";
 import { galleryView } from "./views/gallery.js";
 import { detailView } from "./views/detail.js";
@@ -38,6 +39,7 @@ async function render() {
   const route = routes.find(r => r.re.test(hash));
   if (!route) { location.hash = "#/recipes"; return; }
   if (!route.public && !(await data.hasSession())) { location.hash = "#/login"; return; }
+  if (!route.public) await settingUp();
   const params = hash.match(route.re).slice(1).map(x => (x == null ? x : decodeURIComponent(x)));
   const app = $("#app");
   $("#tabbar").hidden = !route.tab;
@@ -49,6 +51,18 @@ async function render() {
     app.innerHTML = `<p class="t-item">Something went wrong loading this page.</p><p class="t-label grey">${String(err.message || err)}</p>`;
   }
   window.scrollTo(0, 0);
+}
+
+// A brand-new account gets its starter recipes and staples on the first screen after signing in.
+// Only shows the whisk if it takes a moment (it's a no-op for everyone else).
+async function settingUp() {
+  const work = data.seedIfNew();
+  const t = setTimeout(() => {
+    const el = document.createElement("div"); el.className = "busy"; el.id = "setting-up";
+    el.innerHTML = `<div class="busy-panel">${whiskIcon()}<span class="t-label">Setting up your kitchen…</span></div>`;
+    document.body.appendChild(el);
+  }, 300);
+  await work; clearTimeout(t); document.getElementById("setting-up")?.remove();
 }
 
 // Always load the newest app files after an update (see sw.js).
