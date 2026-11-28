@@ -53,6 +53,7 @@ export async function changeEmail(email) {
     if (/already|registered|exists/i.test(error.message)) throw new Error("That email already has a Kitchen account.");
     if (/rate|seconds/i.test(error.message)) throw new Error("A code was just sent. Wait a minute, then try again.");
     if (/same/i.test(error.message)) throw new Error("That’s already your email.");
+    if (/session/i.test(error.message)) throw new Error("You’ve been signed out on this device. Sign out, sign back in, then try again.");
     throw new Error("Couldn’t send a code. Try again.");
   }
 }
@@ -141,7 +142,7 @@ export async function deleteAccount() {
 
 export async function signOut() {
   if (isDemo) { safeDel(DEMO_SESSION); return; }
-  await sb.auth.signOut();
+  await sb.auth.signOut({ scope: "local" });   // this device only; other devices stay signed in
 }
 
 // Who's signed in: { email, name }. The name comes with accounts (profiles); until then it's empty.
