@@ -245,6 +245,8 @@ input.t-item, textarea.t-item, select.t-item, .field textarea.t-instr { font-siz
 .set-row { display: flex; align-items: center; gap: var(--s12); padding: var(--s12) 0; border-bottom: 1px solid var(--line); color: var(--ink); cursor: pointer; }
 div.set-row { cursor: default; }
 .set-row .spacer { flex: 1; }
+.set-row.set-group { border-bottom: 0; padding-bottom: var(--s4); }
+.set-joined { margin: 0; padding-bottom: var(--s12); border-bottom: 1px solid var(--line); }
 .set-key { width: 88px; flex: none; }
 .set-head-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s16); }
 .settings .danger-zone { margin-top: var(--s48); }

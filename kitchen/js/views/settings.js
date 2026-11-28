@@ -23,7 +23,16 @@ export async function settingsView(app) {
       ${act ? `<button class="btn-text t-label" type="button" data-edit="${key}">${act}</button>` : ""}</div>`;
   const now = new Date();
   const people = invites.map(i => {
-    const used = !!i.used_by, expired = !used && new Date(i.expires_at) < now;
+    const group = (i.max_uses || 1) > 1, closed = new Date(i.expires_at) < now;
+    if (group) {
+      const names = (i.invite_joins || []).sort((a, b) => a.joined_at < b.joined_at ? -1 : 1).map(j => j.name).filter(Boolean);
+      const full = i.uses >= i.max_uses;
+      const right = closed || full ? `<span class="t-label grey">${full ? "Full" : "Closed"}</span>`
+        : `<button class="btn-text t-label" type="button" data-share="${esc(i.code)}">Share link</button><button class="btn-text grey t-label" type="button" data-stop="${esc(i.code)}">Stop</button>`;
+      return `<div class="set-row set-group"><span class="t-item">${esc(i.name || "Group link")}</span><span class="spacer"></span>${right}</div>
+        <p class="t-label grey set-joined">${i.uses} of ${i.max_uses} joined${names.length ? ": " + esc(names.join(", ")) : ""}</p>`;
+    }
+    const used = !!i.used_by, expired = !used && closed;
     const right = used ? `${i.with_library ? "" : `<button class="btn-text t-label" type="button" data-copy="${esc(i.code)}">Give my recipes</button>`}<span class="t-label green">Joined</span>`
       : expired ? `<span class="t-label grey">Expired</span>`
       : `<button class="btn-text t-label" type="button" data-share="${esc(i.code)}">Share link</button><span class="t-label grey">Invite sent</span>`;
@@ -81,6 +90,10 @@ export async function settingsView(app) {
   $("[data-delete]", app).onclick = () => deleteSheet();
   const inv = $("[data-invite]", app); if (inv) inv.onclick = () => inviteSheet(again);
   app.querySelectorAll("[data-share]").forEach(b => b.onclick = () => shareLink(joinLink(b.dataset.share)));
+  app.querySelectorAll("[data-stop]").forEach(b => b.onclick = async () => {
+    if (!confirm("Stop this link? No one else can join with it. People who already joined keep their accounts.")) return;
+    try { await data.stopInvite(b.dataset.stop); toast("Link stopped."); again(); } catch (e) { console.error(e); toast("Couldn’t stop it. Try again."); }
+  });
   app.querySelectorAll("[data-copy]").forEach(b => b.onclick = () => copySheet(invites.find(i => i.code === b.dataset.copy)));
 }
 
@@ -128,7 +141,8 @@ function inviteSheet(done) {
   const { el, close } = sheet(`
     <div class="sheet-head"><span class="t-label">Invite someone</span><button class="t-label grey" data-close>Close</button></div>
     <form class="edit-field">
-      <p class="t-instr">They get a link to join with their own recipes. Each link works once and lasts 14 days.</p>
+      <nav class="chips" aria-label="Who it’s for">${[["one", "One person"], ["group", "Group"]].map(([k, l]) => `<button class="chip t-label" type="button" data-kind="${k}" aria-pressed="${k === "one"}">${l}</button>`).join("")}</nav>
+      <p class="t-instr" data-kind-note>They get a link to join with their own recipes. Each link works once and lasts 14 days.</p>
       <label class="input-line"><input class="t-item" name="n" placeholder="Their name (optional)"></label>
       <button class="check-row" type="button" data-opt="library" aria-pressed="false"><span class="box"></span><span class="t-item">Give them a copy of my recipes</span></button>
       <button class="check-row" type="button" data-opt="meals" aria-pressed="false" hidden><span class="box"></span><span class="t-item">Include meal plans</span></button>
@@ -137,7 +151,18 @@ function inviteSheet(done) {
       <button class="btn-primary t-label" type="submit">Share invite link</button>
       <button class="btn-text t-label" type="button" data-copylink>Copy link</button>
     </form>`, "Invite someone");
-  let code = null; const opts = { library: false, meals: false };
+  let code = null; const opts = { library: false, meals: false, group: false };
+  const lib = el.querySelector('[data-opt="library"]');
+  el.querySelectorAll("[data-kind]").forEach(b => b.onclick = () => {
+    opts.group = b.dataset.kind === "group"; code = null;
+    el.querySelectorAll("[data-kind]").forEach(x => x.setAttribute("aria-pressed", x === b));
+    el.querySelector("[data-kind-note]").textContent = opts.group
+      ? "One link for a group text. Up to 10 people can join in the next 7 days, each with their own account and the starter recipes. Stop it any time in Settings."
+      : "They get a link to join with their own recipes. Each link works once and lasts 14 days.";
+    el.querySelector('input[name="n"]').placeholder = opts.group ? "Group name, like Family (optional)" : "Their name (optional)";
+    lib.hidden = opts.group;
+    if (opts.group && opts.library) lib.click();
+  });
   el.querySelectorAll("[data-opt]").forEach(b => b.onclick = () => {
     opts[b.dataset.opt] = !opts[b.dataset.opt]; b.setAttribute("aria-pressed", opts[b.dataset.opt]);
     b.querySelector(".box").innerHTML = opts[b.dataset.opt] ? icon("check", true) : "";

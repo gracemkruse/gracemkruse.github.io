@@ -39,7 +39,7 @@ export function joinView(code, app) {
       await data.join({ code, email, name: form.name.value, birth_year: form.year.value.trim(), gender: form.gender.value });
       codeView(app, email, { label: "Join Kitchen", after: () => { location.hash = "#/recipes"; } });
     } catch (ex) {
-      if (ex.code === "used" || ex.code === "expired") return usedView(app, ex.code);
+      if (ex.code === "used" || ex.code === "expired" || ex.code === "full") return usedView(app, ex.code);
       err.textContent = ex.message; btn.disabled = false;
     }
   });
@@ -50,9 +50,9 @@ function usedView(app, why) {
     <div class="login">
       <div>
         <div class="t-label grey">Kitchen</div>
-        <h1 class="t-page" style="margin:8px 0 0">${why === "expired" ? "This invite has expired" : "This invite has been used"}</h1>
+        <h1 class="t-page" style="margin:8px 0 0">${why === "expired" ? "This invite has expired" : why === "full" ? "This invite is full" : "This invite has been used"}</h1>
       </div>
-      <p class="t-instr">Each invite link works once and lasts 14 days. Ask Grace for a new one, or sign in if this was you.</p>
+      <p class="t-instr">${why === "full" ? "Everyone this link was for has joined." : why === "expired" ? "Invite links only last a few days." : "Each invite link works once."} Ask Grace for a new one, or sign in if you already joined.</p>
       <a class="btn-primary t-label" href="#/login">Sign in</a>
     </div>`;
 }

@@ -48,7 +48,7 @@ export async function join({ code, email, name, birth_year, gender }) {
   if (isDemo) return;
   const { data, error } = await sb.functions.invoke("join", { body: { code, email, name, birth_year: birth_year || null, gender: gender || null } });
   const msg = data?.error || (error && (await error.context?.json?.().catch(() => null))?.error);
-  if (msg === "used" || msg === "expired") { const e = new Error(msg); e.code = msg; throw e; }
+  if (msg === "used" || msg === "expired" || msg === "full") { const e = new Error(msg); e.code = msg; throw e; }
   if (msg || error) throw new Error(msg || "Couldn’t join. Try again.");
   await sendCode(email);
 }
@@ -85,17 +85,25 @@ export async function updateProfile(fields) {
 }
 export async function listInvites() {
   if (isDemo) return [];
-  const { data, error } = await sb.from("invites").select("code,name,used_by,used_at,expires_at,created_at,with_library").order("created_at", { ascending: false });
+  const { data, error } = await sb.from("invites").select("code,name,used_by,used_at,expires_at,created_at,with_library,max_uses,uses,invite_joins(name,joined_at)").order("created_at", { ascending: false });
   if (error) throw error; return data;
 }
-export async function createInvite(name, { library = false, meals = false } = {}) {
+// group: one link for up to 10 people, 7 days, starter recipes only (no library copy)
+export async function createInvite(name, { library = false, meals = false, group = false } = {}) {
   if (isDemo) return "demo-invite";
-  const { data, error } = await sb.from("invites").insert({ name: String(name || "").trim() || null, with_library: !!library, with_meals: !!(library && meals) }).select("code").single();
+  const row = group
+    ? { name: String(name || "").trim() || null, max_uses: 10, expires_at: new Date(Date.now() + 7 * 864e5).toISOString() }
+    : { name: String(name || "").trim() || null, with_library: !!library, with_meals: !!(library && meals) };
+  const { data, error } = await sb.from("invites").insert(row).select("code").single();
   if (error) throw new Error("Couldn’t make an invite."); return data.code;
 }
 export async function cancelInvite(code) {
   if (isDemo) return;
   const { error } = await sb.from("invites").delete().eq("code", code); if (error) throw error;
+}
+export async function stopInvite(code) {
+  if (isDemo) return;
+  const { error } = await sb.rpc("stop_invite", { c: code }); if (error) throw error;
 }
 export async function copyLibraryTo(email) {
   const { data, error } = await sb.functions.invoke("copy-library", { body: { to_email: email } });
