@@ -46,7 +46,7 @@ export async function settingsView(app) {
 
       <h2 class="t-label grey set-head">Account</h2>
       ${field("display_name", "Name", p.display_name || m.name, "Edit")}
-      ${field("", "Email", m.email)}
+      ${field("email", "Email", m.email, "Edit")}
       ${field("birth_year", "Birth year", p.birth_year, p.birth_year ? "Edit" : "Add")}
       ${field("gender", "Gender", p.gender, p.gender ? "Edit" : "Add")}
 
@@ -85,7 +85,7 @@ export async function settingsView(app) {
       toast(`${all.recipes.length} recipes downloaded.`);
     } catch (e) { console.error(e); toast("Couldn’t download. Try again."); }
   };
-  app.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => editField(b.dataset.edit, p, again));
+  app.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => b.dataset.edit === "email" ? emailSheet(m.email, again) : editField(b.dataset.edit, p, again));
   $("[data-signout]", app).onclick = async () => { await data.signOut(); location.hash = "#/login"; };
   $("[data-delete]", app).onclick = () => deleteSheet();
   const inv = $("[data-invite]", app); if (inv) inv.onclick = () => inviteSheet(again);
@@ -95,6 +95,41 @@ export async function settingsView(app) {
     try { await data.stopInvite(b.dataset.stop); toast("Link stopped."); again(); } catch (e) { console.error(e); toast("Couldn’t stop it. Try again."); }
   });
   app.querySelectorAll("[data-copy]").forEach(b => b.onclick = () => copySheet(invites.find(i => i.code === b.dataset.copy)));
+}
+
+// New email → a 6-digit code sent there → switched. Sign-in codes go to the new address from then on.
+function emailSheet(current, done) {
+  const { el, close } = sheet(`
+    <div class="sheet-head"><span class="t-label">Email</span><button class="t-label grey" data-close>Close</button></div>
+    <form class="edit-field">
+      <p class="t-instr">Your sign-in codes go here. We’ll send a 6-digit code to the new address to check it’s yours.</p>
+      <label class="input-line"><input class="t-item" type="email" name="e" placeholder="New email" autocomplete="email" inputmode="email" value=""></label>
+      <label class="input-line" hidden><input class="t-item" name="c" placeholder="6-digit code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"></label>
+      <p class="error t-label" aria-live="assertive"></p>
+      <div class="sheet-actions"><button class="btn-text grey t-label" type="button" data-resend hidden>Send a new code</button><button class="btn-primary t-label" type="submit">Send code</button></div>
+    </form>`, "Email");
+  const form = el.querySelector("form"), err = el.querySelector(".error"), btn = el.querySelector('button[type="submit"]');
+  const emailIn = form.e, codeIn = form.c, resend = el.querySelector("[data-resend]");
+  let sentTo = null;
+  const send = async () => {
+    const v = emailIn.value.trim().toLowerCase();
+    if (v === String(current || "").toLowerCase()) throw new Error("That’s already your email.");
+    await data.changeEmail(v); sentTo = v;
+    emailIn.readOnly = true; codeIn.parentElement.hidden = false; resend.hidden = false; btn.textContent = "Confirm";
+    el.querySelector(".t-instr").textContent = `We sent a 6-digit code to ${v}. Enter it to switch.`;
+    codeIn.focus();
+  };
+  resend.onclick = async () => { err.textContent = ""; try { await data.changeEmail(sentTo); toast("New code sent."); } catch (ex) { err.textContent = ex.message; } };
+  codeIn.oninput = () => { if (codeIn.value.replace(/\D/g, "").length === 6) form.requestSubmit(); };
+  emailIn.focus();
+  form.onsubmit = async e => {
+    e.preventDefault(); err.textContent = ""; btn.disabled = true;
+    try {
+      if (!sentTo) await send();
+      else { await data.confirmEmailChange(sentTo, codeIn.value); close(); toast("Email changed."); done(); }
+    } catch (ex) { err.textContent = ex.message; }
+    btn.disabled = false;
+  };
 }
 
 function editField(key, p, done) {

@@ -43,6 +43,27 @@ export async function verifyCode(email, code) {
   if (error) throw new Error(/expired/i.test(error.message) ? "That code has expired. Send a new one." : "That code didn’t work. Check it and try again.");
 }
 
+// Change your email: a code goes to the new address; entering it makes the switch.
+export async function changeEmail(email) {
+  email = String(email || "").trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("That email doesn’t look right.");
+  if (isDemo) return;
+  const { error } = await sb.auth.updateUser({ email });
+  if (error) {
+    if (/already|registered|exists/i.test(error.message)) throw new Error("That email already has a Kitchen account.");
+    if (/rate|seconds/i.test(error.message)) throw new Error("A code was just sent. Wait a minute, then try again.");
+    if (/same/i.test(error.message)) throw new Error("That’s already your email.");
+    throw new Error("Couldn’t send a code. Try again.");
+  }
+}
+export async function confirmEmailChange(email, code) {
+  code = String(code || "").replace(/\D/g, "");
+  if (code.length < 6) throw new Error("Enter the 6-digit code.");
+  if (isDemo) return;
+  const { error } = await sb.auth.verifyOtp({ email: String(email).trim().toLowerCase(), token: code, type: "email_change" });
+  if (error) throw new Error(/expired/i.test(error.message) ? "That code has expired. Send a new one." : "That code didn’t work. Check it and try again.");
+}
+
 // Join from an invite (server function makes the account), then a code is emailed to finish.
 export async function join({ code, email, name, birth_year, gender }) {
   if (isDemo) return;
