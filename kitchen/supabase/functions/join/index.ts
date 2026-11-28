@@ -8,6 +8,7 @@
 //
 // Request:  POST { code, email, name, birth_year?, gender? }
 // Response: { ok: true, library? } (then the app emails a sign-in code), or { error } with 400/404/409/410
+// Group links (max_uses > 1, up to 10) work for several people until full, expired or stopped; never with a library.
 
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 
@@ -88,10 +89,11 @@ Deno.serve(async (req) => {
 
     const URL_ = Deno.env.get("SUPABASE_URL")!;
     const admin = createClient(URL_, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
-    const { data: inv } = await admin.from("invites").select("code,created_by,used_by,expires_at,with_library,with_meals").eq("code", code).maybeSingle();
+    const { data: inv } = await admin.from("invites").select("code,created_by,used_by,expires_at,with_library,with_meals,max_uses,uses").eq("code", code).maybeSingle();
     if (!inv) return send({ error: "That invite link doesn’t work. Ask Grace for a new one." }, 404);
-    if (inv.used_by) return send({ error: "used" }, 410);
+    const group = (inv.max_uses || 1) > 1;
     if (new Date(inv.expires_at) < new Date()) return send({ error: "expired" }, 410);
+    if (group ? inv.uses >= inv.max_uses : inv.used_by) return send({ error: group ? "full" : "used" }, 410);
 
     const { data: made, error: e1 } = await admin.auth.admin.createUser({ email, email_confirm: true, user_metadata: { name } });
     if (e1) {
@@ -99,14 +101,25 @@ Deno.serve(async (req) => {
       throw e1;
     }
     const id = made.user.id;
-    // claim the invite first (only if still unused, in case two people raced)
-    const { data: claimed } = await admin.from("invites").update({ used_by: id, used_at: new Date().toISOString() }).eq("code", code).is("used_by", null).select("code");
-    if (!claimed?.length) { await admin.auth.admin.deleteUser(id); return send({ error: "used" }, 410); }
+    // claim the invite first (only if still free, in case two people raced)
+    if (group) {
+      let ok = false;
+      for (let n = inv.uses, tries = 0; tries < 5 && n < inv.max_uses; tries++) {
+        const { data: c } = await admin.from("invites").update({ uses: n + 1, used_at: new Date().toISOString() }).eq("code", code).eq("uses", n).select("code");
+        if (c?.length) { ok = true; break; }
+        const { data: fresh } = await admin.from("invites").select("uses").eq("code", code).single(); n = fresh?.uses ?? inv.max_uses;
+      }
+      if (!ok) { await admin.auth.admin.deleteUser(id); return send({ error: "full" }, 410); }
+      await admin.from("invite_joins").insert({ code, user_id: id, name });
+    } else {
+      const { data: claimed } = await admin.from("invites").update({ used_by: id, used_at: new Date().toISOString(), uses: 1 }).eq("code", code).is("used_by", null).select("code");
+      if (!claimed?.length) { await admin.auth.admin.deleteUser(id); return send({ error: "used" }, 410); }
+    }
     // with the inviter's library: no starter recipes or staples (seeded now); otherwise the app adds them on first sign-in
-    const { error: e2 } = await admin.from("profiles").insert({ id, display_name: name, birth_year: year, gender, seeded_at: inv.with_library ? new Date().toISOString() : null });
+    const { error: e2 } = await admin.from("profiles").insert({ id, display_name: name, birth_year: year, gender, seeded_at: inv.with_library && !group ? new Date().toISOString() : null });
     if (e2) throw e2;
     let library = null;
-    if (inv.with_library) library = await copyLibrary(admin, URL_, inv.created_by, id, !!inv.with_meals);
+    if (inv.with_library && !group) library = await copyLibrary(admin, URL_, inv.created_by, id, !!inv.with_meals);
     return send({ ok: true, library });
   } catch (e) {
     console.error(e);
