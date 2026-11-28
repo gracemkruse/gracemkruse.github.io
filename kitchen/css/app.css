@@ -123,9 +123,9 @@ img { display: block; max-width: 100%; }
   .tile-more { opacity: 0; background: var(--chartreuse-bright); color: var(--white); }   /* green button with a mouse */
   .tile:hover .tile-name, .tile:hover .tile-more, .tile:focus-within .tile-name, .tile:focus-within .tile-more { opacity: 1; }
 }
-.tile-title { position: absolute; left: var(--s8); right: var(--s8); top: var(--s8); color: var(--white); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; overflow-wrap: anywhere; }
-.tile.no-photo .tile-more { opacity: 1; }
-.tile.no-photo:hover .tile-title, .tile.no-photo:focus-within .tile-title { opacity: 0; }
+.tile.no-photo .tile-name, .tile.no-photo .tile-more { opacity: 1; }
+.tile.no-photo .tile-name .grey { display: none; }   /* name only, so the colour still shows */
+.tile-name .recipe-name { overflow-wrap: anywhere; }
 .tile-time { display: flex; align-items: center; gap: var(--s8); margin: var(--s12) 0 0; }
 .tile-time + .t-label { margin-top: var(--s4); }
 .form-actions .error { margin-right: auto; }
