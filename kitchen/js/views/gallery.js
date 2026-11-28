@@ -51,11 +51,11 @@ export async function galleryView(app) {
 
   // Smallest view: photos only. A + on each photo (always on touch screens, on hover with a mouse)
   // opens the name with Add to this week; with a mouse the name also shows on hover.
-  // No photo: the name always sits on the coloured block, and the + always shows.
+  // No photo: the name box (the hover look) and the + always show.
   function tile(r) {
     const name = esc(niceTitle(r.title));
     return `<div class="card tile${r.image_url ? "" : " no-photo"}">
-      <a class="photo" href="#/recipe/${encodeURIComponent(r.id)}" style="${photoStyle(r, true)}" aria-label="${name}">${r.image_url ? "" : `<span class="t-label tile-title" aria-hidden="true">${name}</span>`}<span class="tile-name" aria-hidden="true"><span class="t-label recipe-name">${name}</span>${r.total_minutes ? `<span class="t-label grey">About ${esc(duration(r.total_minutes))}</span>` : ""}</span></a>
+      <a class="photo" href="#/recipe/${encodeURIComponent(r.id)}" style="${photoStyle(r, true)}" aria-label="${name}"><span class="tile-name" aria-hidden="true"><span class="t-label recipe-name">${name}</span>${r.total_minutes ? `<span class="t-label grey">About ${esc(duration(r.total_minutes))}</span>` : ""}</span></a>
       <button class="tile-more" data-id="${esc(r.id)}" aria-label="${name}: add to this week or open">${icon("plus", true)}</button>
     </div>`;
   }
